@@ -43,25 +43,32 @@ router.get("/userid/:id", async (req, res) => {
   if (!req.params.id || isNaN(parseInt(req.params.id))) {
     handleError(req, res, "invalid user_id parameter");
   }
-  const userId = parseInt(req.params.id);
+  const userId = parseInt(req.params.id.trim());
   try {
-    const allPostsByUser = getAllPostsByUser(userId);
+    const allPostsByUser = await getAllPostsByUser(userId);
     res.json({
-      status: "success",
-      message: `all posts of user ${userId} retrieved`,
-      payload: allPostsByUser
-  });
+        status: "success",
+        message: `all posts of user ${userId} retrieved`,
+        payload: allPostsByUser
+    });
   } catch (err) {
     handleError(req, res, err);
   }
 });
 
 // allPostsByHashtag: get global user posts with specific hashtag
-router.get("/:hashtag", async (req, res) => {
-  const hashtag = req.params.hashtag;
-
+router.get("/tag/:hashtag", async (req, res) => {
+  if (!req.params.hashtag) {
+    handleError(req, res, "empty hashtag parameter");
+  }
+  const hashtag = req.params.hashtag.trim();
   try {
-    const allPostsByHashtag = await getAllPostsByHashtag();
+    const allPostsByHashtag = await getAllPostsByHashtag(hashtag);
+    res.json({
+        status: "success",
+        message: `all posts with hashtag "${hashtag}" retrieved`,
+        payload: allPostsByHashtag
+    });
   } catch (err) {
     handleError(req, res, err);
   }

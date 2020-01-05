@@ -5,14 +5,13 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 // DATABASE CONNECTION
-const db = require('../../Database/Dathrow(RS */
-const log = console.log;
+const db = require('../../Database/Database.js');
 
 
 const getAllPosts = async () => {
   try {
     const getQuery = `
-      SELECT posts.image_url
+      SELECT image_url
         , caption
         , time_created
         , username
@@ -25,25 +24,34 @@ const getAllPosts = async () => {
   }
 }
 
-const getAllPostsByUser = async (userId) => {
+const getAllPostsByUser = async (numId) => {
   try {
     const getQuery = `
-      SELECT posts.image_url
+      SELECT image_url
         , caption
         , time_created
       FROM posts
       WHERE owner_id = $/id/
       ORDER BY time_created DESC;
     `;
-    return await db.any(getQuery, { id: userId });
+    return await db.any(getQuery, { id: numId });
   } catch(err) {
     throw(err);
   }
 }
 
-const getAllPostsByHashtag = async () => {
+const getAllPostsByHashtag = async (strTag) => {
   try {
-
+    const getQuery = `
+      SELECT image_url
+        , caption
+        , time_created
+        , username
+      FROM posts INNER JOIN users ON (posts.owner_id = users.id)
+      WHERE hashtag_str LIKE $/hashStr/
+      ORDER BY posts.time_created DESC;
+    `;
+    return await db.any(getQuery, { hashStr: `%${strTag}%` });
   } catch(err) {
     throw(err);
   }
@@ -78,6 +86,7 @@ const deletePost = async () => {
 /* EXPORT */
 module.exports = {
   getAllPosts,
+  getAllPostsByUser,
   getAllPostsByHashtag,
   getOnePost,
   createPost,
