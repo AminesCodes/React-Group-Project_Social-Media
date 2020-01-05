@@ -1,7 +1,7 @@
 # React-Group-Project_Social-Media
 
 
-## [Pursuit-Core-Web-React-Group-Project] (https://github.com/joinpursuit/Pursuit-Core-Web-React-Group-Project)
+## [Pursuit-Core-Web-React-Group-Project](https://github.com/joinpursuit/Pursuit-Core-Web-React-Group-Project)
 
 For this project, in a group, build a Full-Stack Application with Express.js, PostgreSQL and React where users can upload and view images. 
 
