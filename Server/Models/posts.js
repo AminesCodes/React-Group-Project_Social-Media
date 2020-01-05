@@ -57,9 +57,16 @@ const getAllPostsByHashtag = async (strTag) => {
   }
 }
 
-const getOnePost = async () => {
+const getOnePost = async (numId) => {
   try {
-
+    const getQuery = `
+      SELECT image_url
+        , caption
+        , time_created
+      FROM posts
+      WHERE id = $/id/
+    `;
+    return await db.one(getQuery, { id: numId });
   } catch(err) {
     throw(err);
   }

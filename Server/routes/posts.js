@@ -75,11 +75,18 @@ router.get("/tag/:hashtag", async (req, res) => {
 });
 
 // onePost: get global user posts with specific hashtag
-router.get("/:hashtag", async (req, res) => {
-  const hashtag = req.params.hashtag;
-
+router.get("/:id", async (req, res) => {
+  if (!req.params.id || isNaN(parseInt(req.params.id))) {
+    handleError(req, res, "invalid post_id parameter");
+  }
+  const postId = req.params.id;
   try {
-    const onePost = await getOnePost();
+    const onePost = await getOnePost(postId);
+    res.json({
+        status: "success",
+        message: `post ${postId} retrieved`,
+        payload: onePost
+    });
   } catch (err) {
     handleError(req, res, err);
   }
