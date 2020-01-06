@@ -139,7 +139,7 @@ router.get("/:id", async (req, res) => {
 // createPost: create a single post
 router.post("/", checkPostInputs, async (req, res) => {
     const { imageUrl, caption, ownerId } = req.body;
-    const hashtagString = parseHashtags(caption);
+    const hashtagString = parseHashtags(caption) || "";
     try {
       const response = await createPost({
           imageUrl,
