@@ -1,4 +1,4 @@
-const db = require('../Database/database');
+const db = require('../../Database/Database');
 
 const formatStringInputs = (str) => {
     str = str.trim()
@@ -27,7 +27,7 @@ const createUser = async (user) => {
 
       const insertQuery = `
         INSERT INTO users
-            (username, avatar_url, firstname, lastname, dob, user_password, email)
+            (username, firstname, lastname, user_password, email)
         VALUES
             ($1, $2, $3, $4, $5, $6) 
         RETURNING *
@@ -42,12 +42,9 @@ const createUser = async (user) => {
 
 const getUserByUsername = async (username) => {
     try {
-        const requestQuery = `
-            SELECT id, username, firstname, lastname, dob, email, signing_date
-            FROM users
-            WHERE username = $1
-        `
+        const requestQuery = `SELECT * FROM users WHERE username = $1`
         const user = await db.one(requestQuery, username);
+        delete user.user_password;
         return user;
     } catch (err) {
         if (err.message === 'No data returned from the query') {
@@ -59,12 +56,9 @@ const getUserByUsername = async (username) => {
 
 const getUserById = async (id) => {
     try {
-        const requestQuery = `
-            SELECT id, username, firstname, lastname, dob, email, signing_date
-            FROM users
-            WHERE id = $1
-        `
+        const requestQuery = `SELECT * FROM users WHERE id = $1`
         const user = await db.one(requestQuery, id);
+        delete user.user_password;
         return user;
     } catch (err) {
         if (err.message === 'No data returned from the query') {
@@ -76,8 +70,9 @@ const getUserById = async (id) => {
 
 const getAllUsers = async () => {
     try {
+        
         const requestQuery = `
-            SELECT id, username, firstname, lastname, dob, email, signing_date
+            SELECT id, firstname, lastname, username, email, avatar_url, ui_theme, time_created
             FROM users
         `
         const users = await db.any(requestQuery);
@@ -89,18 +84,24 @@ const getAllUsers = async () => {
 
 const updateUserInfo = async (userId, user) => {
     try {
-        let { username, firstname, lastname, dob, email } = user;
+        let { username, firstname, lastname, dob, email, bio, avatarUrl } = user;
         username = username.toLowerCase();
         firstname = formatStringInputs(firstname);
         lastname = formatStringInputs(lastname);
         email = email.toLowerCase();
 
-        const updateQuery = `UPDATE users 
-        SET username=$1, firstname=$2, lastname=$3, dob=$4, email=$5
-        WHERE id = $6 
-        RETURNING id, username, firstname, lastname, dob, email, signing_date
-        `
-        const updatedUser = await db.one(updateQuery, [username, firstname, lastname, dob, email, userId])
+        let updateQuery = `UPDATE users 
+        SET username=$1, firstname=$2, lastname=$3, email=$5, bio=$6
+        WHERE id = $7 
+        RETURNING *`
+        if (avatarUrl) {
+            updateQuery = `UPDATE users 
+                SET username=$1, firstname=$2, lastname=$3, email=$5, bio=$6, avatar_url=$8
+                WHERE id = $7 
+                RETURNING *`
+        }
+        const updatedUser = await db.one(updateQuery, [username, firstname, lastname, dob, email, bio, userId, avatarUrl]);
+        delete updatedUser.user_password;
         return updatedUser;
     } catch (err) {
         throw err;
@@ -116,6 +117,37 @@ const updateUserPassword = async (userId, password) => {
         RETURNING *
         `
         const user = await db.one(updateQuery, [password, userId])
+        delete user.user_password;
+        return user;
+    } catch (err) {
+        throw err;
+    }
+}
+
+const updateUserAvatar = async (userId, avatarUrl) => {
+    try {
+        const updateQuery = `UPDATE users 
+        SET avatar_url = $1
+        WHERE id = $2 
+        RETURNING *
+        `
+        const user = await db.one(updateQuery, [avatarUrl, userId]);
+        delete user.user_password;
+        return user;
+    } catch (err) {
+        throw err;
+    }
+}
+
+const updateUserTheme = async (userId, lightTheme) => {
+    try {
+        const updateQuery = `UPDATE users 
+        SET ui_theme = $1
+        WHERE id = $2 
+        RETURNING *
+        `
+        const user = await db.one(updateQuery, [lightTheme, userId]);
+        delete user.user_password;
         return user;
     } catch (err) {
         throw err;

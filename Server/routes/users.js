@@ -1,13 +1,39 @@
 const express = require('express');
 const router = express.Router();
-
-const Express = require('express');
-const Router = Express.Router();
+const multer = require('multer');
 
 const Users = require('../Models/users');
 
+const storage = multer.diskStorage({
+  destination: (request, file, cb) => {
+    cb(null, '../')
+    cb(null, '../public/images/avatars')
+  },
+  filename: (request, file, cb) => {
+    const fileName = Date.now() + "-" + file.originalname
+    cb(null, fileName)
+  }
+});
 
-Router.get('/all', async (request, response) => {
+const fileFilter = (request, file, cb) => {
+    if ((file.mimetype).slice(0, 6) === 'image/') {
+        // request.file = file
+        // request.file.path = file.path
+        const avatarUrl = request.headers.host + '/images/avatars/' + file.originalname
+        cb(null, true) 
+        console.log(avatarUrl)
+    } else {
+        cb(null, false)
+    }
+}
+
+const upload = multer({ 
+        storage: storage,
+        // fileFilter: fileFilter,
+    });
+
+
+router.get('/all', async (request, response) => {
     try {
         const allUsers = await Users.getAllUsers();
         response.json({
@@ -26,7 +52,7 @@ Router.get('/all', async (request, response) => {
     }
 })
 
-Router.get('/:username', async (request, response) => {
+router.get('/:username', async (request, response) => {
     const username = request.params.username
     let userId = false
 
@@ -73,7 +99,7 @@ Router.get('/:username', async (request, response) => {
 
 
 // Login a registered user
-Router.patch('/login', async (request, response) => {
+router.patch('/login', async (request, response) => {
     let { password, email } = request.body
     
     if (!password || !email) {
@@ -113,14 +139,14 @@ Router.patch('/login', async (request, response) => {
 })
 
 
-Router.post('/signup', async (request, response) => {
-    const { username, firstname, lastname, dob, password, email } = request.body
+router.post('/signup', async (request, response) => {
+    const { username, firstname, lastname, password, email, ageCheck } = request.body
 
-    if (!username || !firstname || !lastname || !dob || !password || !email) {
+    if (!username || !firstname || !lastname || !password || !email || !ageCheck || ageCheck !== 'true') {
         response.status(400)
             response.json({
                 status: 'fail',
-                message: 'Missing Information',
+                message: 'Missing Information, all fields are required',
                 payload: null,
             })
     } else {
@@ -154,61 +180,85 @@ Router.post('/signup', async (request, response) => {
     }
 })
 
-Router.put('/:userId', async (request, response) => {
+// app.post('/upload', upload.single("image"), (req, res, next) => {
+//   console.log('req.file', req.file)
+//   console.log('req.body', req.body)
+//   let imageUrl = "http://localhost:3129/" + req.file.path.replace('public/', '')
+//   res.json({
+//     imageUrl: imageUrl,
+//     message: "file uploaded"
+//   })
+// })
+router.put('/:userId', upload.single('avatar'), async (request, response) => {
     const userId = request.params.userId;
-    const { username, firstname, lastname, dob, password, email } = request.body
+    const { username, firstname, lastname, password, email} = request.body
 
-    if (username === 'undefined' || !username || !firstname || !lastname || !dob || !password || !email) {
-        response.status(400)
+    if (isNaN(parseInt(userId)) || parseInt(userId) + '' !== userId) {
+        response.status(404)
             response.json({
                 status: 'fail',
-                message: 'Missing Information or invalid username',
+                message: 'Wrong route',
                 payload: null,
             })
+    // } else if (username === 'undefined' || !username || !firstname || !lastname || !password || !email) {
+    //     response.status(400)
+    //         response.json({
+    //             status: 'fail',
+    //             message: 'Missing Information or invalid username',
+    //             payload: null,
+    //         })
     } else {
-        try {
-            const authorizedToUpdate = await Users.authenticateUser(userId, password)
+        console.log('Req.Body (Before)', request.body)
+        avatarUrl = request.headers.host + '/images/avatars/' + request.file.originalname
+        console.log('REQUEST.BODY (After)', request.file)
+        let imageUrl = "http://localhost:3129/" + request.file.path.replace('/public/', '/')
+        response.send(imageUrl)
+        // try {
+        //     if (request.body.bio) {
+        //         request.body.bio = 'NULL'
+        //     }
 
-            if (authorizedToUpdate) {
-                try {
-                    const updatedUser = await Users.updateUserInfo(userId, request.body)
-                    response.json({
-                        status: 'success',
-                        message: 'Successfully update information',
-                        payload: updatedUser,
-                    })
-                } catch (err) {
-                    console.log(err)
-                    response.status(500)
-                    response.json({
-                        status: 'fail',
-                        message: 'Sorry, Something Went Wrong (BE)',
-                        payload: null,
-                    })
-                }
-            } else {
-                console.log('Authentication issue')
-                response.status(401)
-                response.json({
-                    status: 'fail',
-                    message: 'Authentication issue',
-                    payload: null,
-                })
-            }
-        } catch (err) {
-            console.log(err)
-            response.status(500)
-            response.json({
-                status: 'fail',
-                message: 'Sorry, Something Went Wrong (BE)',
-                payload: null,
-            })
-        }
+        //     const authorizedToUpdate = await Users.authenticateUser(userId, password)
+        //     if (authorizedToUpdate) {
+        //         try {
+        //             const updatedUser = await Users.updateUserInfo(userId, request.body)
+        //             response.json({
+        //                 status: 'success',
+        //                 message: 'Successfully update information',
+        //                 payload: updatedUser,
+        //             })
+        //         } catch (err) {
+        //             console.log(err)
+        //             response.status(500)
+        //             response.json({
+        //                 status: 'fail',
+        //                 message: 'Sorry, Something Went Wrong (BE)',
+        //                 payload: null,
+        //             })
+        //         }
+        //     } else {
+        //         console.log('Authentication issue')
+        //         response.status(401)
+        //         response.json({
+        //             status: 'fail',
+        //             message: 'Authentication issue',
+        //             payload: null,
+        //         })
+        //     }
+        // } catch (err) {
+        //     console.log(err)
+        //     response.status(500)
+        //     response.json({
+        //         status: 'fail',
+        //         message: 'Sorry, Something Went Wrong (BE)',
+        //         payload: null,
+        //     })
+        // }
     }
 })
 
 
-Router.patch('/:userId/password', async (request, response) => {
+router.patch('/:userId/password', async (request, response) => {
     const userId = request.params.userId;
     const { oldPassword, newPassword, confirmedPassword } = request.body
 
@@ -262,7 +312,7 @@ Router.patch('/:userId/password', async (request, response) => {
 })
 
 
-Router.patch('/:userId/delete', async (request, response) => {
+router.patch('/:userId/delete', async (request, response) => {
     const userId = request.params.userId;
     const { password } = request.body
 
@@ -315,12 +365,4 @@ Router.patch('/:userId/delete', async (request, response) => {
     }
 })
 
-module.exports = Router
-
-
-/* GET users listing. */
-router.get('/', (req, res, next) => {
-  res.send('respond with a resource');
-});
-
-module.exports = router;
+module.exports = router
