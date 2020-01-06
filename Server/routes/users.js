@@ -6,8 +6,7 @@ const Users = require('../Models/users');
 
 const storage = multer.diskStorage({
   destination: (request, file, cb) => {
-    cb(null, '../')
-    cb(null, '../public/images/avatars')
+    cb(null, './public/images/avatars') // UNEXPECTED BUG!! while '../public/images/avatars' looks like it's the correct route, for some reason it doesn't work
   },
   filename: (request, file, cb) => {
     const fileName = Date.now() + "-" + file.originalname
@@ -17,11 +16,7 @@ const storage = multer.diskStorage({
 
 const fileFilter = (request, file, cb) => {
     if ((file.mimetype).slice(0, 6) === 'image/') {
-        // request.file = file
-        // request.file.path = file.path
-        const avatarUrl = request.headers.host + '/images/avatars/' + file.originalname
-        cb(null, true) 
-        console.log(avatarUrl)
+        cb(null, true)
     } else {
         cb(null, false)
     }
@@ -29,7 +24,7 @@ const fileFilter = (request, file, cb) => {
 
 const upload = multer({ 
         storage: storage,
-        // fileFilter: fileFilter,
+        fileFilter: fileFilter,
     });
 
 
@@ -208,11 +203,12 @@ router.put('/:userId', upload.single('avatar'), async (request, response) => {
     //             payload: null,
     //         })
     } else {
-        console.log('Req.Body (Before)', request.body)
-        avatarUrl = request.headers.host + '/images/avatars/' + request.file.originalname
-        console.log('REQUEST.BODY (After)', request.file)
-        let imageUrl = "http://localhost:3129/" + request.file.path.replace('/public/', '/')
-        response.send(imageUrl)
+        let avatarUrl = null;
+        if (request.file) {
+            avatarUrl = 'http://' + request.headers.host + '/images/avatars/' + request.file.filename
+            response.send(avatarUrl)
+        } 
+        else response.send('no avatar, proceed')
         // try {
         //     if (request.body.bio) {
         //         request.body.bio = 'NULL'
