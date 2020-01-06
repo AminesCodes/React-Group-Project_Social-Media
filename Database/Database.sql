@@ -14,7 +14,7 @@ CREATE TABLE users
     email VARCHAR (30) UNIQUE NOT NULL,
     avatar_url TEXT,
     bio VARCHAR (500),
-    ui_theme BOOLEAN NOT NULL DEFAULT TRUE,
+    light_theme BOOLEAN NOT NULL DEFAULT TRUE,
     time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -286,7 +286,18 @@ VALUES
 (21, NULL, 5),
 (NULL, 87, 4),
 (NULL, 63, 2),
-(13, NULL, 1);
+(13, NULL, 1),
+(NULL, 75, 4),
+(NULL, 84, 6),
+(5, NULL, 2),
+(11, NULL, 8),
+(NULL, 91, 7),
+(NULL, 29, 2),
+(NULL, 72, 7),
+(23, NULL, 1),
+(20, NULL, 6),
+(6, NULL, 7),
+(NULL, 40, 6);
 
 INSERT INTO follows
 (follower_id, followed_user_id)
