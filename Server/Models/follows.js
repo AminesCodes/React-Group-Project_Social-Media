@@ -11,8 +11,8 @@ const db = require('../../Database/Database.js');
 const getFollows = async (numId) => {
   try {
     const getQuery = `
-      SELECT followed_user_id
-        , username
+      SELECT username AS followings
+        , avatar_url
       FROM follows INNER JOIN users ON (follows.followed_user_id = users.id)
       WHERE follower_id = $/id/
       ORDER BY username ASC;
@@ -23,17 +23,16 @@ const getFollows = async (numId) => {
   }
 }
 
-const getFollowings = async (numId) => {
+const getFollowers = async (numId) => {
   try {
-    // const getQuery = `
-    //   SELECT image_url
-    //     , caption
-    //     , time_created
-    //   FROM follows
-    //   WHERE owner_id = $/id/
-    //   ORDER BY time_created DESC;
-    // `;
-    // return await db.any(getQuery, { id: numId });
+    const getQuery = `
+      SELECT username AS followers
+        , avatar_url
+      FROM follows INNER JOIN users ON (follows.follower_id = users.id)
+      WHERE followed_user_id = $/id/
+      ORDER BY username ASC;
+    `;
+    return await db.any(getQuery, { id: numId });
   } catch(err) {
     throw(err);
   }

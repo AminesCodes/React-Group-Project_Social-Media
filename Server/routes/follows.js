@@ -47,17 +47,20 @@ router.get("/:currUserId", async (req, res) => {
 });
 
 // getFollowers: get all following current user
-router.get("/followers/:currUserId", async (req, res) => {
-  // try {
-  //   const followers = await getFollowers();
-  //   res.json({
-  //       status: "success",
-  //       message: "followers retreived",
-  //       payload: followers
-  //   });
-  // } catch (err) {
-  //   handleError(req, res, err);
-  // }
+router.get("/whofollows/:currUserId", async (req, res) => {
+  if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
+    handleError(req, res, "invalid current user id parameter");
+  }
+  try {
+    const followers = await getFollowers(parseInt(req.params.currUserId.trim()));
+    res.json({
+        status: "success",
+        message: "followers retreived",
+        payload: followers
+    });
+  } catch (err) {
+    handleError(req, res, err);
+  }
 });
 
 // createFollow: make new follow relationship
