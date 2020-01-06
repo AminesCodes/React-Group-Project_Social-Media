@@ -31,8 +31,11 @@ const handleError = (req, res, error) => {
 /* ROUTE HANDLES */
 // getFollows: get all others the user is following
 router.get("/:currUserId", async (req, res) => {
+  if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
+    handleError(req, res, "invalid current user id parameter");
+  }
   try {
-    const follows = await getFollows();
+    const follows = await getFollows(parseInt(req.params.currUserId.trim()));
     res.json({
         status: "success",
         message: "followings retrieved",
