@@ -119,11 +119,11 @@ router.get("/tag/:hashtag", async (req, res) => {
 });
 
 // onePost: get one single post by post_id
-router.get("/:id", async (req, res) => {
-    if (!req.params.id || isNaN(parseInt(req.params.id))) {
+router.get("/:postId", async (req, res) => {
+    if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
       handleError(req, res, "invalid post_id parameter");
     }
-    const postId = req.params.id;
+    const postId = parseInt(req.params.postId);
     try {
       const onePost = await getOnePost(postId);
       res.json({
