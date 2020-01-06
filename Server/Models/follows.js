@@ -38,52 +38,16 @@ const getFollowers = async (numId) => {
   }
 }
 
-// const getAllPostsByHashtag = async (strTag) => {
-//   try {
-//     const getQuery = `
-//       SELECT image_url
-//         , caption
-//         , time_created
-//         , username
-//       FROM follows INNER JOIN users ON (posts.owner_id = users.id)
-//       WHERE hashtag_str LIKE $/hashStr/
-//       ORDER BY posts.time_created DESC;
-//     `;
-//     return await db.any(getQuery, { hashStr: `%${strTag}%` });
-//   } catch(err) {
-//     throw(err);
-//   }
-// }
-
-// const getOnePost = async (numId) => {
-//   try {
-//     const getQuery = `
-//       SELECT image_url
-//         , caption
-//         , time_created
-//       FROM follows
-//       WHERE id = $/id/
-//     `;
-//     return await db.one(getQuery, { id: numId });
-//   } catch(err) {
-//     throw(err);
-//   }
-// }
-
-const createFollow = async (bodyObj) => {
+const createFollow = async (currentUserId, targetUserId) => {
   try {
-    // const postQuery = `
-    //   INSERT INTO posts (image_url
-    //     , caption
-    //     , owner_id
-    //     , hashtag_str
-    //   ) VALUES ($/imageUrl/
-    //     , $/caption/
-    //     , $/ownerId/
-    //     , $/hashtagString/
-    //   ) RETURNING *;
-    // `;
-    // return await db.one(postQuery, bodyObj);
+    const postQuery = `
+      INSERT INTO follows (follower_id
+        , followed_user_id
+      ) VALUES ($/currentUserId/
+        , $/targetUserId/
+      ) RETURNING *;
+    `;
+    return await db.one(postQuery, { currentUserId, targetUserId });
   } catch(err) {
     throw(err);
   }
