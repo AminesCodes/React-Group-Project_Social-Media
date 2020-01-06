@@ -91,14 +91,18 @@ const createPost = async (bodyObj) => {
   }
 }
 
-const deletePost = async () => {
+const deletePost = async (numId) => {
   try {
-
+    const deleteQuery = `
+      DELETE FROM posts
+      WHERE id = $/id/
+      RETURNING *;
+    `;
+    return await db.one(deleteQuery, { id: numId });
   } catch(err) {
     throw(err);
   }
 }
-
 
 
 /* EXPORT */

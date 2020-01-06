@@ -8,7 +8,14 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 const express = require('express');
 const router = express.Router();
 // Queries
-const { getAllPosts, getAllPostsByUser, getAllPostsByHashtag, getOnePost, createPost, deletePost } = require('../Models/posts.js');
+const { 
+  getAllPosts,
+  getAllPostsByUser,
+  getAllPostsByHashtag,
+  getOnePost,
+  createPost,
+  deletePost
+} = require('../Models/posts.js');
 
 
 /* HELPERS */
@@ -21,6 +28,7 @@ const handleError = (req, res, error) => {
       payload: null
   });
 }
+
 const parseHashtags = (str) => {
   if (!str || !str.trim()) {
     return;
@@ -110,7 +118,7 @@ router.get("/tag/:hashtag", async (req, res) => {
     }
 });
 
-// onePost: get global user posts with specific hashtag
+// onePost: get one single post by post_id
 router.get("/:id", async (req, res) => {
     if (!req.params.id || isNaN(parseInt(req.params.id))) {
       handleError(req, res, "invalid post_id parameter");
@@ -128,7 +136,7 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-// createPost: create a post
+// createPost: create a single post
 router.post("/", checkPostInputs, async (req, res) => {
     const { imageUrl, caption, ownerId } = req.body;
     const hashtagString = parseHashtags(caption);
@@ -151,13 +159,20 @@ router.post("/", checkPostInputs, async (req, res) => {
 
 // removePost: delete a post
 router.delete("/:postId", async (req, res) => {
+    if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
+      handleError(req, res, "invalid post_id parameter");
+    }
     try {
-
+      const response = await deletePost(parseInt(req.params.postId));
+      res.json({
+          status: "success",
+          message: `post ${postId} deleted`,
+          payload: response
+      });
     } catch (err) {
       handleError(req, res, err);
     }
 });
-
 
 
 /* EXPORT */
