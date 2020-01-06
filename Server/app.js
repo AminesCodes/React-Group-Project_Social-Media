@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const corse = require('cors');
+const cors = require('cors');
 const multer = require('multer');
 
 const indexRouter = require('./routes/index');
@@ -19,7 +19,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static('/public', path.join(__dirname, 'public'))); // IGNORE /public
+app.use('/public', express.static(path.join(__dirname, 'public'))); // IGNORE /public
 app.use(cors());
 
 // const storage = multer.diskStorage({
