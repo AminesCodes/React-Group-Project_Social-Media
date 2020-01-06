@@ -8,7 +8,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 const db = require('../../Database/Database.js');
 
 
-const getFollows = async (numId) => {
+const getFollows = async (currentUserId) => {
   try {
     const getQuery = `
       SELECT username AS followings
@@ -17,13 +17,13 @@ const getFollows = async (numId) => {
       WHERE follower_id = $/id/
       ORDER BY username ASC;
     `;
-    return await db.any(getQuery, { id: numId });
+    return await db.any(getQuery, { id: currentUserId });
   } catch(err) {
     throw(err);
   }
 }
 
-const getFollowers = async (numId) => {
+const getFollowers = async (currentUserId) => {
   try {
     const getQuery = `
       SELECT username AS followers
@@ -32,7 +32,7 @@ const getFollowers = async (numId) => {
       WHERE followed_user_id = $/id/
       ORDER BY username ASC;
     `;
-    return await db.any(getQuery, { id: numId });
+    return await db.any(getQuery, { id: currentUserId });
   } catch(err) {
     throw(err);
   }
@@ -53,14 +53,15 @@ const createFollow = async (currentUserId, targetUserId) => {
   }
 }
 
-const deleteFollow = async (numId) => {
+const deleteFollow = async (currentUserId, targetUserId) => {
   try {
-    // const deleteQuery = `
-    //   DELETE FROM follows
-    //   WHERE id = $/id/
-    //   RETURNING *;
-    // `;
-    // return await db.one(deleteQuery, { id: numId });
+    const deleteQuery = `
+      DELETE FROM follows
+      WHERE follower_id = $/currentUserId/
+        AND followed_user_id = $/targetUserId/
+      RETURNING *;
+    `;
+    return await db.one(deleteQuery, { currentUserId, targetUserId });
   } catch(err) {
     throw(err);
   }

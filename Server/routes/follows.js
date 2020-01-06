@@ -27,7 +27,7 @@ const handleError = (req, res, error) => {
   });
 }
 
-const checkNumIds = (req, res, whichId) => {
+const checkNumId = (req, res, whichId) => {
   const { [whichId] } = req.params;
   if (![whichId] || isNaN(parseInt([whichId].trim()))) {
     return handleError(req, res, `invalid ${whichId} parameter`);
@@ -38,7 +38,7 @@ const checkNumIds = (req, res, whichId) => {
 /* ROUTE HANDLES */
 // getFollows: get all others the user is following
 router.get("/:currUserId", async (req, res) => {
-    checkNumIds(req, res, "currUserId");
+    checkNumId(req, res, "currUserId");
     try {
       const follows = await getFollows(parseInt(req.params.currUserId.trim()));
       res.json({
@@ -53,7 +53,7 @@ router.get("/:currUserId", async (req, res) => {
 
 // getFollowers: get all following current user
 router.get("/whofollows/:currUserId", async (req, res) => {
-    checkNumIds(req, res, "currUserId");
+    checkNumId(req, res, "currUserId");
     try {
       const followers = await getFollowers(parseInt(req.params.currUserId.trim()));
       res.json({
@@ -68,8 +68,8 @@ router.get("/whofollows/:currUserId", async (req, res) => {
 
 // createFollow: make new follow relationship
 router.post("/:currUserId/:targetUserId", async (req, res) => {
-    checkNumIds(req, res, "currUserId");
-    checkNumIds(req, res, "targetUserId");
+    checkNumId(req, res, "currUserId");
+    checkNumId(req, res, "targetUserId");
     const { currUserId, targetUserId } = req.params;
     try {
       const response = await createFollow(currUserId, targetUserId);
@@ -85,18 +85,18 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
 
 // deleteFollow: delete follow relationship
 router.delete("/:currUserId/:targetUserId", async (req, res) => {
-  // checkNumIds(req, res, "currUserId");
-  // checkNumIds(req, res, "targetUserId");
-  // try {
-  //   const response = await deleteFollow();
-  //   res.json({
-  //       status: "success",
-  //       message: "follow deleted",
-  //       payload: response
-  //   });
-  // } catch (err) {
-  //   handleError(req, res, err);
-  // }
+    checkNumId(req, res, "currUserId");
+    checkNumId(req, res, "targetUserId");
+    try {
+      const response = await deleteFollow(currUserId, targetUserId);
+      res.json({
+          status: "success",
+          message: "follow deleted",
+          payload: response
+      });
+    } catch (err) {
+      handleError(req, res, err);
+    }
 });
 
 
