@@ -1,14 +1,11 @@
 const db = require('../Database');
 
 const formatStringInputs = (str) => {
-    str = str.replace(/ /g, ' ')
     const arr = str.split(' ')
     const nameHolder = [];
     for (let word of arr) {
-        if (typeof word === 'string') {
+        if (typeof word === 'string' && word !== '') {
             nameHolder.push(word[0].toUpperCase() + (word.slice(1, word.length)).toLowerCase());
-        } else {
-            nameHolder.push(word)
         }
     }
     return nameHolder.join(' ')
