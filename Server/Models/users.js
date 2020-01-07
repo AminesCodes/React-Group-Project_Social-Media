@@ -82,25 +82,35 @@ const getAllUsers = async () => {
     }
 }
 
-const updateUserInfo = async (userId, user) => {
+const updateUserInfo = async (userId, user, avatarUrl) => {
     try {
-        let { username, firstname, lastname, dob, email, bio, avatarUrl } = user;
+        let { username, firstname, lastname, email, bio } = user;
         username = username.toLowerCase();
         firstname = formatStringInputs(firstname);
         lastname = formatStringInputs(lastname);
         email = email.toLowerCase();
 
         let updateQuery = `UPDATE users 
-        SET username=$1, firstname=$2, lastname=$3, email=$5, bio=$6
-        WHERE id = $7 
+        SET username=$2, firstname=$3, lastname=$4, email=$5
+        WHERE id = $1 
         RETURNING *`
-        if (avatarUrl) {
+        if (avatarUrl && bio) {
             updateQuery = `UPDATE users 
-                SET username=$1, firstname=$2, lastname=$3, email=$5, bio=$6, avatar_url=$8
-                WHERE id = $7 
+                SET username=$2, firstname=$3, lastname=$4, email=$5, bio=$6, avatar_url=$7
+                WHERE id = $1 
+                RETURNING *`
+        } else if (bio) {
+            updateQuery = `UPDATE users 
+                SET username=$2, firstname=$3, lastname=$4, email=$5, bio=$6
+                WHERE id = $1 
+                RETURNING *`
+        } else if (avatarUrl) {
+            updateQuery = `UPDATE users 
+                SET username=$2, firstname=$3, lastname=$4, email=$5, avatar_url=$7
+                WHERE id = $1 
                 RETURNING *`
         }
-        const updatedUser = await db.one(updateQuery, [username, firstname, lastname, dob, email, bio, userId, avatarUrl]);
+        const updatedUser = await db.one(updateQuery, [userId, username, firstname, lastname, dob, email, bio, avatarUrl]);
         delete updatedUser.user_password;
         return updatedUser;
     } catch (err) {
@@ -124,14 +134,13 @@ const updateUserPassword = async (userId, password) => {
     }
 }
 
-const updateUserAvatar = async (userId, avatarUrl) => {
+const updateUserTheme = async (userId, theme) => {
     try {
         const updateQuery = `UPDATE users 
-        SET avatar_url = $1
-        WHERE id = $2 
-        RETURNING *
-        `
-        const user = await db.one(updateQuery, [avatarUrl, userId]);
+        SET light_theme = $2
+        WHERE id = $1 
+        RETURNING *`
+        const user = await db.one(updateQuery, [userId, theme]);
         delete user.user_password;
         return user;
     } catch (err) {
@@ -139,20 +148,6 @@ const updateUserAvatar = async (userId, avatarUrl) => {
     }
 }
 
-const updateUserTheme = async (userId, lightTheme) => {
-    try {
-        const updateQuery = `UPDATE users 
-        SET ui_theme = $1
-        WHERE id = $2 
-        RETURNING *
-        `
-        const user = await db.one(updateQuery, [lightTheme, userId]);
-        delete user.user_password;
-        return user;
-    } catch (err) {
-        throw err;
-    }
-}
 
 const deleteUser = async (userId) => {
     try {
@@ -213,5 +208,6 @@ module.exports = {
     updateUserPassword,
     deleteUser,
     authenticateUser,
-    logUser
+    logUser,
+    updateUserTheme
   }

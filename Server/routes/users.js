@@ -16,6 +16,7 @@ const storage = multer.diskStorage({
 
 const fileFilter = (request, file, cb) => {
     if ((file.mimetype).slice(0, 6) === 'image/') {
+        
         cb(null, true)
     } else {
         cb(null, false)
@@ -27,6 +28,16 @@ const upload = multer({
         fileFilter: fileFilter,
     });
 
+const handleError = err => {
+    console.log(err)
+    response.status(500)
+    response.json({
+        status: 'fail',
+        message: 'Sorry, Something Went Wrong (BE)',
+        payload: null,
+    })
+}
+
 
 router.get('/all', async (request, response) => {
     try {
@@ -37,13 +48,7 @@ router.get('/all', async (request, response) => {
             payload: allUsers,
         })
     } catch (err) {
-        console.log(err)
-        response.status(500)
-        response.json({
-            status: 'fail',
-            message: 'Sorry, Something Went Wrong (BE)',
-            payload: null
-        })
+        handleError(err)
     }
 })
 
@@ -64,13 +69,7 @@ router.get('/:username', async (request, response) => {
                 payload: targetUser,
             })
         } catch (err) {
-            console.log(err)
-            response.status(500)
-            response.json({
-                status: 'fail',
-                message: 'Sorry, Something Went Wrong (BE)',
-                payload: null,
-            })
+            handleError(err)
         }
     } else {
         try {
@@ -81,13 +80,7 @@ router.get('/:username', async (request, response) => {
                 payload: targetUser,
             })
         } catch (err) {
-            console.log(err)
-            response.status(500)
-            response.json({
-                status: 'fail',
-                message: 'Sorry, Something Went Wrong (BE)',
-                payload: null,
-            })
+            handleError(err)
         }
     }
 })
@@ -122,13 +115,7 @@ router.patch('/login', async (request, response) => {
                 })
             }
         } catch (err) {
-            console.log(err)
-            response.status(500)
-            response.json({
-                status: 'fail',
-                message: 'Sorry, something went wrong',
-                payload: null,
-            })
+            handleError(err)
         }
     }
 })
@@ -163,93 +150,62 @@ router.post('/signup', async (request, response) => {
                     payload: null,
                 })
             } else {
-                console.log(err)
-                response.status(500)
-                response.json({
-                    status: 'fail',
-                    message: 'Sorry, Something Went Wrong (BE)',
-                    payload: null,
-                })
+                handleError(err)
             }
         }
     }
 })
 
-// app.post('/upload', upload.single("image"), (req, res, next) => {
-//   console.log('req.file', req.file)
-//   console.log('req.body', req.body)
-//   let imageUrl = "http://localhost:3129/" + req.file.path.replace('public/', '')
-//   res.json({
-//     imageUrl: imageUrl,
-//     message: "file uploaded"
-//   })
-// })
+
 router.put('/:userId', upload.single('avatar'), async (request, response) => {
     const userId = request.params.userId;
-    const { username, firstname, lastname, password, email} = request.body
+    const { username, firstname, lastname, password, email, bio} = request.body
 
     if (isNaN(parseInt(userId)) || parseInt(userId) + '' !== userId) {
         response.status(404)
             response.json({
-                status: 'fail',
+                status: 'fail',     
                 message: 'Wrong route',
                 payload: null,
             })
-    // } else if (username === 'undefined' || !username || !firstname || !lastname || !password || !email) {
-    //     response.status(400)
-    //         response.json({
-    //             status: 'fail',
-    //             message: 'Missing Information or invalid username',
-    //             payload: null,
-    //         })
+    } else if (username === 'undefined' || !username || !firstname || !lastname || !password || !email) {
+        response.status(400)
+            response.json({
+                status: 'fail',
+                message: 'Missing Information or invalid username',
+                payload: null,
+            })
     } else {
         let avatarUrl = null;
         if (request.file) {
             avatarUrl = 'http://' + request.headers.host + '/images/avatars/' + request.file.filename
             response.send(avatarUrl)
         } 
-        else response.send('no avatar, proceed')
-        // try {
-        //     if (request.body.bio) {
-        //         request.body.bio = 'NULL'
-        //     }
-
-        //     const authorizedToUpdate = await Users.authenticateUser(userId, password)
-        //     if (authorizedToUpdate) {
-        //         try {
-        //             const updatedUser = await Users.updateUserInfo(userId, request.body)
-        //             response.json({
-        //                 status: 'success',
-        //                 message: 'Successfully update information',
-        //                 payload: updatedUser,
-        //             })
-        //         } catch (err) {
-        //             console.log(err)
-        //             response.status(500)
-        //             response.json({
-        //                 status: 'fail',
-        //                 message: 'Sorry, Something Went Wrong (BE)',
-        //                 payload: null,
-        //             })
-        //         }
-        //     } else {
-        //         console.log('Authentication issue')
-        //         response.status(401)
-        //         response.json({
-        //             status: 'fail',
-        //             message: 'Authentication issue',
-        //             payload: null,
-        //         })
-        //     }
-        // } catch (err) {
-        //     console.log(err)
-        //     response.status(500)
-        //     response.json({
-        //         status: 'fail',
-        //         message: 'Sorry, Something Went Wrong (BE)',
-        //         payload: null,
-        //     })
-        // }
+        try {
+            const authorizedToUpdate = await Users.authenticateUser(userId, password)
+            if (authorizedToUpdate) {
+                try {
+                    const updatedUser = await Users.updateUserInfo(userId, request.body, avatarUrl)
+                    response.json({
+                        status: 'success',
+                        message: 'Successfully update information',
+                        payload: updatedUser,
+                    })
+                } catch (err) {
+                    handleError(err)
+                }
+            } else {
+                console.log('Authentication issue')
+                response.status(401)
+                response.json({
+                    status: 'fail',
+                    message: 'Authentication issue',
+                    payload: null,
+                })
+            }
+        } catch (err) {
+            handleError(err)
+        }
     }
 })
 
@@ -278,13 +234,7 @@ router.patch('/:userId/password', async (request, response) => {
                         payload: updatedUser,
                     })
                 } catch (err) {
-                    console.log(err)
-                    response.status(500)
-                    response.json({
-                        status: 'fail',
-                        message: 'Sorry, Something Went Wrong (BE)',
-                        payload: null,
-                    })
+                    handleError(err)
                 }
             } else {
                 console.log('Authentication issue')
@@ -296,14 +246,57 @@ router.patch('/:userId/password', async (request, response) => {
                 })
             }
         } catch (err) {
-            console.log(err)
-            response.status(500)
+            handleError(err)
+        }
+    }
+})
+
+router.patch('/:userId/:theme', async (request, response) => {
+    const { userId, theme } = request.params;
+    const { password } = request.body;
+
+    if (!password) {
+        response.status(400)
             response.json({
                 status: 'fail',
-                message: 'Sorry, Something Went Wrong (BE)',
+                message: 'Missing Information',
                 payload: null,
             })
+    } else if (theme === 'dark' || theme === 'light') { 
+        try {
+            const authorizedToUpdate = await Users.authenticateUser(userId, password)
+
+            if (authorizedToUpdate) {
+                try {
+                    const updatedUser = await Users.updateUserTheme(userId, newPassword)
+                    response.json({
+                        status: 'success',
+                        message: 'Successfully updated the password',
+                        payload: updatedUser,
+                    })
+                } catch (err) {
+                    handleError(err)
+                }
+            } else {
+                console.log('Authentication issue')
+                response.status(401)
+                response.json({
+                    status: 'fail',
+                    message: 'Authentication issue',
+                    payload: null,
+                })
+            }
+        } catch (err) {
+            handleError(err)
         }
+    } else {
+        console.log('Invalid route for changing the theme')
+        response.status(404)
+        response.json({
+            status: 'fail',
+            message: 'Invalid route',
+            payload: null,
+        })
     }
 })
 
@@ -332,13 +325,7 @@ router.patch('/:userId/delete', async (request, response) => {
                         payload: deletedUser,
                     })
                 } catch (err) {
-                    console.log(err)
-                    response.status(500)
-                    response.json({
-                        status: 'fail',
-                        message: 'Sorry, Something Went Wrong (BE)',
-                        payload: null,
-                    })
+                    handleError(err)
                 }
             } else {
                 console.log('Authentication issue')
@@ -350,13 +337,7 @@ router.patch('/:userId/delete', async (request, response) => {
                 })
             }
         } catch (err) {
-            console.log(err)
-            response.status(500)
-            response.json({
-                status: 'fail',
-                message: 'Sorry, Something Went Wrong (BE)',
-                payload: null,
-            })
+            handleError(err)
         }
     }
 })
