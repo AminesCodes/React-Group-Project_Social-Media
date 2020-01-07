@@ -1,3 +1,8 @@
+/*
+Database | SUITAPP Web App
+GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
+*/
+
 /* CREATE DATABASE */
 DROP DATABASE IF EXISTS suitapp_db;
 CREATE DATABASE suitapp_db;
@@ -31,38 +36,31 @@ CREATE TABLE posts
 CREATE TABLE comments
 (
     id SERIAL PRIMARY KEY,
-    post_id INT REFERENCES posts(id),
-    commenter_id INT REFERENCES users(id),
+    post_id INT REFERENCES posts(id) ON DELETE CASCADE,
+    commenter_id INT REFERENCES users(id) ON DELETE CASCADE,
     comment_body VARCHAR,
     time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP 
 );
 
-CREATE TABLE likes
+CREATE TABLE reactions
 (
     id SERIAL PRIMARY KEY,
-    post_id INT REFERENCES posts(id),
-    comment_id INT REFERENCES comments(id),
-    liker_id INT REFERENCES users(id),
+    post_id INT REFERENCES posts(id) ON DELETE CASCADE,
+    comment_id INT REFERENCES comments(id) ON DELETE CASCADE,
+    reactor_id INT REFERENCES users(id) ON DELETE CASCADE,
+    emoji_type INT,
     time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP 
 );
 
 CREATE TABLE follows
 (
     id SERIAL PRIMARY KEY,
-    follower_id INT REFERENCES users(id),
-    followed_user_id INT REFERENCES users(id),
+    follower_id INT REFERENCES users(id) ON DELETE CASCADE,
+    followed_user_id INT REFERENCES users(id) ON DELETE CASCADE,
     time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP 
 );
 
-CREATE TABLE emojis
-(
-    id SERIAL PRIMARY KEY,
-    post_id INT REFERENCES posts(id),
-    comment_id INT REFERENCES comments(id),
-    emojier_id INT REFERENCES users(id),
-    emoji_type INT,
-    time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP 
-);
+
 
 /* SEED DATA */
 
@@ -218,86 +216,86 @@ VALUES
 (33, 2, 'this is really good :)'),
 (33, 5, 'Lol was in that game??');
 
-INSERT INTO likes
-(post_id, comment_id, liker_id)
+INSERT INTO reactions
+(post_id, comment_id, reactor_id, emoji_type)
 VALUES
-(NULL, 1, 6),
-(NULL, 18, 8),
-(5, NULL, 5),
-(NULL, 96, 4),
-(32, NULL, 7),
-(NULL, 11, 3),
-(1, NULL, 6),
-(NULL, 41, 1),
-(8, NULL, 8),
-(NULL, 28, 4),
-(NULL, 43, 2),
-(NULL, 14, 1),
-(NULL, 5, 4),
-(19, NULL, 7),
-(NULL, 87, 2),
-(28, NULL, 4),
-(4, NULL, 6),
-(NULL, 59, 3),
-(NULL, 35, 1),
-(16, NULL, 6),
-(NULL, 55, 8),
-(14, NULL, 4),
-(26, NULL, 7),
-(18, NULL, 1),
-(NULL, 55, 3),
-(17, NULL, 7),
-(32, NULL, 3),
-(NULL, 72, 8),
-(8, NULL, 4),
-(11, NULL, 7),
-(23, NULL, 6),
-(30, NULL, 7),
-(NULL, 42, 5),
-(33, NULL, 1),
-(NULL, 66, 3),
-(NULL, 44, 5),
-(NULL, 23, 8),
-(1, NULL, 5),
-(20, NULL, 7),
-(NULL, 54, 8),
-(12, NULL, 1),
-(24, NULL, 2),
-(NULL, 40, 5),
-(NULL, 35, 7),
-(NULL, 7, 1),
-(NULL, 69, 8),
-(NULL, 24, 6),
-(6, NULL, 2),
-(10, NULL, 6),
-(22, NULL, 4),
-(NULL, 18, 1),
-(24, NULL, 6),
-(11, NULL, 7),
-(10, NULL, 4),
-(NULL, 68, 7),
-(NULL, 74, 5),
-(NULL, 8, 4),
-(25, NULL, 5),
-(NULL, 94, 6),
-(NULL, 86, 8),
-(27, NULL, 2),
-(32, NULL, 1),
-(21, NULL, 5),
-(NULL, 87, 4),
-(NULL, 63, 2),
-(13, NULL, 1),
-(NULL, 75, 4),
-(NULL, 84, 6),
-(5, NULL, 2),
-(11, NULL, 8),
-(NULL, 91, 7),
-(NULL, 29, 2),
-(NULL, 72, 7),
-(23, NULL, 1),
-(20, NULL, 6),
-(6, NULL, 7),
-(NULL, 40, 6);
+(NULL, 1, 6, 7),
+(NULL, 18, 8, 5),
+(5, NULL, 5, 1),
+(NULL, 96, 4, 2),
+(32, NULL, 7, 1),
+(NULL, 11, 3, 2),
+(1, NULL, 6, 5),
+(NULL, 41, 1, 2),
+(8, NULL, 8, 3),
+(NULL, 28, 4, 5),
+(NULL, 43, 2, 7),
+(NULL, 14, 1, 5),
+(NULL, 5, 4, 2),
+(19, NULL, 7, 1),
+(NULL, 87, 2, 6),
+(28, NULL, 4, 3),
+(4, NULL, 6, 5),
+(NULL, 59, , 3),
+(NULL, 35, 1, 2),
+(16, NULL, 6, 4),
+(NULL, 55, 8, 7),
+(14, NULL, 4, 2),
+(26, NULL, 7, 3),
+(18, NULL, 1, 2),
+(NULL, 55, 3, 5),
+(17, NULL, 7, 4),
+(32, NULL, 3, 2),
+(NULL, 72, 8, 6),
+(8, NULL, 4, 3),
+(11, NULL, 7, 6),
+(23, NULL, 6, 2),
+(30, NULL, 7, 1),
+(NULL, 42, 5, 1),
+(33, NULL, 1, 3),
+(NULL, 66, 3, 5),
+(NULL, 44, 5, 7),
+(NULL, 23, 8, 5),
+(1, NULL, 5, 4),
+(20, NULL, 7, 4),
+(NULL, 54, 8, 4),
+(12, NULL, 1, 6),
+(24, NULL, 2, 1),
+(NULL, 40, 5, 4),
+(NULL, 35, 7, 7),
+(NULL, 7, 1, 7),
+(NULL, 69, 8, 2),
+(NULL, 24, 6, 5),
+(6, NULL, 2, 1),
+(10, NULL, 6, 6),
+(22, NULL, 4, 3),
+(NULL, 18, 1, 6),
+(24, NULL, 6, 2),
+(11, NULL, 7, 5),
+(10, NULL, 4, 6),
+(NULL, 68, 7, 4),
+(NULL, 74, 5, 6),
+(NULL, 8, 4, 7),
+(25, NULL, 5, 3),
+(NULL, 94, 6, 4),
+(NULL, 86, 8, 3),
+(27, NULL, 2, 2),
+(32, NULL, 1, 6),
+(21, NULL, 5, 6),
+(NULL, 87, 4, 4),
+(NULL, 63, 2, 5),
+(13, NULL, 1, 3),
+(NULL, 75, 4, 7),
+(NULL, 84, 6, 4),
+(5, NULL, 2, 6),
+(11, NULL, 8, 7),
+(NULL, 91, 7, 4),
+(NULL, 29, 2, 2),
+(NULL, 72, 7, 5),
+(23, NULL, 1, 6),
+(20, NULL, 6, 5),
+(6, NULL, 7, 3),
+(NULL, 40, 6, 5);
 
 INSERT INTO follows
 (follower_id, followed_user_id)
