@@ -140,7 +140,12 @@ const updateUserTheme = async (userId, theme) => {
         SET light_theme = $2
         WHERE id = $1 
         RETURNING *`
-        const user = await db.one(updateQuery, [userId, theme]);
+        let user = false;
+        if (theme === 'dark') {
+            user = await db.one(updateQuery, [userId, 'FALSE']);
+        } else {
+            user = await db.one(updateQuery, [userId, 'TRUE']);
+        }
         delete user.user_password;
         return user;
     } catch (err) {

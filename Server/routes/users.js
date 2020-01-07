@@ -268,11 +268,11 @@ router.patch('/:userId/:theme', async (request, response) => {
 
             if (authorizedToUpdate) {
                 try {
-                    const updatedUser = await Users.updateUserTheme(userId, newPassword)
+                    const updatedTheme = await Users.updateUserTheme(userId, theme)
                     response.json({
                         status: 'success',
-                        message: 'Successfully updated the password',
-                        payload: updatedUser,
+                        message: `Successfully updated the theme to ${theme}`,
+                        payload: updatedTheme,
                     })
                 } catch (err) {
                     handleError(err)
