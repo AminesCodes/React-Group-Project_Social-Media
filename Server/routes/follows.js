@@ -27,7 +27,7 @@ const handleError = (res, error) => {
   });
 }
 
-const checkTwoNumParams = (req) => {
+const checkIdParams = (req) => {
   let problems = [];
   if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
     problems.push("current user_id");
@@ -88,19 +88,20 @@ router.get("/whofollows/:currUserId", async (req, res) => {
 
 // createFollow: make new follow relationship
 router.post("/:currUserId/:targetUserId", async (req, res) => {
-    const paramsCheck = checkTwoNumParams(req);
+    const paramsCheck = checkIdParams(req);
     if (paramsCheck) {
-      handleError(res, `invalid ${paramsCheck} parameter`);
+      handleError(res, `invalid ${paramsCheck} parameter(s)`);
     } else {
+      const currUserId = parseInt(req.params.currUserId.trim());
+      const targetUserId = parseInt(req.params.targetUserId.trim());
+      const password = req.body.password.trim();
       let authorized = null;
       try {
-        authorized = await Users.authenticateUser(userId, password);
+        authorized = await Users.authenticateUser(currUserId, password);
       } catch(err) {
         handleError(res, "error during authentication query");
       }
       if (authorized) {
-        const currUserId = parseInt(req.params.currUserId.trim());
-        const targetUserId = parseInt(req.params.targetUserId.trim());
         try {
           const response = await createFollow(currUserId, targetUserId);
           res.json({
@@ -124,11 +125,14 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
 });
 
 // deleteFollow: delete follow relationship
-router.delete("/:currUserId/:targetUserId", async (req, res) => {
-    const paramsCheck = checkTwoNumParams(req);
+router.patch("/:currUserId/:targetUserId", async (req, res) => {
+    const paramsCheck = checkIdParams(req);
     if (paramsCheck) {
-      handleError(res, `invalid ${paramsCheck} parameter`);
+      handleError(res, `invalid ${paramsCheck} parameter(s)`);
     } else {
+      const currUserId = parseInt(req.params.currUserId.trim());
+      const targetUserId = parseInt(req.params.targetUserId.trim());
+      const password = req.body.password.trim();
       let authorized = null;
       try {
         authorized = await Users.authenticateUser(userId, password);
@@ -136,8 +140,6 @@ router.delete("/:currUserId/:targetUserId", async (req, res) => {
         handleError(res, "error during authentication query");
       }
       if (authorized) {
-        const currUserId = parseInt(req.params.currUserId.trim());
-        const targetUserId = parseInt(req.params.targetUserId.trim());
         try {
           const response = await deleteFollow(currUserId, targetUserId);
           res.json({
