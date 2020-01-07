@@ -17,7 +17,7 @@ const {
 
 
 /* HELPERS */
-const handleError = (req, res, error) => {
+const handleError = (res, error) => {
   console.log(error);
   res.status(500);
   res.json({
@@ -27,75 +27,136 @@ const handleError = (req, res, error) => {
   });
 }
 
-const checkNumId = (req, res, whichId) => {
-  const { [whichId] } = req.params;
-  if (![whichId] || isNaN(parseInt([whichId].trim()))) {
-    return handleError(req, res, `invalid ${whichId} parameter`);
+const checkTwoNumParams = (req) => {
+  let problems = [];
+  if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
+    problems.push("current user_id");
   }
+  if (!req.params.targetUserId || isNaN(parseInt(req.params.targetUserId.trim()))) {
+    problems.push("target user_id");
+  }
+  // COMPILE MESSAGE
+  if (problems.length) {
+    if (problems.length >= 2) {
+      problems[problems.length - 1] = "and " + problems[problems.length - 1];
+      problems = problems.join(' ');
+    } else {
+      problems = problems.join('');
+    }
+    return problems;
+  }
+  return false;
 }
 
 
 /* ROUTE HANDLES */
 // getFollows: get all others the user is following
 router.get("/:currUserId", async (req, res) => {
-    checkNumId(req, res, "currUserId");
-    try {
-      const follows = await getFollows(parseInt(req.params.currUserId.trim()));
-      res.json({
-          status: "success",
-          message: "followings retrieved",
-          payload: follows
-      });
-    } catch (err) {
-      handleError(req, res, err);
+    if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
+      handleError(res, 'invalid currUserId parameter');
+    } else {
+      try {
+        const follows = await getFollows(parseInt(req.params.currUserId.trim()));
+        res.json({
+            status: "success",
+            message: "followings retrieved",
+            payload: follows
+        });
+      } catch (err) {
+        handleError(res, err);
+      }
     }
 });
 
 // getFollowers: get all following current user
 router.get("/whofollows/:currUserId", async (req, res) => {
-    checkNumId(req, res, "currUserId");
-    try {
-      const followers = await getFollowers(parseInt(req.params.currUserId.trim()));
-      res.json({
-          status: "success",
-          message: "followers retreived",
-          payload: followers
-      });
-    } catch (err) {
-      handleError(req, res, err);
+    if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
+      handleError(res, 'invalid currUserId parameter');
+    } else {
+      try {
+        const followers = await getFollowers(parseInt(req.params.currUserId.trim()));
+        res.json({
+            status: "success",
+            message: "followers retreived",
+            payload: followers
+        });
+      } catch (err) {
+        handleError(res, err);
+      }
     }
 });
 
 // createFollow: make new follow relationship
 router.post("/:currUserId/:targetUserId", async (req, res) => {
-    checkNumId(req, res, "currUserId");
-    checkNumId(req, res, "targetUserId");
-    const { currUserId, targetUserId } = req.params;
-    try {
-      const response = await createFollow(currUserId, targetUserId);
-      res.json({
-          status: "success",
-          message: "follow created",
-          payload: response
-      });
-    } catch (err) {
-      handleError(req, res, err);
+    const paramsCheck = checkTwoNumParams(req);
+    if (paramsCheck) {
+      handleError(res, `invalid ${paramsCheck} parameter`);
+    } else {
+      let authorized = null;
+      try {
+        authorized = await Users.authenticateUser(userId, password);
+      } catch(err) {
+        handleError(res, "error during authentication query");
+      }
+      if (authorized) {
+        const currUserId = parseInt(req.params.currUserId.trim());
+        const targetUserId = parseInt(req.params.targetUserId.trim());
+        try {
+          const response = await createFollow(currUserId, targetUserId);
+          res.json({
+              status: "success",
+              message: "follow created",
+              payload: response
+          });
+        } catch (err) {
+          handleError(res, err);
+        }
+      } else {
+        console.log('Authentication issue')
+        res.status(401);
+        res.json({
+            status: 'fail',
+            message: 'Authentication issue',
+            payload: null,
+        });
+      }
     }
 });
 
 // deleteFollow: delete follow relationship
 router.delete("/:currUserId/:targetUserId", async (req, res) => {
-    checkNumId(req, res, "currUserId");
-    checkNumId(req, res, "targetUserId");
-    try {
-      const response = await deleteFollow(currUserId, targetUserId);
-      res.json({
-          status: "success",
-          message: "follow deleted",
-          payload: response
-      });
-    } catch (err) {
-      handleError(req, res, err);
+    const paramsCheck = checkTwoNumParams(req);
+    if (paramsCheck) {
+      handleError(res, `invalid ${paramsCheck} parameter`);
+    } else {
+      let authorized = null;
+      try {
+        authorized = await Users.authenticateUser(userId, password);
+      } catch(err) {
+        handleError(res, "error during authentication query");
+      }
+      if (authorized) {
+        const currUserId = parseInt(req.params.currUserId.trim());
+        const targetUserId = parseInt(req.params.targetUserId.trim());
+        try {
+          const response = await deleteFollow(currUserId, targetUserId);
+          res.json({
+              status: "success",
+              message: "follow deleted",
+              payload: response
+          });
+        } catch (err) {
+          handleError(res, err);
+        }
+      } else {
+        console.log('Authentication issue')
+        res.status(401);
+        res.json({
+            status: 'fail',
+            message: 'Authentication issue',
+            payload: null,
+        });
+      }
     }
 });
 
