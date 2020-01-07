@@ -8,6 +8,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 const express = require('express');
 const router = express.Router();
 // Queries
+const users = require('../Models/users.js');
 const { 
   getFollows,
   getFollowers,
@@ -97,7 +98,7 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
       const password = req.body.password.trim();
       let authorized = null;
       try {
-        authorized = await Users.authenticateUser(currUserId, password);
+        authorized = await users.authenticateUser(currUserId, password);
       } catch(err) {
         handleError(res, "error during authentication query");
       }
@@ -135,7 +136,7 @@ router.patch("/:currUserId/:targetUserId", async (req, res) => {
       const password = req.body.password.trim();
       let authorized = null;
       try {
-        authorized = await Users.authenticateUser(userId, password);
+        authorized = await users.authenticateUser(userId, password);
       } catch(err) {
         handleError(res, "error during authentication query");
       }
