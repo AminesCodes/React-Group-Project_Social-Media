@@ -1,4 +1,4 @@
-const db = require('../../Database/Database');
+const db = require('../Database');
 
 const formatStringInputs = (str) => {
     str = str.trim()
