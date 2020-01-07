@@ -14,7 +14,8 @@ CREATE TABLE users
     id SERIAL PRIMARY KEY,
     firstname VARCHAR (20) NOT NULL,
     lastname VARCHAR (20) NOT NULL,
-    username VARCHAR (20) UNIQUE NOT NULL,
+    username VARCHAR (20),
+    normalized_username VARCHAR (20) UNIQUE NOT NULL,
     user_password VARCHAR (30) NOT NULL,
     email VARCHAR (30) UNIQUE NOT NULL,
     avatar_url TEXT,
@@ -65,16 +66,16 @@ CREATE TABLE follows
 /* SEED DATA */
 
 INSERT INTO users
-(firstname, lastname, username, user_password, email, avatar_url, bio)
+(firstname, lastname, username, normalized_username, user_password, email, avatar_url, bio)
 VALUES
-('Abby', 'Star', 'Abby Dark Star', 'password123', 'abbydarkstar@gmail.com', 'http://localhost:3129/images/avatars/abby_avatar.jpg', 'New England bred, Southern raised, West Coast girl. Marketing| Content Creator | Cosplayer| Current: Unity |Former: Logitech G, Ubisoft'),
-('Nova', 'Kyra', 'Nova Kyra', 'password123', 'novakyra@gmail.com', 'http://localhost:3129/images/avatars/nova_avatar.jpg', '20 something lover of cosplay, wine, bikinis and general nerdity.'),
-('Envy', 'Us', 'EnvyUs', 'password123', 'greenwith@gmail.com', 'http://localhost:3129/images/avatars/envy_avatar.jpg', 'Just a girl Lovecrafting their way to your heart'),
-('Spider', 'Monarch', 'Cursed Arachnid', 'password123', 'cursedarachnid@gmail.com', 'http://localhost:3129/images/avatars/cursed_avatar.jpg', '🕷spiders are beautiful🕷spider-man/fantastic four enthusiast🕷'),
-('MH', 'Cosplay & Design', 'MH Cosplay & Design', 'password123', 'mhcosplay@gmail.com', 'http://localhost:3129/images/avatars/mh_avatar.jpg', 'Professional Cosplayer who loves Cosplay Art, and I love to create anything art related. Enjoy scrolling through my cosplay page.'),
-('MegaSeneca', 'Cosplay', 'MegaSeneca Cosplay', 'password123', 'megaseneca@gmail.com', 'http://localhost:3129/images/avatars/megaseneca_avatar.jpg', 'amateur cosplayer, artist, avid Megaman fan'),
-('Chris', 'Mason', 'Chris Mason', 'password123', 'fit4life.com', 'http://localhost:3129/images/avatars/chris_avatar.jpg', 'Gym Addict, Mixed martial artist, Cosplayer and Traveller. My Cosplay page is King of The North Cosplays'),
-('Dan', 'Morash', 'DanMorashCosplay', 'password123', 'dantheman@gmail.com', 'http://localhost:3129/images/avatars/chris_avatar.jpg', 'Cosplayer from Halifax - Obsessed with my cat and Funkos.');
+('Abby', 'Star', 'Abby Dark Star', 'abbydarkstar', 'password123', 'abbydarkstar@gmail.com', 'http://localhost:3129/images/avatars/abby_avatar.jpg', 'New England bred, Southern raised, West Coast girl. Marketing| Content Creator | Cosplayer| Current: Unity |Former: Logitech G, Ubisoft'),
+('Nova', 'Kyra', 'Nova Kyra', 'novakyra', 'password123', 'novakyra@gmail.com', 'http://localhost:3129/images/avatars/nova_avatar.jpg', '20 something lover of cosplay, wine, bikinis and general nerdity.'),
+('Envy', 'Us', 'EnvyUs', 'envyus', 'password123', 'greenwith@gmail.com', 'http://localhost:3129/images/avatars/envy_avatar.jpg', 'Just a girl Lovecrafting their way to your heart'),
+('Spider', 'Monarch', 'Cursed Arachnid', 'cursedarachnid', 'password123', 'cursedarachnid@gmail.com', 'http://localhost:3129/images/avatars/cursed_avatar.jpg', '🕷spiders are beautiful🕷spider-man/fantastic four enthusiast🕷'),
+('MH', 'Cosplay & Design', 'MH Cosplay & Design', 'mhcosplaydesign', 'password123', 'mhcosplay@gmail.com', 'http://localhost:3129/images/avatars/mh_avatar.jpg', 'Professional Cosplayer who loves Cosplay Art, and I love to create anything art related. Enjoy scrolling through my cosplay page.'),
+('MegaSeneca', 'Cosplay', 'MegaSeneca Cosplay', 'megasenecacosplay', 'password123', 'megaseneca@gmail.com', 'http://localhost:3129/images/avatars/megaseneca_avatar.jpg', 'amateur cosplayer, artist, avid Megaman fan'),
+('Chris', 'Mason', 'Chris Mason', 'chrismason', 'password123', 'fit4life.com', 'http://localhost:3129/images/avatars/chris_avatar.jpg', 'Gym Addict, Mixed martial artist, Cosplayer and Traveller. My Cosplay page is King of The North Cosplays'),
+('Dan', 'Morash', 'DanMorashCosplay', 'danmorashcosplay', 'password123', 'dantheman@gmail.com', 'http://localhost:3129/images/avatars/chris_avatar.jpg', 'Cosplayer from Halifax - Obsessed with my cat and Funkos.');
 
 INSERT INTO posts
 (image_url, caption, owner_id, hashtag_str)

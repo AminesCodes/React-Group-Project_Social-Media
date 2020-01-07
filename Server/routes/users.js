@@ -28,7 +28,7 @@ const upload = multer({
         fileFilter: fileFilter,
     });
 
-const handleError = err => {
+const handleError = (response, err) => {
     console.log(err)
     response.status(500)
     response.json({
@@ -38,7 +38,7 @@ const handleError = err => {
     })
 }
 
-
+// GET ALL USERS
 router.get('/all', async (request, response) => {
     try {
         const allUsers = await Users.getAllUsers();
@@ -48,9 +48,25 @@ router.get('/all', async (request, response) => {
             payload: allUsers,
         })
     } catch (err) {
-        handleError(err)
+        handleError(response, err)
     }
 })
+const handleResponse = (response, data) => {
+    if (data === 'no match') {
+        response.status(444)
+        response.json({
+            status: 'fail',
+            message: `No match`,
+            payload: null,
+        })
+    } else {
+        response.json({
+            status: 'success',
+            message: `Successfully retrieved the user`,
+            payload: data,
+        })
+    }
+}
 
 router.get('/:username', async (request, response) => {
     const username = request.params.username
@@ -63,30 +79,23 @@ router.get('/:username', async (request, response) => {
     if (userId) {
         try {
             const targetUser = await Users.getUserById(userId);
-            response.json({
-                status: 'success',
-                message: `Successfully retrieved the user with id ${userId}`,
-                payload: targetUser,
-            })
+            handleResponse(response, targetUser)
         } catch (err) {
-            handleError(err)
+            handleError(response, err)
         }
     } else {
         try {
-            const targetUser = await Users.getUserByUsername(username.toLowerCase());
-            response.json({
-                status: 'success',
-                message: `Successfully retrieved user: ${username}`,
-                payload: targetUser,
-            })
+            const targetUser = await Users.getUserByUsername(username);
+            handleResponse(response, targetUser)
+
         } catch (err) {
-            handleError(err)
+            handleError(response, err)
         }
     }
 })
 
 
-// Login a registered user
+// Log a registered user
 router.patch('/login', async (request, response) => {
     let { password, email } = request.body
     
@@ -110,12 +119,12 @@ router.patch('/login', async (request, response) => {
                 response.status(401)
                 response.json({
                     status: 'fail',
-                    message: 'Bad Combination email/password',
+                    message: 'Invalid user',
                     payload: null,
                 })
             }
         } catch (err) {
-            handleError(err)
+            handleError(response, err)
         }
     }
 })
@@ -123,7 +132,6 @@ router.patch('/login', async (request, response) => {
 
 router.post('/signup', async (request, response) => {
     const { username, firstname, lastname, password, email, ageCheck } = request.body
-
     if (!username || !firstname || !lastname || !password || !email || !ageCheck || ageCheck !== 'true') {
         response.status(400)
             response.json({
@@ -134,13 +142,14 @@ router.post('/signup', async (request, response) => {
     } else {
         try {
             const newUser = await Users.createUser(request.body)
+            response.status(201)
             response.json({
                 status: 'success',
                 message: 'Successfully signed up',
                 payload: newUser,
             })
         } catch (err) {
-            // Username already taken 
+            // Username/email already taken 
             if (err.code === "23505" && err.detail.includes("already exists")) {
                 console.log('Attempt to register a new user with a taken email/username')
                 response.status(403)
@@ -150,7 +159,7 @@ router.post('/signup', async (request, response) => {
                     payload: null,
                 })
             } else {
-                handleError(err)
+                handleError(response, err)
             }
         }
     }
@@ -159,7 +168,7 @@ router.post('/signup', async (request, response) => {
 
 router.put('/:userId', upload.single('avatar'), async (request, response) => {
     const userId = request.params.userId;
-    const { username, firstname, lastname, password, email, bio} = request.body
+    const { username, firstname, lastname, password, email} = request.body
 
     if (isNaN(parseInt(userId)) || parseInt(userId) + '' !== userId) {
         response.status(404)
@@ -179,7 +188,6 @@ router.put('/:userId', upload.single('avatar'), async (request, response) => {
         let avatarUrl = null;
         if (request.file) {
             avatarUrl = 'http://' + request.headers.host + '/images/avatars/' + request.file.filename
-            response.send(avatarUrl)
         } 
         try {
             const authorizedToUpdate = await Users.authenticateUser(userId, password)
@@ -192,7 +200,18 @@ router.put('/:userId', upload.single('avatar'), async (request, response) => {
                         payload: updatedUser,
                     })
                 } catch (err) {
-                    handleError(err)
+                    // Username/email already taken 
+                    if (err.code === "23505" && err.detail.includes("already exists")) {
+                        console.log('Attempt to update user information with a taken email/username')
+                        response.status(403)
+                        response.json({
+                            status: 'fail',
+                            message: 'Username already taken AND/OR email address already registered',
+                            payload: null,
+                        })
+                    } else {
+                        handleError(response, err)
+                    }
                 }
             } else {
                 console.log('Authentication issue')
@@ -204,7 +223,7 @@ router.put('/:userId', upload.single('avatar'), async (request, response) => {
                 })
             }
         } catch (err) {
-            handleError(err)
+            handleError(response, err)
         }
     }
 })
@@ -234,7 +253,7 @@ router.patch('/:userId/password', async (request, response) => {
                         payload: updatedUser,
                     })
                 } catch (err) {
-                    handleError(err)
+                    handleError(response, err)
                 }
             } else {
                 console.log('Authentication issue')
@@ -246,12 +265,12 @@ router.patch('/:userId/password', async (request, response) => {
                 })
             }
         } catch (err) {
-            handleError(err)
+            handleError(response, err)
         }
     }
 })
 
-router.patch('/:userId/:theme', async (request, response) => {
+router.patch('/:userId/theme/:theme', async (request, response) => {
     const { userId, theme } = request.params;
     const { password } = request.body;
 
@@ -275,7 +294,7 @@ router.patch('/:userId/:theme', async (request, response) => {
                         payload: updatedTheme,
                     })
                 } catch (err) {
-                    handleError(err)
+                    handleError(response, err)
                 }
             } else {
                 console.log('Authentication issue')
@@ -287,7 +306,7 @@ router.patch('/:userId/:theme', async (request, response) => {
                 })
             }
         } catch (err) {
-            handleError(err)
+            handleError(response, err)
         }
     } else {
         console.log('Invalid route for changing the theme')
@@ -315,18 +334,33 @@ router.patch('/:userId/delete', async (request, response) => {
     } else {
         try {
             const authorizedToUpdate = await Users.authenticateUser(userId, password)
-
-            if (authorizedToUpdate) {
+            if (authorizedToUpdate && authorizedToUpdate !== 'User does not exist') {
                 try {
-                    const deletedUser = await Users.deleteUSer(userId)
-                    response.json({
-                        status: 'success',
-                        message: 'Successfully delete user',
-                        payload: deletedUser,
-                    })
+                    const deletedUser = await Users.deleteUser(userId)
+                    if (deletedUser) {
+                        response.json({
+                            status: 'success',
+                            message: 'Successfully delete user',
+                            payload: deletedUser,
+                        })
+                    } else {
+                        response.status(401)
+                        response.json({
+                            status: 'fail',
+                            message: 'Invalid user',
+                            payload: null,
+                        })
+                    }
                 } catch (err) {
-                    handleError(err)
+                    handleError(response, err)
                 }
+            } else if (authorizedToUpdate === 'User does not exist') {
+                response.status(404)
+                response.json({
+                    status: 'fail',
+                    message: 'User not found',
+                    payload: null,
+                })
             } else {
                 console.log('Authentication issue')
                 response.status(401)
@@ -337,7 +371,7 @@ router.patch('/:userId/delete', async (request, response) => {
                 })
             }
         } catch (err) {
-            handleError(err)
+            handleError(response, err)
         }
     }
 })
