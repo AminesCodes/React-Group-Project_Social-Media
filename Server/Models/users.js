@@ -177,26 +177,6 @@ const deleteUser = async (userId) => {
     }
 }
 
-const authenticateUser = async (userId, password) => {
-    try {
-        const requestQuery = `
-        Select user_password FROM users WHERE id = $1
-        `
-        const targetUser = await db.one(requestQuery, userId)
-        if (password === targetUser.user_password) {
-            return true
-        }
-        return false
-    } catch (err) {
-        if (err.message) {
-            if (err.message === 'No data returned from the query.') {
-                return 'User does not exist';
-            }
-        }
-        throw err;
-    }
-}
-
 const logUser = async (email, password) => {
     try {
         email = email.toLowerCase();
@@ -229,7 +209,6 @@ module.exports = {
     updateUserInfo,
     updateUserPassword,
     deleteUser,
-    authenticateUser,
     logUser,
     updateUserTheme
   }
