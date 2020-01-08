@@ -109,12 +109,13 @@ router.get("/followers/:currUserId", async (req, res) => {
 // createFollow: make new follow relationship
 router.post("/:currUserId/:targetUserId", async (req, res) => {
     const paramsCheck = checkIdParams(req);
+    console.log(paramsCheck);
     if (paramsCheck) {
       handleError(res, `invalid ${paramsCheck} parameter(s)`);
     } else {
       const currUserId = parseInt(req.params.currUserId.trim());
       const targetUserId = parseInt(req.params.targetUserId.trim());
-      const password = req.body.password.trim();
+      const password = req.body.password.trim() || req.body.password;
       let authorized = null;
       try {
         authorized = await authenticateUser(currUserId, password);
@@ -152,7 +153,7 @@ router.patch("/:currUserId/:targetUserId", async (req, res) => {
     } else {
       const currUserId = parseInt(req.params.currUserId.trim());
       const targetUserId = parseInt(req.params.targetUserId.trim());
-      const password = req.body.password.trim();
+      const password = req.body.password.trim() || req.body.password;
       let authorized = null;
       try {
         authorized = await authenticateUser(userId, password);
