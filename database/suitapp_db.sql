@@ -75,7 +75,8 @@ VALUES
 ('MH', 'Cosplay & Design', 'MH Cosplay & Design', 'mhcosplaydesign', 'password123', 'mhcosplay@gmail.com', 'http://localhost:3129/images/avatars/mh_avatar.jpg', 'Professional Cosplayer who loves Cosplay Art, and I love to create anything art related. Enjoy scrolling through my cosplay page.'),
 ('MegaSeneca', 'Cosplay', 'MegaSeneca Cosplay', 'megasenecacosplay', 'password123', 'megaseneca@gmail.com', 'http://localhost:3129/images/avatars/megaseneca_avatar.jpg', 'amateur cosplayer, artist, avid Megaman fan'),
 ('Chris', 'Mason', 'Chris Mason', 'chrismason', 'password123', 'fit4life.com', 'http://localhost:3129/images/avatars/chris_avatar.jpg', 'Gym Addict, Mixed martial artist, Cosplayer and Traveller. My Cosplay page is King of The North Cosplays'),
-('Dan', 'Morash', 'DanMorashCosplay', 'danmorashcosplay', 'password123', 'dantheman@gmail.com', 'http://localhost:3129/images/avatars/chris_avatar.jpg', 'Cosplayer from Halifax - Obsessed with my cat and Funkos.');
+('Dan', 'Morash', 'DanMorashCosplay', 'danmorashcosplay', 'password123', 'dantheman@gmail.com', 'http://localhost:3129/images/avatars/chris_avatar.jpg', 'Cosplayer from Halifax - Obsessed with my cat and Funkos.'),
+('Empty', 'Newbie', 'mrNewPerson', 'mrnewperson', 'password123', 'mrempty@gmail.com', '', '');
 
 INSERT INTO posts
 (image_url, caption, owner_id, hashtag_str)
