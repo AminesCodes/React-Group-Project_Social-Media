@@ -22,7 +22,7 @@ const {
 
 /* HELPERS */
 const handleError = (res, error, code) => {
-  console.log(error);
+  console.log(code ? `error(fe): ${error}` : `error(be): ${error}`);
   res.status(code || 500);
   res.json({
       status: "fail",
@@ -62,7 +62,7 @@ const checkIdParams = (req) => {
 // getFollows: get all others the user is following
 router.get("/:currUserId", async (req, res) => {
     if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-      handleError(res, 'invalid currUserId parameter');
+      handleError(res, 'invalid currUserId parameter', 400);
     } else {
       const currUserId = parseInt(req.params.currUserId.trim());
       try {
@@ -70,7 +70,7 @@ router.get("/:currUserId", async (req, res) => {
         if (follows.length === 0) {
           const userExists = await getUserById(currUserId);
           if (userExists === 'no match') {
-            handleError(res, 'user does not exist');
+            handleError(res, 'user does not exist', 400);
           } else {
             handleSuccess(res, 'follows', follows);
           }
@@ -86,7 +86,7 @@ router.get("/:currUserId", async (req, res) => {
 // getFollowers: get all following current user
 router.get("/followers/:currUserId", async (req, res) => {
     if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-      handleError(res, 'invalid currUserId parameter');
+      handleError(res, 'invalid currUserId parameter', 400);
     } else {
       const currUserId = parseInt(req.params.currUserId.trim());
       try {
@@ -94,7 +94,7 @@ router.get("/followers/:currUserId", async (req, res) => {
         if (followers.length === 0) {
           const userExists = await getUserById(currUserId);
           if (userExists === 'no match') {
-            handleError(res, 'user does not exist');
+            handleError(res, 'user does not exist', 400);
           } else {
             handleSuccess(res, 'followers', followers);
           }
@@ -111,7 +111,7 @@ router.get("/followers/:currUserId", async (req, res) => {
 router.post("/:currUserId/:targetUserId", async (req, res) => {
     const paramsCheck = checkIdParams(req);
     if (paramsCheck) {
-      handleError(res, `invalid ${paramsCheck} parameter(s)`);
+      handleError(res, `invalid ${paramsCheck} parameter(s)`, 400);
     } else {
       const currUserId = parseInt(req.params.currUserId.trim());
       const targetUserId = parseInt(req.params.targetUserId.trim());
@@ -128,7 +128,7 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
         try {
           const followExists = await checkFollowExists(currUserId, targetUserId);
           if (followExists) {
-            handleError(res, 'follow already exists');
+            handleError(res, 'follow already exists', 403);
           } else {
             const response = await createFollow(currUserId, targetUserId);
             res.json({
@@ -141,13 +141,7 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
           handleError(res, err);
         }
       } else {
-        console.log('Authentication issue');
-        res.status(401);
-        res.json({
-            status: 'fail',
-            message: 'Authentication issue',
-            payload: null,
-        });
+        handleError(res, 'authentication issue', 401);
       }
     }
 });
@@ -156,7 +150,7 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
 router.patch("/delete/:currUserId/:targetUserId", async (req, res) => {
     const paramsCheck = checkIdParams(req);
     if (paramsCheck) {
-      handleError(res, `invalid ${paramsCheck} parameter(s)`);
+      handleError(res, `invalid ${paramsCheck} parameter(s)`, 400);
     } else {
       const currUserId = parseInt(req.params.currUserId.trim());
       const targetUserId = parseInt(req.params.targetUserId.trim());
@@ -173,7 +167,7 @@ router.patch("/delete/:currUserId/:targetUserId", async (req, res) => {
         try {
           const followExists = await checkFollowExists(currUserId, targetUserId);
           if (!followExists) {
-            handleError(res, 'follow does not exist');
+            handleError(res, 'follow does not exist', 400);
           } else {
             const response = await deleteFollow(currUserId, targetUserId);
             res.json({
@@ -186,13 +180,7 @@ router.patch("/delete/:currUserId/:targetUserId", async (req, res) => {
           handleError(res, err);
         }
       } else {
-        console.log('Authentication issue');
-        res.status(401);
-        res.json({
-            status: 'fail',
-            message: 'Authentication issue',
-            payload: null,
-        });
+        handleError(res, 'authentication issue', 401);
       }
     }
 });
