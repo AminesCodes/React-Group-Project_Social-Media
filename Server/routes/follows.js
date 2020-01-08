@@ -14,6 +14,7 @@ const { getUserById } = require('../queries/users.js'); // for checking if user 
 const { 
   getFollows,
   getFollowers,
+  checkFollowExists,
   createFollow,
   deleteFollow
 } = require('../queries/follows.js');
@@ -109,7 +110,6 @@ router.get("/followers/:currUserId", async (req, res) => {
 // createFollow: make new follow relationship
 router.post("/:currUserId/:targetUserId", async (req, res) => {
     const paramsCheck = checkIdParams(req);
-    console.log(paramsCheck);
     if (paramsCheck) {
       handleError(res, `invalid ${paramsCheck} parameter(s)`);
     } else {
@@ -124,12 +124,17 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
       }
       if (authorized) {
         try {
-          const response = await createFollow(currUserId, targetUserId);
-          res.json({
-              status: "success",
-              message: "follow created",
-              payload: response
-          });
+          const test = await checkFollowExists(currUserId, targetUserId);
+          if (test) {
+            handleError(res, 'follow already exists');
+          } else {
+            const response = await createFollow(currUserId, targetUserId);
+            res.json({
+                status: "success",
+                message: "follow created",
+                payload: response
+            });
+          }
         } catch (err) {
           handleError(res, err);
         }

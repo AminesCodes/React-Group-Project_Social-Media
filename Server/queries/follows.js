@@ -38,6 +38,23 @@ const getFollowers = async (currentUserId) => {
   }
 }
 
+const checkFollowExists = async (currentUserId, targetUserId) => {
+  try {
+    const getQuery = `
+      SELECT id
+        , follower_id
+        , followed_user_id
+      FROM follows
+      WHERE follower_id = $/currentUserId/
+        AND followed_user_id = $/targetUserId/
+    `;
+    const follow = await db.any(getQuery, { currentUserId, targetUserId });
+    return !!follow.length;
+  } catch(err) {
+    throw(err);
+  }
+}
+
 const createFollow = async (currentUserId, targetUserId) => {
   try {
     const postQuery = `
@@ -72,6 +89,7 @@ const deleteFollow = async (currentUserId, targetUserId) => {
 module.exports = {
   getFollows,
   getFollowers,
+  checkFollowExists,
   createFollow,
   deleteFollow
 }
