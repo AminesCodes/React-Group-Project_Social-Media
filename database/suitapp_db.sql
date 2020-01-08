@@ -348,7 +348,7 @@ SELECT *
 FROM comments;
 
 SELECT *
-FROM likes;
+FROM reactions;
 
 SELECT *
 FROM follows;
