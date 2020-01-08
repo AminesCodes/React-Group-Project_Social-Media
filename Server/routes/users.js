@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 
-const Users = require('../Models/users');
-const { authenticateUser } = require('../Models/Authentication')
+const Users = require('../queries/users');
+const { authenticateUser } = require('../queries/authentication')
 
 const storage = multer.diskStorage({
   destination: (request, file, cb) => {

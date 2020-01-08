@@ -8,13 +8,13 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 const express = require('express');
 const router = express.Router();
 // Queries
-const users = require('../Models/users.js');
+const users = require('../queries/authentication');
 const { 
   getFollows,
   getFollowers,
   createFollow,
   deleteFollow
-} = require('../Models/follows.js');
+} = require('../queries/follows');
 
 
 /* HELPERS */

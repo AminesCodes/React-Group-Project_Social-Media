@@ -15,7 +15,7 @@ const {
   getOnePost,
   createPost,
   deletePost
-} = require('../Models/posts.js');
+} = require('../queries/posts');
 
 
 /* HELPERS */
