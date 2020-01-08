@@ -127,6 +127,7 @@ router.post('/:postId/:userId', async (request, response) => {
             } else {
                 try {
                     const addComment = await addCommentToPost(postId, userId, body);
+                    response.status(201)
                     response.json({
                         status: 'success',
                         message: `Successfully added a comment to the post: ${postId}`,
