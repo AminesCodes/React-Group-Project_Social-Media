@@ -160,7 +160,7 @@ const updateUserTheme = async (userId, theme) => {
 
 const deleteUser = async (userId) => {
     try {
-        const deleteQuery = `delete from users
+        const deleteQuery = `DELETE FROM users
         WHERE id = $1 
         RETURNING *
         `
