@@ -21,12 +21,12 @@ const {
 
 
 /* HELPERS */
-const handleError = (res, error) => {
+const handleError = (res, error, code) => {
   console.log(error);
-  res.status(500);
+  res.status(code || 500);
   res.json({
       status: "fail",
-      message: `error: (be) ${error}`,
+      message: code ? `error: ${error}` : `error(backend): ${error}`,
       payload: null
   });
 }
@@ -115,8 +115,10 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
     } else {
       const currUserId = parseInt(req.params.currUserId.trim());
       const targetUserId = parseInt(req.params.targetUserId.trim());
-      const password = req.body.password.trim() || req.body.password;
-      let authorized = null;
+      let password, authorized = null;
+      req.body.password
+        ? password = req.body.password.trim()
+        : false;
       try {
         authorized = await authenticateUser(currUserId, password);
       } catch(err) {
@@ -124,8 +126,8 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
       }
       if (authorized) {
         try {
-          const test = await checkFollowExists(currUserId, targetUserId);
-          if (test) {
+          const followExists = await checkFollowExists(currUserId, targetUserId);
+          if (followExists) {
             handleError(res, 'follow already exists');
           } else {
             const response = await createFollow(currUserId, targetUserId);
@@ -139,7 +141,7 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
           handleError(res, err);
         }
       } else {
-        console.log('Authentication issue')
+        console.log('Authentication issue');
         res.status(401);
         res.json({
             status: 'fail',
@@ -151,33 +153,40 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
 });
 
 // deleteFollow: delete follow relationship
-router.patch("/:currUserId/:targetUserId", async (req, res) => {
+router.patch("/delete/:currUserId/:targetUserId", async (req, res) => {
     const paramsCheck = checkIdParams(req);
     if (paramsCheck) {
       handleError(res, `invalid ${paramsCheck} parameter(s)`);
     } else {
       const currUserId = parseInt(req.params.currUserId.trim());
       const targetUserId = parseInt(req.params.targetUserId.trim());
-      const password = req.body.password.trim() || req.body.password;
-      let authorized = null;
+      let password, authorized = null;
+      req.body.password
+        ? password = req.body.password.trim()
+        : false;
       try {
-        authorized = await authenticateUser(userId, password);
+        authorized = await authenticateUser(currUserId, password);
       } catch(err) {
         handleError(res, "error during authentication query");
       }
       if (authorized) {
         try {
-          const response = await deleteFollow(currUserId, targetUserId);
-          res.json({
-              status: "success",
-              message: "follow deleted",
-              payload: response
-          });
+          const followExists = await checkFollowExists(currUserId, targetUserId);
+          if (!followExists) {
+            handleError(res, 'follow does not exist');
+          } else {
+            const response = await deleteFollow(currUserId, targetUserId);
+            res.json({
+                status: "success",
+                message: "follow deleted",
+                payload: response
+            });
+          }
         } catch (err) {
           handleError(res, err);
         }
       } else {
-        console.log('Authentication issue')
+        console.log('Authentication issue');
         res.status(401);
         res.json({
             status: 'fail',
