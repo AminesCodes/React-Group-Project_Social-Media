@@ -11,7 +11,7 @@ const db = require('../db');
 const getFollows = async (currentUserId) => {
   try {
     const getQuery = `
-      SELECT username AS followings
+      SELECT username AS follow
         , avatar_url
       FROM follows INNER JOIN users ON (follows.followed_user_id = users.id)
       WHERE follower_id = $/id/
@@ -26,7 +26,7 @@ const getFollows = async (currentUserId) => {
 const getFollowers = async (currentUserId) => {
   try {
     const getQuery = `
-      SELECT username AS followers
+      SELECT username AS follower
         , avatar_url
       FROM follows INNER JOIN users ON (follows.follower_id = users.id)
       WHERE followed_user_id = $/id/

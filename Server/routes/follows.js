@@ -4,17 +4,19 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
-/* MODULE INITS */
+/* IMPORTS */
 const express = require('express');
-const router = express.Router();
-// Queries
-const users = require('../queries/authentication');
+    const router = express.Router();
+    
+// local
+const { authenticateUser } = require('../queries/authentication.js'); // for authentication
+const { getUserById } = require('../queries/users.js'); // for checking if user exists after no results
 const { 
   getFollows,
   getFollowers,
   createFollow,
   deleteFollow
-} = require('../queries/follows');
+} = require('../queries/follows.js');
 
 
 /* HELPERS */
@@ -23,8 +25,16 @@ const handleError = (res, error) => {
   res.status(500);
   res.json({
       status: "fail",
-      message: "error: backend issue",
+      message: `error: (be) ${error}`,
       payload: null
+  });
+}
+
+const handleSuccess = (res, path, data) => {
+  res.json({
+    status: "success",
+    message: `${path} data retrieved`,
+    payload: data.length === 1 ? data[0] : data
   });
 }
 
@@ -38,12 +48,9 @@ const checkIdParams = (req) => {
   }
   // COMPILE MESSAGE
   if (problems.length) {
-    if (problems.length >= 2) {
-      problems[problems.length - 1] = "and " + problems[problems.length - 1];
-      problems = problems.join(' ');
-    } else {
-      problems = problems.join('');
-    }
+    problems.length == 2
+      ? problems = problems.join(' and ')
+      : problems = problems.join('');
     return problems;
   }
   return false;
@@ -56,13 +63,19 @@ router.get("/:currUserId", async (req, res) => {
     if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
       handleError(res, 'invalid currUserId parameter');
     } else {
+      const currUserId = parseInt(req.params.currUserId.trim());
       try {
-        const follows = await getFollows(parseInt(req.params.currUserId.trim()));
-        res.json({
-            status: "success",
-            message: "followings retrieved",
-            payload: follows
-        });
+        const follows = await getFollows(currUserId);
+        if (follows.length === 0) {
+          const userExists = await getUserById(currUserId);
+          if (userExists === 'no match') {
+            handleError(res, 'user does not exist');
+          } else {
+            handleSuccess(res, 'follows', follows);
+          }
+        } else {
+          handleSuccess(res, 'follows', follows);
+        }
       } catch (err) {
         handleError(res, err);
       }
@@ -70,17 +83,23 @@ router.get("/:currUserId", async (req, res) => {
 });
 
 // getFollowers: get all following current user
-router.get("/whofollows/:currUserId", async (req, res) => {
+router.get("/followers/:currUserId", async (req, res) => {
     if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
       handleError(res, 'invalid currUserId parameter');
     } else {
+      const currUserId = parseInt(req.params.currUserId.trim());
       try {
-        const followers = await getFollowers(parseInt(req.params.currUserId.trim()));
-        res.json({
-            status: "success",
-            message: "followers retreived",
-            payload: followers
-        });
+        const followers = await getFollowers(currUserId);
+        if (followers.length === 0) {
+          const userExists = await getUserById(currUserId);
+          if (userExists === 'no match') {
+            handleError(res, 'user does not exist');
+          } else {
+            handleSuccess(res, 'followers', followers);
+          }
+        } else {
+          handleSuccess(res, 'followers', followers);
+        }
       } catch (err) {
         handleError(res, err);
       }
@@ -98,7 +117,7 @@ router.post("/:currUserId/:targetUserId", async (req, res) => {
       const password = req.body.password.trim();
       let authorized = null;
       try {
-        authorized = await users.authenticateUser(currUserId, password);
+        authorized = await authenticateUser(currUserId, password);
       } catch(err) {
         handleError(res, "error during authentication query");
       }
@@ -136,7 +155,7 @@ router.patch("/:currUserId/:targetUserId", async (req, res) => {
       const password = req.body.password.trim();
       let authorized = null;
       try {
-        authorized = await users.authenticateUser(userId, password);
+        authorized = await authenticateUser(userId, password);
       } catch(err) {
         handleError(res, "error during authentication query");
       }
