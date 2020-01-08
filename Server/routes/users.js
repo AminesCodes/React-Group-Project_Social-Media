@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 
 const Users = require('../Models/users');
+const { authenticateUser } = require('../Models/Authentication')
 
 const storage = multer.diskStorage({
   destination: (request, file, cb) => {
@@ -190,7 +191,7 @@ router.put('/:userId', upload.single('avatar'), async (request, response) => {
             avatarUrl = 'http://' + request.headers.host + '/images/avatars/' + request.file.filename
         } 
         try {
-            const authorizedToUpdate = await Users.authenticateUser(userId, password)
+            const authorizedToUpdate = await authenticateUser(userId, password)
             if (authorizedToUpdate) {
                 try {
                     const updatedUser = await Users.updateUserInfo(userId, request.body, avatarUrl)
@@ -223,7 +224,16 @@ router.put('/:userId', upload.single('avatar'), async (request, response) => {
                 })
             }
         } catch (err) {
-            handleError(response, err)
+            if (err.message === "No data returned from the query.") {
+                response.status(404)
+                response.json({
+                    status: 'fail',
+                    message: 'User does not exist',
+                    payload: null,
+                })
+            } else {
+                handleError(response, err)
+            }
         }
     }
 })
@@ -242,8 +252,7 @@ router.patch('/:userId/password', async (request, response) => {
             })
     } else {
         try {
-            const authorizedToUpdate = await Users.authenticateUser(userId, oldPassword)
-
+            const authorizedToUpdate = await authenticateUser(userId, oldPassword)
             if (authorizedToUpdate) {
                 try {
                     const updatedUser = await Users.updateUserPassword(userId, newPassword)
@@ -265,7 +274,16 @@ router.patch('/:userId/password', async (request, response) => {
                 })
             }
         } catch (err) {
-            handleError(response, err)
+            if (err.message === "No data returned from the query.") {
+                response.status(404)
+                response.json({
+                    status: 'fail',
+                    message: 'User does not exist',
+                    payload: null,
+                })
+            } else {
+                handleError(response, err)
+            }
         }
     }
 })
@@ -283,8 +301,7 @@ router.patch('/:userId/theme/:theme', async (request, response) => {
             })
     } else if (theme === 'dark' || theme === 'light') { 
         try {
-            const authorizedToUpdate = await Users.authenticateUser(userId, password)
-
+            const authorizedToUpdate = await authenticateUser(userId, password)
             if (authorizedToUpdate) {
                 try {
                     const updatedTheme = await Users.updateUserTheme(userId, theme)
@@ -306,7 +323,16 @@ router.patch('/:userId/theme/:theme', async (request, response) => {
                 })
             }
         } catch (err) {
-            handleError(response, err)
+            if (err.message === "No data returned from the query.") {
+                response.status(404)
+                response.json({
+                    status: 'fail',
+                    message: 'User does not exist',
+                    payload: null,
+                })
+            } else {
+                handleError(response, err)
+            }
         }
     } else {
         console.log('Invalid route for changing the theme')
@@ -333,8 +359,8 @@ router.patch('/:userId/delete', async (request, response) => {
             })
     } else {
         try {
-            const authorizedToUpdate = await Users.authenticateUser(userId, password)
-            if (authorizedToUpdate && authorizedToUpdate !== 'User does not exist') {
+            const authorizedToUpdate = await authenticateUser(userId, password)
+            if (authorizedToUpdate) {
                 try {
                     const deletedUser = await Users.deleteUser(userId)
                     if (deletedUser) {
@@ -354,13 +380,6 @@ router.patch('/:userId/delete', async (request, response) => {
                 } catch (err) {
                     handleError(response, err)
                 }
-            } else if (authorizedToUpdate === 'User does not exist') {
-                response.status(404)
-                response.json({
-                    status: 'fail',
-                    message: 'User not found',
-                    payload: null,
-                })
             } else {
                 console.log('Authentication issue')
                 response.status(401)
@@ -371,7 +390,16 @@ router.patch('/:userId/delete', async (request, response) => {
                 })
             }
         } catch (err) {
-            handleError(response, err)
+            if (err.message === "No data returned from the query.") {
+                response.status(404)
+                response.json({
+                    status: 'fail',
+                    message: 'User does not exist',
+                    payload: null,
+                })
+            } else {
+                handleError(response, err)
+            }
         }
     }
 })
