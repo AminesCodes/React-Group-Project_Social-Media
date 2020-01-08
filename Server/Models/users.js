@@ -8,7 +8,10 @@ const formatStringInputs = (str) => {
             nameHolder.push(word[0].toUpperCase() + (word.slice(1, word.length)).toLowerCase());
         }
     }
-    return nameHolder.join(' ')
+    if (nameHolder.length) {
+        return nameHolder.join(' ')
+    }
+    return str
 }
 
 const formatUsername = username => {
