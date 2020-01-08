@@ -1,4 +1,4 @@
-const db = require('../Database');
+const db = require('../db');
 
 const authenticateUser = async (userId, password) => {
     try {
