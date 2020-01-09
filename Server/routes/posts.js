@@ -4,10 +4,45 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
+// TODO
+/* 
+- hashtag parse mulitple words => IN?
+- MULTER for image upload
+Just really quick (I didn't read all the code) but we're not getting the imageUrl through the request req.body
+We're supposed to use multer to upload the image (received within the request), once uploaded to the local folder Server/public/images/posts we can use multer params to make the image url that we will store in our database
+this also refers to line 141
+
+*/
+
+
+
 /* MODULE INITS */
 const express = require('express');
-const router = express.Router();
-// Queries
+    const router = express.Router();
+const multer = require('multer');
+    const storage = multer.diskStorage({
+        destination: (request, file, cb) => {
+          cb(null, './public/images/posts');
+        },
+        filename: (request, file, cb) => {
+          const fileName = Date.now() + "-" + file.originalname;
+          cb(null, fileName);
+        }
+    });
+    const fileFilter = (request, file, cb) => {
+      if ((file.mimetype).slice(0, 6) === 'image/') {
+          cb(null, true);
+      } else {
+          cb(null, false);
+      }
+    };
+    const upload = multer({ 
+        storage: storage,
+        fileFilter: fileFilter,
+    });
+
+// local
+const { authenticateUser } = require('../queries/authentication.js'); // for authentication
 const { 
   getAllPosts,
   getAllPostsByUser,
