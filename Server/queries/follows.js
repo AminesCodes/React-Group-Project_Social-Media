@@ -11,7 +11,7 @@ const db = require('../db');
 const getFollows = async (currentUserId) => {
   try {
     const getQuery = `
-      SELECT username AS followings
+      SELECT username AS follow
         , avatar_url
       FROM follows INNER JOIN users ON (follows.followed_user_id = users.id)
       WHERE follower_id = $/id/
@@ -26,13 +26,30 @@ const getFollows = async (currentUserId) => {
 const getFollowers = async (currentUserId) => {
   try {
     const getQuery = `
-      SELECT username AS followers
+      SELECT username AS follower
         , avatar_url
       FROM follows INNER JOIN users ON (follows.follower_id = users.id)
       WHERE followed_user_id = $/id/
       ORDER BY username ASC;
     `;
     return await db.any(getQuery, { id: currentUserId });
+  } catch(err) {
+    throw(err);
+  }
+}
+
+const checkFollowExists = async (currentUserId, targetUserId) => {
+  try {
+    const getQuery = `
+      SELECT id
+        , follower_id
+        , followed_user_id
+      FROM follows
+      WHERE follower_id = $/currentUserId/
+        AND followed_user_id = $/targetUserId/
+    `;
+    const follow = await db.any(getQuery, { currentUserId, targetUserId });
+    return !!follow.length;
   } catch(err) {
     throw(err);
   }
@@ -72,6 +89,7 @@ const deleteFollow = async (currentUserId, targetUserId) => {
 module.exports = {
   getFollows,
   getFollowers,
+  checkFollowExists,
   createFollow,
   deleteFollow
 }
