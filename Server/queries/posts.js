@@ -33,9 +33,10 @@ const getAllPostsByUser = async (numId) => {
         , time_created
       FROM posts
       WHERE owner_id = $/id/
-      ORDER BY time_created DESC;
+      ORDER BY time_created DESC
+      LIMIT 10 OFFSET $/offset/;
     `;
-    return await db.any(getQuery, { id: numId });
+    return await db.any(getQuery, { id: numId, offset: offset || 0 });
   } catch(err) {
     throw(err);
   }
@@ -50,9 +51,10 @@ const getAllPostsByHashtag = async (strTag) => {
         , username
       FROM posts INNER JOIN users ON (posts.owner_id = users.id)
       WHERE hashtag_str LIKE $/hashStr/
-      ORDER BY posts.time_created DESC;
+      ORDER BY posts.time_created DESC
+      LIMIT 10 OFFSET $/offset/;
     `;
-    return await db.any(getQuery, { hashStr: `%${strTag}%` });
+    return await db.any(getQuery, { hashStr: `%${strTag}%`, offset: offset || 0 });
   } catch(err) {
     throw(err);
   }

@@ -124,7 +124,8 @@ const checkPostInputs = (req, res, next) => {
 
 
 /* ROUTE HANDLES */
-// getAllPosts: get global user posts; LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
+// getAllPosts: get global user posts
+// LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
 router.get("/", async (req, res) => {
     try {
       const allPosts = await getAllPosts();
@@ -139,6 +140,7 @@ router.get("/", async (req, res) => {
 });
 
 // getAllPostsByUser: get all of a single user's posts
+// LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
 router.get("/userid/:id", async (req, res) => {
     if (!req.params.id || isNaN(parseInt(req.params.id))) {
       handleError(req, res, "invalid user_id parameter");
@@ -157,6 +159,7 @@ router.get("/userid/:id", async (req, res) => {
 });
 
 // getAllPostsByHashtag: get global user posts with specific hashtag
+// LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
 router.get("/tag/:hashtag", async (req, res) => {
     if (!req.params.hashtag) {
       handleError(req, res, "empty hashtag parameter");
