@@ -25,7 +25,7 @@ const getAllPosts = async (offset) => {
   }
 }
 
-const getAllPostsByUser = async (numId) => {
+const getAllPostsByUser = async (numId, offset) => {
   try {
     const getQuery = `
       SELECT image_url
@@ -42,7 +42,7 @@ const getAllPostsByUser = async (numId) => {
   }
 }
 
-const getAllPostsByHashtag = async (strTag) => {
+const getAllPostsByHashtag = async (strTag, offset) => {
   try {
     const getQuery = `
       SELECT image_url

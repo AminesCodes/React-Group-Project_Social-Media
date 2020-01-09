@@ -44,6 +44,7 @@ const multer = require('multer');
 
 // local
 const { authenticateUser } = require('../queries/authentication.js'); // for authentication
+const { getUserById } = require('../queries/users.js'); // for checking if user exists after no results
 const { 
   getAllPosts,
   getAllPostsByUser,
@@ -51,7 +52,7 @@ const {
   getOnePost,
   createPost,
   deletePost
-} = require('../queries/posts');
+} = require('../queries/posts.js');
 
 
 /* HELPERS */
@@ -95,38 +96,38 @@ const parseHashtags = (str) => {
 
 
 /* MIDDLEWARE */
-const checkPostInputs = (req, res, next) => {
-  let problems = [];
-  if (!req.body.imageUrl || !req.body.imageUrl.trim()) {
-    problems.push("invalid image");
-  }
-  if (!req.body.ownerId || isNaN(parseInt(req.body.ownerId.trim()))) {
-    problems.push("invalid owner id");
-  }
-  // COMPILE MESSAGE
-  if (problems.length) {
-    if (problems.length >= 2) {
-      problems[problems.length - 1] = "and " + problems[problems.length - 1];
-      problems = problems.join(' ');
-    } else {
-      problems = problems.join('');
-    }
-    res.status(404);
-    res.json({
-        status: "fail",
-        message: `error: ${problems}. Please check your inputs and try again.`,
-        payload: null
-    });
-  } else {
-    next();
-  }
-}
+// const checkPostInputs = (req, res, next) => {
+//   let problems = [];
+//   if (!req.body.imageUrl || !req.body.imageUrl.trim()) {
+//     problems.push("invalid image");
+//   }
+//   if (!req.body.ownerId || isNaN(parseInt(req.body.ownerId.trim()))) {
+//     problems.push("invalid owner id");
+//   }
+//   // COMPILE MESSAGE
+//   if (problems.length) {
+//     if (problems.length >= 2) {
+//       problems[problems.length - 1] = "and " + problems[problems.length - 1];
+//       problems = problems.join(' ');
+//     } else {
+//       problems = problems.join('');
+//     }
+//     res.status(404);
+//     res.json({
+//         status: "fail",
+//         message: `error: ${problems}. Please check your inputs and try again.`,
+//         payload: null
+//     });
+//   } else {
+//     next();
+//   }
+// }
 
 
 /* ROUTE HANDLES */
 // getAllPosts: get global user posts
 // LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
     try {
       const allPosts = await getAllPosts();
       res.json({
@@ -141,97 +142,104 @@ router.get("/", async (req, res) => {
 
 // getAllPostsByUser: get all of a single user's posts
 // LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
-router.get("/userid/:id", async (req, res) => {
-    if (!req.params.id || isNaN(parseInt(req.params.id))) {
-      handleError(req, res, "invalid user_id parameter");
-    }
-    const userId = parseInt(req.params.id.trim());
+router.get("/userid/:id", async (req, res, next) => {
     try {
-      const allPostsByUser = await getAllPostsByUser(userId);
-      res.json({
-          status: "success",
-          message: `all posts of user ${userId} retrieved`,
-          payload: allPostsByUser
-      });
+      if (!req.params.id || isNaN(parseInt(req.params.id))) {
+        throw new Error("400__error: invalid user_id parameter");
+      } else {
+        const userId = parseInt(req.params.id.trim());
+        const allPostsByUser = await getAllPostsByUser(userId);
+        if (allPostsByUser.length === 0) {
+          const userExists = await getUserById(userId);
+          if (userExists === 'no match') {
+            throw new Error("400__error: user does not exist");
+          }
+        }
+        res.json({
+            status: "success",
+            message: `all posts of user ${userId} retrieved`,
+            payload: allPostsByUser.length === 1 ? allPostsByUser[0] : allPostsByUser
+        });
+      }
     } catch (err) {
       handleError(err, req, res, next);
     }
 });
 
-// getAllPostsByHashtag: get global user posts with specific hashtag
-// LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
-router.get("/tag/:hashtag", async (req, res) => {
-    if (!req.params.hashtag) {
-      handleError(req, res, "empty hashtag parameter");
-    }
-    const hashtag = req.params.hashtag.trim();
-    try {
-      const allPostsByHashtag = await getAllPostsByHashtag(hashtag);
-      res.json({
-          status: "success",
-          message: `all posts with hashtag "${hashtag}" retrieved`,
-          payload: allPostsByHashtag
-      });
-    } catch (err) {
-      handleError(err, req, res, next);
-    }
-});
+// // getAllPostsByHashtag: get global user posts with specific hashtag
+// // LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
+// router.get("/tag/:hashtag", async (req, res, next) => {
+//     if (!req.params.hashtag) {
+//       handleError(req, res, "empty hashtag parameter");
+//     }
+//     const hashtag = req.params.hashtag.trim();
+//     try {
+//       const allPostsByHashtag = await getAllPostsByHashtag(hashtag);
+//       res.json({
+//           status: "success",
+//           message: `all posts with hashtag "${hashtag}" retrieved`,
+//           payload: allPostsByHashtag
+//       });
+//     } catch (err) {
+//       handleError(err, req, res, next);
+//     }
+// });
 
-// getOnePost: get one single post by post_id
-router.get("/:postId", async (req, res) => {
-    if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
-      handleError(req, res, "invalid post_id parameter");
-    }
-    const postId = parseInt(req.params.postId);
-    try {
-      const onePost = await getOnePost(postId);
-      res.json({
-          status: "success",
-          message: `post ${postId} retrieved`,
-          payload: onePost
-      });
-    } catch (err) {
-      handleError(err, req, res, next);
-    }
-});
+// // getOnePost: get one single post by post_id
+// router.get("/:postId", async (req, res, next) => {
+//     if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
+//       handleError(req, res, "invalid post_id parameter");
+//     }
+//     const postId = parseInt(req.params.postId);
+//     try {
+//       const onePost = await getOnePost(postId);
+//       res.json({
+//           status: "success",
+//           message: `post ${postId} retrieved`,
+//           payload: onePost
+//       });
+//     } catch (err) {
+//       handleError(err, req, res, next);
+//     }
+// });
 
-// createPost: create a single post
-router.post("/", checkPostInputs, async (req, res) => {
-    const { imageUrl, caption, ownerId } = req.body;
-    const hashtagString = parseHashtags(caption) || "";
-    try {
-      const response = await createPost({
-          imageUrl,
-          caption,
-          ownerId,
-          hashtagString
-      });
-      res.json({
-          status: "success",
-          message: "post created",
-          payload: response
-      });
-    } catch (err) {
-      handleError(err, req, res, next);
-    }
-});
+// // createPost: create a single post
+// router.post("/", checkPostInputs, async (req, res, next) => {
+//     const { imageUrl, caption, ownerId } = req.body;
+//     const hashtagString = parseHashtags(caption) || "";
+//     try {
+//       const response = await createPost({
+//           imageUrl,
+//           caption,
+//           ownerId,
+//           hashtagString
+//       });
+//       res.json({
+//           status: "success",
+//           message: "post created",
+//           payload: response
+//       });
+//     } catch (err) {
+//       handleError(err, req, res, next);
+//     }
+// });
 
-// deletePost: delete a post
-router.delete("/:postId", async (req, res) => {
-    if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
-      handleError(req, res, "invalid post_id parameter");
-    }
-    try {
-      const response = await deletePost(parseInt(req.params.postId));
-      res.json({
-          status: "success",
-          message: `post ${postId} deleted`,
-          payload: response
-      });
-    } catch (err) {
-      handleError(err, req, res, next);
-    }
-});
+// // deletePost: delete a post
+// router.delete("/:postId", async (req, res, next) => {
+//     if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
+//       handleError(req, res, "invalid post_id parameter");
+//     }
+//     try {
+//       const response = await deletePost(parseInt(req.params.postId));
+//       res.json({
+//           status: "success",
+//           message: `post ${postId} deleted`,
+//           payload: response
+//       });
+//     } catch (err) {
+//       handleError(err, req, res, next);
+//     }
+// });
 
 
 /* EXPORT */
