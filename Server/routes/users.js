@@ -52,6 +52,7 @@ router.get('/all', async (request, response) => {
         handleError(response, err)
     }
 })
+
 const handleResponse = (response, data) => {
     if (data === 'no match') {
         response.status(444)
