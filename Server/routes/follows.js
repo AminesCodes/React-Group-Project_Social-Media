@@ -4,6 +4,9 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
+// TODO Add check if users exist in create/deleteFollows Route
+
+
 /* IMPORTS */
 const express = require('express');
     const router = express.Router();
@@ -21,15 +24,26 @@ const {
 
 
 /* HELPERS */
-const handleError = (res, error, code) => {
-  console.log(code ? `error(fe): ${error}` : `error(be): ${error}`);
-  res.status(code || 500);
+handleError = (err, req, res, next) => {
+  if (res.headersSent) {
+    console.log("err: res headers already exist. passing error to express");
+    return next(err);
+  }
+  let [ code, msg ] = err.message.split('__');
+  if (!msg) {
+    msg = code;
+  }
+  console.log(code[0] === '4' ? "(front)" : "(back)", msg);
+  if (code.length === 3 && !isNaN(code)) {
+    code = parseInt(code);
+    res.status(code);
+  }
   res.json({
       status: "fail",
-      message: code ? `error: ${error}` : `error(backend): ${error}`,
+      message: msg,
       payload: null
   });
-}
+};
 
 const handleSuccess = (res, path, data) => {
   res.json({
@@ -47,6 +61,11 @@ const checkIdParams = (req) => {
   if (!req.params.targetUserId || isNaN(parseInt(req.params.targetUserId.trim()))) {
     problems.push("target user_id");
   }
+  const currentUser = parseInt(req.params.currUserId.trim()) || null;
+  const targetUser = parseInt(req.params.targetUserId.trim()) || null;
+  if (currentUser && targetUser && currentUser === targetUser) {
+    problems.push("duplicate");
+  }
   // COMPILE MESSAGE
   if (problems.length) {
     problems.length == 2
@@ -60,128 +79,144 @@ const checkIdParams = (req) => {
 
 /* ROUTE HANDLES */
 // getFollows: get all others the user is following
-router.get("/:currUserId", async (req, res) => {
-    if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-      handleError(res, 'invalid currUserId parameter', 400);
-    } else {
-      const currUserId = parseInt(req.params.currUserId.trim());
-      try {
-        const follows = await getFollows(currUserId);
-        if (follows.length === 0) {
-          const userExists = await getUserById(currUserId);
-          if (userExists === 'no match') {
-            handleError(res, 'user does not exist', 400);
+router.get("/:currUserId", async (req, res, next) => {
+    try {
+      if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
+        throw new Error("400__error: invalid currUserId parameter");
+      } else {
+        const currUserId = parseInt(req.params.currUserId.trim());
+        try {
+          const follows = await getFollows(currUserId);
+          if (follows.length === 0) {
+            const userExists = await getUserById(currUserId);
+            if (userExists === 'no match') {
+              throw new Error("400__error: user does not exist");
+            } else {
+              handleSuccess(res, 'follows', follows);
+            }
           } else {
             handleSuccess(res, 'follows', follows);
           }
-        } else {
-          handleSuccess(res, 'follows', follows);
+        } catch (err) {
+          throw (err);
         }
-      } catch (err) {
-        handleError(res, err);
       }
+    } catch (err) {
+      handleError(err, req, res, next);
     }
 });
 
 // getFollowers: get all following current user
-router.get("/followers/:currUserId", async (req, res) => {
-    if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-      handleError(res, 'invalid currUserId parameter', 400);
-    } else {
-      const currUserId = parseInt(req.params.currUserId.trim());
-      try {
-        const followers = await getFollowers(currUserId);
-        if (followers.length === 0) {
-          const userExists = await getUserById(currUserId);
-          if (userExists === 'no match') {
-            handleError(res, 'user does not exist', 400);
+router.get("/followers/:currUserId", async (req, res, next) => {
+    try {
+      if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
+        throw new Error("400__error: invalid currUserId parameter");
+      } else {
+        const currUserId = parseInt(req.params.currUserId.trim());
+        try {
+          const followers = await getFollowers(currUserId);
+          if (followers.length === 0) {
+            const userExists = await getUserById(currUserId);
+            if (userExists === 'no match') {
+              throw new Error("400__error: user does not exist");
+            } else {
+              handleSuccess(res, 'followers', followers);
+            }
           } else {
             handleSuccess(res, 'followers', followers);
           }
-        } else {
-          handleSuccess(res, 'followers', followers);
+        } catch (err) {
+          throw (err);
         }
-      } catch (err) {
-        handleError(res, err);
       }
+    } catch (err) {
+      handleError(err, req, res, next);
     }
 });
 
 // createFollow: make new follow relationship
-router.post("/:currUserId/:targetUserId", async (req, res) => {
-    const paramsCheck = checkIdParams(req);
-    if (paramsCheck) {
-      handleError(res, `invalid ${paramsCheck} parameter(s)`, 400);
-    } else {
-      const currUserId = parseInt(req.params.currUserId.trim());
-      const targetUserId = parseInt(req.params.targetUserId.trim());
-      let password, authorized = null;
-      req.body.password
-        ? password = req.body.password.trim()
-        : false;
-      try {
-        authorized = await authenticateUser(currUserId, password);
-      } catch(err) {
-        handleError(res, "error during authentication query");
-      }
-      if (authorized) {
-        try {
-          const followExists = await checkFollowExists(currUserId, targetUserId);
-          if (followExists) {
-            handleError(res, 'follow already exists', 403);
-          } else {
-            const response = await createFollow(currUserId, targetUserId);
-            res.json({
-                status: "success",
-                message: "follow created",
-                payload: response
-            });
-          }
-        } catch (err) {
-          handleError(res, err);
-        }
+router.post("/:currUserId/:targetUserId", async (req, res, next) => {
+    try {
+      const paramsCheck = checkIdParams(req);
+      if (paramsCheck) {
+        throw new Error(`400__error: invalid ${paramsCheck} parameter(s)`);
       } else {
-        handleError(res, 'authentication issue', 401);
+        const currUserId = parseInt(req.params.currUserId.trim());
+        const targetUserId = parseInt(req.params.targetUserId.trim());
+        let password, authorized = null;
+        req.body.password
+          ? password = req.body.password.trim()
+          : false;
+        try {
+          authorized = await authenticateUser(currUserId, password);
+        } catch(err) {
+          throw new Error("500__error: problem during authentication query");
+        }
+        if (authorized) {
+          try {
+            const followExists = await checkFollowExists(currUserId, targetUserId);
+            if (followExists) {
+              throw new Error("403__error: follow already exists");
+            } else {
+              const response = await createFollow(currUserId, targetUserId);
+              res.json({
+                  status: "success",
+                  message: "follow created",
+                  payload: response
+              });
+            }
+          } catch (err) {
+            throw (err);
+          }
+        } else {
+          throw new Error("401__error: authentication issue");
+        }
       }
+    } catch (err) {
+      handleError(err, req, res, next);
     }
 });
 
 // deleteFollow: delete follow relationship
-router.patch("/delete/:currUserId/:targetUserId", async (req, res) => {
-    const paramsCheck = checkIdParams(req);
-    if (paramsCheck) {
-      handleError(res, `invalid ${paramsCheck} parameter(s)`, 400);
-    } else {
-      const currUserId = parseInt(req.params.currUserId.trim());
-      const targetUserId = parseInt(req.params.targetUserId.trim());
-      let password, authorized = null;
-      req.body.password
-        ? password = req.body.password.trim()
-        : false;
-      try {
-        authorized = await authenticateUser(currUserId, password);
-      } catch(err) {
-        handleError(res, "error during authentication query");
-      }
-      if (authorized) {
-        try {
-          const followExists = await checkFollowExists(currUserId, targetUserId);
-          if (!followExists) {
-            handleError(res, 'follow does not exist', 400);
-          } else {
-            const response = await deleteFollow(currUserId, targetUserId);
-            res.json({
-                status: "success",
-                message: "follow deleted",
-                payload: response
-            });
-          }
-        } catch (err) {
-          handleError(res, err);
-        }
+router.patch("/delete/:currUserId/:targetUserId", async (req, res, next) => {
+    try {
+      const paramsCheck = checkIdParams(req);
+      if (paramsCheck) {
+        throw new Error(`400__error: invalid ${paramsCheck} parameter(s)`);
       } else {
-        handleError(res, 'authentication issue', 401);
+        const currUserId = parseInt(req.params.currUserId.trim());
+        const targetUserId = parseInt(req.params.targetUserId.trim());
+        let password, authorized = null;
+        req.body.password
+          ? password = req.body.password.trim()
+          : false;
+        try {
+          authorized = await authenticateUser(currUserId, password);
+        } catch(err) {
+          throw new Error("500__error: problem during authentication query");
+        }
+        if (authorized) {
+          try {
+            const followExists = await checkFollowExists(currUserId, targetUserId);
+            if (!followExists) {
+              throw new Error("400__error: follow does not exist");
+            } else {
+              const response = await deleteFollow(currUserId, targetUserId);
+              res.json({
+                  status: "success",
+                  message: "follow deleted",
+                  payload: response
+              });
+            }
+          } catch (err) {
+            throw (err);
+          }
+        } else {
+          throw new Error("401__error: authentication issue");
+        }
       }
+    } catch (err) {
+      handleError(err, req, res, next);
     }
 });
 
