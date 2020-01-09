@@ -120,7 +120,7 @@ router.patch('/login', async (request, response) => {
                 response.status(401)
                 response.json({
                     status: 'fail',
-                    message: 'Invalid user',
+                    message: 'User Authentication Issue',
                     payload: null,
                 })
             }
@@ -133,6 +133,7 @@ router.patch('/login', async (request, response) => {
 
 router.post('/signup', async (request, response) => {
     const { username, firstname, lastname, password, email, ageCheck } = request.body
+    console.log(ageCheck)
     if (!username || !firstname || !lastname || !password || !email || !ageCheck || ageCheck !== 'true') {
         response.status(400)
             response.json({
