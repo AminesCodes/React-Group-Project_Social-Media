@@ -8,17 +8,18 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 const db = require('../db');
 
 
-const getAllPosts = async () => {
+const getAllPosts = async (offset) => {
   try {
     const getQuery = `
-      SELECT image_url
+      SELECT username
+        , posts.time_created
+        , image_url
         , caption
-        , time_created
-        , username
       FROM posts INNER JOIN users ON (posts.owner_id = users.id)
-      ORDER BY posts.time_created DESC;
+      ORDER BY posts.time_created DESC
+      LIMIT 10 OFFSET $/offset/;
     `;
-    return await db.any(getQuery);
+    return await db.any(getQuery, { offset: offset || 0 });
   } catch(err) {
     throw(err);
   }

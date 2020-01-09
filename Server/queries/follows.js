@@ -12,6 +12,7 @@ const getFollows = async (currentUserId) => {
   try {
     const getQuery = `
       SELECT username AS follow
+        , followed_user_id
         , avatar_url
       FROM follows INNER JOIN users ON (follows.followed_user_id = users.id)
       WHERE follower_id = $/id/
@@ -27,6 +28,7 @@ const getFollowers = async (currentUserId) => {
   try {
     const getQuery = `
       SELECT username AS follower
+        , follower_id
         , avatar_url
       FROM follows INNER JOIN users ON (follows.follower_id = users.id)
       WHERE followed_user_id = $/id/

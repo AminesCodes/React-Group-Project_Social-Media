@@ -11,6 +11,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 Just really quick (I didn't read all the code) but we're not getting the imageUrl through the request req.body
 We're supposed to use multer to upload the image (received within the request), once uploaded to the local folder Server/public/images/posts we can use multer params to make the image url that we will store in our database
 this also refers to line 141
+- add upload to createPOst
 
 */
 
@@ -54,15 +55,35 @@ const {
 
 
 /* HELPERS */
-const handleError = (req, res, error) => {
-  console.log(error);
-  res.status(500);
+// const handleError = (req, res, error) => {
+//   console.log(error);
+//   res.status(500);
+//   res.json({
+//       status: "fail",
+//       message: "error: backend issue",
+//       payload: null
+//   });
+// }
+handleError = (err, req, res, next) => {
+  if (res.headersSent) {
+    console.log("err: res headers already exist. passing error to express");
+    return next(err);
+  }
+  let [ code, msg ] = err.message.split('__');
+  if (!msg) {
+    msg = code;
+  }
+  console.log(code[0] === '4' ? "(front)" : "(back)", msg);
+  if (code.length === 3 && !isNaN(code)) {
+    code = parseInt(code);
+    res.status(code);
+  }
   res.json({
       status: "fail",
-      message: "error: backend issue",
+      message: msg,
       payload: null
   });
-}
+};
 
 const parseHashtags = (str) => {
   if (!str || !str.trim()) {
@@ -103,21 +124,21 @@ const checkPostInputs = (req, res, next) => {
 
 
 /* ROUTE HANDLES */
-// allPosts: get global user posts
+// getAllPosts: get global user posts; LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
 router.get("/", async (req, res) => {
     try {
       const allPosts = await getAllPosts();
       res.json({
           status: "success",
           message: "all posts retrieved",
-          payload: allPosts
+          payload: allPosts.length === 1 ? allPosts[0] : allPosts
       });
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
-// allPostsByUser: get all of a single user's posts
+// getAllPostsByUser: get all of a single user's posts
 router.get("/userid/:id", async (req, res) => {
     if (!req.params.id || isNaN(parseInt(req.params.id))) {
       handleError(req, res, "invalid user_id parameter");
@@ -131,11 +152,11 @@ router.get("/userid/:id", async (req, res) => {
           payload: allPostsByUser
       });
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
-// allPostsByHashtag: get global user posts with specific hashtag
+// getAllPostsByHashtag: get global user posts with specific hashtag
 router.get("/tag/:hashtag", async (req, res) => {
     if (!req.params.hashtag) {
       handleError(req, res, "empty hashtag parameter");
@@ -149,11 +170,11 @@ router.get("/tag/:hashtag", async (req, res) => {
           payload: allPostsByHashtag
       });
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
-// onePost: get one single post by post_id
+// getOnePost: get one single post by post_id
 router.get("/:postId", async (req, res) => {
     if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
       handleError(req, res, "invalid post_id parameter");
@@ -167,7 +188,7 @@ router.get("/:postId", async (req, res) => {
           payload: onePost
       });
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
@@ -188,11 +209,11 @@ router.post("/", checkPostInputs, async (req, res) => {
           payload: response
       });
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
-// removePost: delete a post
+// deletePost: delete a post
 router.delete("/:postId", async (req, res) => {
     if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
       handleError(req, res, "invalid post_id parameter");
@@ -205,7 +226,7 @@ router.delete("/:postId", async (req, res) => {
           payload: response
       });
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
