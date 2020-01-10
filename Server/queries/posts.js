@@ -66,11 +66,13 @@ const getAllPostsByHashtags = async (hashArr, offset) => {
 const getOnePost = async (numId) => {
   try {
     const getQuery = `
-      SELECT image_url
+      SELECT username
+        , posts.time_created
+        , image_url
         , caption
-        , time_created
-      FROM posts
-      WHERE id = $/id/
+        , hashtag_str
+      FROM posts INNER JOIN users ON (posts.owner_id = users.id)
+      WHERE posts.id = $/id/
     `;
     return await db.one(getQuery, { id: numId });
   } catch(err) {

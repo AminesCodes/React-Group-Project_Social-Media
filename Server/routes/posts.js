@@ -107,10 +107,10 @@ const processInput = (req, location) => {
       }
       return parseInt(req.query.offset.trim());
     case "userId":
-      if (!req.params.id || !req.params.id.trim() || isNaN(parseInt(req.params.id.trim()))) {
+      if (!req.params.id || !req.params.id.trim() || isNaN(parseInt(req.params.id))) {
         throw new Error("400__error: invalid user_id parameter");
       }
-      return parseInt(req.params.id.trim());
+      return parseInt(req.params.id);
     case "search hashtags":
       if (!req.query.hashtags || !req.query.hashtags.trim()) {
         throw new Error("400__empty hashtags parameter");
@@ -122,6 +122,11 @@ const processInput = (req, location) => {
           parsed: hashtagsArr.join(', '),
           formatted: formattedHashtagsArr
       });
+    case "postId":
+      if (!req.params.postId || !req.params.postId.trim() || isNaN(parseInt(req.params.postId))) {
+        throw new Error("400__invalid post_id parameter");
+      }
+      return parseInt(req.params.postId);
       // hashtags = "#" + hashtags.split(' ').join('#') + "#";
     default:
       throw new Error("500__error: you're not supposed to be here");
@@ -223,23 +228,30 @@ router.get("/tags", async (req, res, next) => {
     }
 });
 
-// // getOnePost: get one single post by post_id
-// router.get("/:postId", async (req, res, next) => {
-//     if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
-//       handleError(req, res, "invalid post_id parameter");
-//     }
-//     const postId = parseInt(req.params.postId);
-//     try {
-//       const onePost = await getOnePost(postId);
-//       res.json({
-//           status: "success",
-//           message: `post ${postId} retrieved`,
-//           payload: onePost
-//       });
-//     } catch (err) {
-//       handleError(err, req, res, next);
-//     }
-// });
+// getOnePost: get one single post by post_id
+router.get("/:postId", async (req, res, next) => {
+    try {
+      const postId = processInput(req, "postId");
+      const onePost = await getOnePost(postId);
+      res.json({
+          status: "success",
+          message: `post ${postId} retrieved`,
+          payload: onePost
+      });
+    } catch (err) {
+      if (err.message === "No data returned from the query.") {
+        res
+          .status(404)
+          .json({
+              status: "fail",
+              message: `no post with id ${req.params.postId} found`,
+              payload: null
+          });
+      } else {
+        handleError(err, req, res, next);
+      }
+    }
+});
 
 // // createPost: create a single post
 // router.post("/", checkPostInputs, async (req, res, next) => {
