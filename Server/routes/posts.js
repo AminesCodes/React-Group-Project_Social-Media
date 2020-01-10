@@ -48,7 +48,7 @@ const { getUserById } = require('../queries/users.js'); // for checking if user 
 const { 
   getAllPosts,
   getAllPostsByUser,
-  getAllPostsByHashtag,
+  getAllPostsByHashtags,
   getOnePost,
   createPost,
   deletePost
@@ -85,6 +85,48 @@ handleError = (err, req, res, next) => {
       payload: null
   });
 };
+
+// const prepareOffset = (req) => {
+//   if (!req.query.offset || !req.query.offset.trim()) {
+//     return 0;
+//   }
+//   if (isNaN(parseInt(req.query.offset.trim()))) {
+//     throw new Error("400__invalid offset parameter");
+//   }
+//   return parseInt(req.query.offset.trim());
+// }
+
+const processInput = (req, location) => {
+  switch (location) {
+    case "offset":
+      if (!req.query.offset || !req.query.offset.trim()) {
+        return 0;
+      }
+      if (isNaN(parseInt(req.query.offset.trim()))) {
+        throw new Error("400__invalid offset parameter");
+      }
+      return parseInt(req.query.offset.trim());
+    case "userId":
+      if (!req.params.id || !req.params.id.trim() || isNaN(parseInt(req.params.id.trim()))) {
+        throw new Error("400__error: invalid user_id parameter");
+      }
+      return parseInt(req.params.id.trim());
+    case "search hashtags":
+      if (!req.query.hashtags || !req.query.hashtags.trim()) {
+        throw new Error("400__empty hashtags parameter");
+      }
+      const hashtagsInput = req.query.hashtags.trim();
+      let hashtagsArr = hashtagsInput.replace(/[^a-zA-Z0-9 ]/g, "").split(" ");
+      const formattedHashtagsArr = hashtagsArr.map(tag => `%#${tag}#%`);
+      return ({
+          parsed: hashtagsArr.join(', '),
+          formatted: formattedHashtagsArr
+      });
+      // hashtags = "#" + hashtags.split(' ').join('#') + "#";
+    default:
+      throw new Error("500__error: you're not supposed to be here");
+  }
+}
 
 const parseHashtags = (str) => {
   if (!str || !str.trim()) {
@@ -129,7 +171,8 @@ const parseHashtags = (str) => {
 // LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
 router.get("/", async (req, res, next) => {
     try {
-      const allPosts = await getAllPosts();
+      const offset = processInput(req, "offset");
+      const allPosts = await getAllPosts(offset);
       res.json({
           status: "success",
           message: "all posts retrieved",
@@ -144,14 +187,12 @@ router.get("/", async (req, res, next) => {
 // LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
 router.get("/userid/:id", async (req, res, next) => {
     try {
-      if (!req.params.id || isNaN(parseInt(req.params.id))) {
-        throw new Error("400__error: invalid user_id parameter");
-      } else {
-        const userId = parseInt(req.params.id.trim());
-        const allPostsByUser = await getAllPostsByUser(userId);
+        const userId = processInput(req, "userId");
+        const offset = processInput(req, "offset");
+        const allPostsByUser = await getAllPostsByUser(userId, offset);
         if (allPostsByUser.length === 0) {
-          const userExists = await getUserById(userId);
-          if (userExists === 'no match') {
+          const doesUserExist = await getUserById(userId);
+          if (doesUserExist === 'no match') {
             throw new Error("400__error: user does not exist");
           }
         }
@@ -160,30 +201,27 @@ router.get("/userid/:id", async (req, res, next) => {
             message: `all posts of user ${userId} retrieved`,
             payload: allPostsByUser.length === 1 ? allPostsByUser[0] : allPostsByUser
         });
-      }
     } catch (err) {
       handleError(err, req, res, next);
     }
 });
 
-// // getAllPostsByHashtag: get global user posts with specific hashtag
-// // LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
-// router.get("/tag/:hashtag", async (req, res, next) => {
-//     if (!req.params.hashtag) {
-//       handleError(req, res, "empty hashtag parameter");
-//     }
-//     const hashtag = req.params.hashtag.trim();
-//     try {
-//       const allPostsByHashtag = await getAllPostsByHashtag(hashtag);
-//       res.json({
-//           status: "success",
-//           message: `all posts with hashtag "${hashtag}" retrieved`,
-//           payload: allPostsByHashtag
-//       });
-//     } catch (err) {
-//       handleError(err, req, res, next);
-//     }
-// });
+// getAllPostsByHashtags: get global user posts with specific hashtag
+// LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
+router.get("/tags", async (req, res, next) => {
+    try {
+      const hashtags = processInput(req, "search hashtags");
+      const offset = processInput(req, "offset");
+      const allPostsByHashtags = await getAllPostsByHashtags(hashtags.formatted, offset);
+      res.json({
+          status: "success",
+          message: `all posts with hashtags '${hashtags.parsed}' retrieved`,
+          payload: allPostsByHashtags
+      });
+    } catch (err) {
+      handleError(err, req, res, next);
+    }
+});
 
 // // getOnePost: get one single post by post_id
 // router.get("/:postId", async (req, res, next) => {
