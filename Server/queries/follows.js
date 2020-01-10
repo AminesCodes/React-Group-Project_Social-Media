@@ -40,23 +40,6 @@ const getFollowers = async (currentUserId) => {
   }
 }
 
-const checkFollowExists = async (currentUserId, targetUserId) => {
-  try {
-    const getQuery = `
-      SELECT id
-        , follower_id
-        , followed_user_id
-      FROM follows
-      WHERE follower_id = $/currentUserId/
-        AND followed_user_id = $/targetUserId/
-    `;
-    const follow = await db.any(getQuery, { currentUserId, targetUserId });
-    return !!follow.length;
-  } catch(err) {
-    throw(err);
-  }
-}
-
 const createFollow = async (currentUserId, targetUserId) => {
   try {
     const postQuery = `
@@ -86,12 +69,32 @@ const deleteFollow = async (currentUserId, targetUserId) => {
   }
 }
 
+const checkDoesFollowExist = async (currentUserId, targetUserId) => {
+  try {
+    const getQuery = `
+      SELECT id
+        , follower_id
+        , followed_user_id
+      FROM follows
+      WHERE follower_id = $/currentUserId/
+        AND followed_user_id = $/targetUserId/
+    `;
+    const follow = await db.any(getQuery, { currentUserId, targetUserId });
+    if (follow.length) {
+      throw new Error("403__error: follow already exists");
+    }
+    return;
+  } catch(err) {
+    throw(err);
+  }
+}
+
 
 /* EXPORT */
 module.exports = {
   getFollows,
   getFollowers,
-  checkFollowExists,
   createFollow,
-  deleteFollow
+  deleteFollow,
+  checkDoesFollowExist
 }
