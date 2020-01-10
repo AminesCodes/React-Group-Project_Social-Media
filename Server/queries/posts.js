@@ -83,14 +83,12 @@ const getOnePost = async (numId) => {
 const createPost = async (bodyObj) => {
   try {
     const postQuery = `
-      INSERT INTO posts (image_url
+      INSERT INTO posts (owner_id
         , caption
-        , owner_id
         , hashtag_str
-      ) VALUES ($/imageUrl/
+      ) VALUES ($/ownerId/
         , $/caption/
-        , $/ownerId/
-        , $/hashtagString/
+        , $/formattedHashtags/
       ) RETURNING *;
     `;
     return await db.one(postQuery, bodyObj);

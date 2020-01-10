@@ -43,6 +43,7 @@ const multer = require('multer');
     });
 
 // local
+const { handleError } = require('../helpers.js');
 const { authenticateUser } = require('../queries/authentication.js'); // for authentication
 const { getUserById } = require('../queries/users.js'); // for checking if user exists after no results
 const { 
@@ -54,37 +55,6 @@ const {
   deletePost
 } = require('../queries/posts.js');
 
-
-/* HELPERS */
-// const handleError = (req, res, error) => {
-//   console.log(error);
-//   res.status(500);
-//   res.json({
-//       status: "fail",
-//       message: "error: backend issue",
-//       payload: null
-//   });
-// }
-handleError = (err, req, res, next) => {
-  if (res.headersSent) {
-    console.log("err: res headers already exist. passing error to express");
-    return next(err);
-  }
-  let [ code, msg ] = err.message.split('__');
-  if (!msg) {
-    msg = code;
-  }
-  console.log(code[0] === '4' ? "(front)" : "(back)", msg);
-  if (code.length === 3 && !isNaN(code)) {
-    code = parseInt(code);
-    res.status(code);
-  }
-  res.json({
-      status: "fail",
-      message: msg,
-      payload: null
-  });
-};
 
 // const prepareOffset = (req) => {
 //   if (!req.query.offset || !req.query.offset.trim()) {
@@ -103,7 +73,7 @@ const processInput = (req, location) => {
         return 0;
       }
       if (isNaN(parseInt(req.query.offset.trim()))) {
-        throw new Error("400__invalid offset parameter");
+        throw new Error("400__error: invalid offset parameter");
       }
       return parseInt(req.query.offset.trim());
     case "userId":
@@ -113,7 +83,7 @@ const processInput = (req, location) => {
       return parseInt(req.params.id);
     case "search hashtags":
       if (!req.query.hashtags || !req.query.hashtags.trim()) {
-        throw new Error("400__empty hashtags parameter");
+        throw new Error("400__error: empty hashtags parameter");
       }
       const hashtagsInput = req.query.hashtags.trim();
       let hashtagsArr = hashtagsInput.replace(/[^a-zA-Z0-9 ]/g, "").split(" ");
@@ -124,9 +94,19 @@ const processInput = (req, location) => {
       });
     case "postId":
       if (!req.params.postId || !req.params.postId.trim() || isNaN(parseInt(req.params.postId))) {
-        throw new Error("400__invalid post_id parameter");
+        throw new Error("400__error: invalid post_id parameter");
       }
       return parseInt(req.params.postId);
+    case "posterId":
+      if (!req.body.currUserId || isNaN(parseInt(req.body.currUserId))) {
+        throw new Error("400__error: invalid parsed current user id");
+      }
+      return parseInt(req.body.currUserId);
+    case "password":
+      if (!req.body.password || !req.body.password.trim()) {
+        throw new Error("401__error: invalid password");
+      }
+      return req.body.password.trim();
       // hashtags = "#" + hashtags.split(' ').join('#') + "#";
     default:
       throw new Error("500__error: you're not supposed to be here");
@@ -143,32 +123,6 @@ const parseHashtags = (str) => {
 
 
 /* MIDDLEWARE */
-// const checkPostInputs = (req, res, next) => {
-//   let problems = [];
-//   if (!req.body.imageUrl || !req.body.imageUrl.trim()) {
-//     problems.push("invalid image");
-//   }
-//   if (!req.body.ownerId || isNaN(parseInt(req.body.ownerId.trim()))) {
-//     problems.push("invalid owner id");
-//   }
-//   // COMPILE MESSAGE
-//   if (problems.length) {
-//     if (problems.length >= 2) {
-//       problems[problems.length - 1] = "and " + problems[problems.length - 1];
-//       problems = problems.join(' ');
-//     } else {
-//       problems = problems.join('');
-//     }
-//     res.status(404);
-//     res.json({
-//         status: "fail",
-//         message: `error: ${problems}. Please check your inputs and try again.`,
-//         payload: null
-//     });
-//   } else {
-//     next();
-//   }
-// }
 
 
 /* ROUTE HANDLES */
@@ -253,26 +207,33 @@ router.get("/:postId", async (req, res, next) => {
     }
 });
 
-// // createPost: create a single post
-// router.post("/", checkPostInputs, async (req, res, next) => {
-//     const { imageUrl, caption, ownerId } = req.body;
-//     const hashtagString = parseHashtags(caption) || "";
-//     try {
-//       const response = await createPost({
-//           imageUrl,
-//           caption,
-//           ownerId,
-//           hashtagString
-//       });
-//       res.json({
-//           status: "success",
-//           message: "post created",
-//           payload: response
-//       });
-//     } catch (err) {
-//       handleError(err, req, res, next);
-//     }
-// });
+// createPost: create a single post
+router.post("/add", async (req, res, next) => {
+    try {
+      const caption = req.body.caption.trim() || "";
+      const formattedHashtags = parseHashtags(caption) || "";
+      const posterId = processInput(req, "posterId");
+      const password = processInput(req, "password");
+      const authorized = await authenticateUser(posterId, password);
+      if (authorized) {
+        const response = await createPost({
+            ownerId: posterId,
+            caption,
+            formattedHashtags,
+            // avatarUrl: "hold"
+        });
+        res.json({
+            status: "success",
+            message: "new post created",
+            payload: response
+        });
+      } else {
+        throw new Error("401__error: authentication failure");
+      }
+    } catch (err) {
+      handleError(err, req, res, next);
+    }
+});
 
 // // deletePost: delete a post
 // router.delete("/:postId", async (req, res, next) => {
