@@ -58,7 +58,7 @@ export default class Welcome extends React.PureComponent {
                     <Route path={`/:username/posts`} render={props => (<Posts username={username} {...props} /> )} />
                     <Route path={`/:username/pictures`} render={props => (<Pictures username={username} {...props} /> )} />
                     <Route path={`/:username/likes`} render={props => (<Likes username={username} {...props} /> )} />
-                    <Route path={`/:username/profile`} render={props => (<Profile username={username} {...props} /> )} />
+                    <Route path={`/:username/profile`} render={props => (<Profile username={username} logout={this.props.logout} {...props} /> )} />
                     <Route exact component= {ErrorNotFound} />
                 </Switch>
             </>

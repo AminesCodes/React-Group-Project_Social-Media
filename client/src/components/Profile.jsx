@@ -2,6 +2,7 @@ import React from 'react'
 import axios from 'axios'
 import ProfileTab from './ProfileTab'
 import PasswordTab from './PasswordTab'
+import PersonalPosts from './PersonalPosts'
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -152,7 +153,8 @@ export default class Account extends React.PureComponent {
                     email: data.payload.email,
                     avatar: data.payload.avatar_url,
                     bio: data.payload.bio,
-                    waitingForData: false
+                    password: '',
+                    waitingForData: false,
                 })
                 toast.success('Updated information successfully',
                 { position: toast.POSITION.BOTTOM_CENTER });
@@ -275,7 +277,20 @@ export default class Account extends React.PureComponent {
     }
 
     handleDeleteAccount = async () => {
-        console.log('here')
+        console.log(this.state)
+        if (this.state.password && this.state.id) {
+            try {
+                this.setState({ waitingForData: true })
+                await axios.patch(`http://localhost:3129/users/${this.state.id}/delete`, {password: this.state.password})
+                this.props.logout()
+            } catch (err) {
+                this.setState({ waitingForData: false })
+                handleNetworkErrors(err)
+            }
+        } else {
+            toast.error('Please enter your password to DELETE your account',
+                { position: toast.POSITION.TOP_CENTER });
+        }
     }
 
 
@@ -332,26 +347,10 @@ export default class Account extends React.PureComponent {
                         handleNewPasswordConfirmInput = {this.handleNewPasswordConfirmInput}
                     />
 
-{/* ############ PASSWORD TAB ################ */}
-                    <div className='tab-pane fade' id='nav-password' role='tabpanel' aria-labelledby='nav-password-tab'>
-                        <form className='form-row was-validated' onSubmit={this.handlePasswordForm}>
-                            <div className='form-group col-sm-12'>
-                                <label htmlFor='oldPassword'>Old Password: </label>
-                                <input className='form-control' id='oldPassword' type='password' autoComplete='off' value={this.state.oldPassword} onChange={this.handleOldPasswordInput} required></input>
-                            </div>
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='newPassword'>New Password: </label>
-                                <input className='form-control' id='newPassword' type='password' autoComplete='off' value={this.state.newPassword} onChange={this.handleNewPasswordInput} required></input>
-                            </div>
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='newPasswordConfirmation'>Confirm Password: </label>
-                                <input className='form-control' id='newPasswordConfirmation' type='password' autoComplete='off' value={this.state.newPasswordConfirmation} onChange={this.handleNewPasswordConfirmInput} required></input>
-                            </div>
-                            <div className='d-sm-flex justify-content-between col-sm-12'>
-                                <button className='d-lg-block'>Update Information</button>
-                            </div>
-                        </form>
-                    </div>
+{/* ############ POSTS TAB ################ */}
+                    <PersonalPosts
+                        active = {this.state.postsTab}
+                    />
                 </div>
             </>
                 
