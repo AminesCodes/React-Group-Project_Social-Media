@@ -51,7 +51,7 @@ const {
 
 
 /* ROUTE HANDLES */
-// getFollows: get all others the user is following
+//    getFollows: get all others the user is following
 router.get("/:currUserId", async (req, res, next) => {
     try {
       const currUserId = processInput(req, "currUserId");
@@ -63,35 +63,19 @@ router.get("/:currUserId", async (req, res, next) => {
     }
 });
 
-// getFollowers: get all following current user
+//    getFollowers: get all following current user
 router.get("/followers/:currUserId", async (req, res, next) => {
     try {
-      if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-        throw new Error("400__error: invalid currUserId parameter");
-      } else {
-        const currUserId = parseInt(req.params.currUserId.trim());
-        try {
-          const followers = await getFollowers(currUserId);
-          if (followers.length === 0) {
-            const userExists = await getUserById(currUserId);
-            if (userExists === "no match") {
-              throw new Error("400__error: user does not exist");
-            } else {
-              handleSuccess(res, "followers", followers);
-            }
-          } else {
-            handleSuccess(res, "followers", followers);
-          }
-        } catch (err) {
-          throw (err);
-        }
-      }
+      const currUserId = processInput(req, "currUserId");
+      const followers = await getFollowers(currUserId);
+      await checkDoesUserExist(followers, currUserId);
+      handleSuccess(res, followers, currUserId, "followers");
     } catch (err) {
       handleError(err, req, res, next);
     }
 });
 
-// createFollow: make new follow relationship
+//    createFollow: make new follow relationship
 router.post("/:currUserId/:targetUserId", async (req, res, next) => {
     try {
       const paramsCheck = checkIdParams(req);
@@ -134,7 +118,7 @@ router.post("/:currUserId/:targetUserId", async (req, res, next) => {
     }
 });
 
-// deleteFollow: delete follow relationship
+//    deleteFollow: delete follow relationship
 router.patch("/delete/:currUserId/:targetUserId", async (req, res, next) => {
     try {
       const paramsCheck = checkIdParams(req);
