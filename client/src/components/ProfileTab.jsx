@@ -3,7 +3,7 @@ import Avatar from './Avatar';
 
 export default function ProfileTab(props) {
     return (
-        <div className='tab-pane fade show active' id='nav-profile' role='tabpanel' aria-labelledby='nav-profile-tab'>
+        <div className={`tab-pane fade show ${props.active}`} id='nav-profile' role='tabpanel' aria-labelledby='nav-profile-tab'>
             <Avatar avatar={props.avatar} />
             <form className='form-row was-validated' onSubmit={e => props.handleFormSubmit(e)}>
                 <div className='form-group col-sm-6'>
@@ -33,7 +33,7 @@ export default function ProfileTab(props) {
                 </div>
                 <div className='form-group col-sm-12'>
                     <label htmlFor='bio'>Bio: </label>
-                    <input className='form-control' id='bio' type='textarea' value={props.bio} onChange={e =>props.handleBioInput(e)}></input>
+                    <textarea className='form-control' id='bio' rows='5' value={props.bio} onChange={e =>props.handleBioInput(e)}></textarea>
                 </div>
                 <div className='d-sm-flex justify-content-between col-sm-12'>
                     <button className='d-lg-block'>Update Information</button>

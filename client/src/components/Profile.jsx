@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import ProfileTab from './ProfileTab'
+import PasswordTab from './PasswordTab'
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -171,7 +172,7 @@ export default class Account extends React.PureComponent {
 
         if (oldPassword && newPassword && newPasswordConfirmation && newPassword === newPasswordConfirmation) {
             try {
-                // this.setState({ waitingForData: true })
+                this.setState({ waitingForData: true })
                 const updateData = { 
                     oldPassword: oldPassword, 
                     newPassword: newPassword, 
@@ -179,8 +180,12 @@ export default class Account extends React.PureComponent {
                 }
 
                 const { data } = await axios.patch(`http://localhost:3129/users/${id}/password`, updateData)
-                console.log(data)
-                // this.setState({ waitingForData: false })
+                this.setState({ 
+                    waitingForData: false,
+                    oldPassword: '', 
+                    newPassword: '', 
+                    newPasswordConfirmation: '', 
+                })
                 if (data.status === 'success') {
                     sessionStorage.setItem('Parent-Ing_App_KS', newPassword);
                     toast.success('Password updated successfully ',
@@ -191,7 +196,7 @@ export default class Account extends React.PureComponent {
                     { position: toast.POSITION.TOP_CENTER });
                 }
             } catch (err) {
-                // this.setState({ waitingForData: false })
+                this.setState({ waitingForData: false })
                 handleNetworkErrors(err)
             }
         } else {
@@ -270,23 +275,12 @@ export default class Account extends React.PureComponent {
     }
 
     handleDeleteAccount = async () => {
-        
+        console.log('here')
     }
 
 
     // ############ RENDER ############
     render() {
-        let avatarImage = 
-            <div className='form-group col-sm-12'>
-                <img className='avatarImage' src={'../media/avatar.png'} alt='profile avatar'></img>
-            </div>
-        if (this.state.avatar) {
-            avatarImage = 
-                <div className='form-group col-sm-12'>
-                    <img className='avatarImage' src={this.state.avatar}    alt='profile avatar'></img>
-                </div>
-        }
-
         let content =
             <div className='spinner-border m-5' role='status'>
                 <span className='sr-only  text-center'>Loading...</span>
@@ -297,15 +291,16 @@ export default class Account extends React.PureComponent {
             <>
                 <nav>
                     <div className='nav nav-tabs' id='nav-tab' role='tablist'>
-                        <a className={`nav-item nav-link ${this.state.profileTab}`} id='nav-profile-tab' data-toggle='tab' href='#nav-profile' role='tab' aria-controls='nav-profile' aria-selected={this.state.profileTabArea} >Profile</a>
-                        <a className={`nav-item nav-link ${this.state.passwordTab}`} id='nav-password-tab' data-toggle='tab' href='#nav-password' role='tab' aria-controls='nav-password' aria-selected={this.state.passwordTabArea}>Update Password</a>
-                        <a className={`nav-item nav-link ${this.state.postsTab}`}  id='nav-posts-tab' data-toggle='tab' href='#nav-posts' role='tab' aria-controls='nav-posts' aria-selected={this.state.postsTabArea}>My Posts</a>
+                        <a className={`nav-item nav-link ${this.state.profileTab}`} id='nav-profile-tab' data-toggle='tab' href='#nav-profile' role='tab' aria-controls='nav-profile' aria-selected={this.state.profileTabArea} onClick={() => this.handleTabSelection(1)}>Profile</a>
+                        <a className={`nav-item nav-link ${this.state.passwordTab}`} id='nav-password-tab' data-toggle='tab' href='#nav-password' role='tab' aria-controls='nav-password' aria-selected={this.state.passwordTabArea} onClick={() => this.handleTabSelection(2)}>Update Password</a>
+                        <a className={`nav-item nav-link ${this.state.postsTab}`}  id='nav-posts-tab' data-toggle='tab' href='#nav-posts' role='tab' aria-controls='nav-posts' aria-selected={this.state.postsTabArea} onClick={() => this.handleTabSelection(3)}>My Posts</a>
                     </div>
                 </nav>
 
                 <div className='tab-content' id='nav-tabContent'>
 {/* ############ PROFILE TAB ################ */}
                     <ProfileTab 
+                        active = {this.state.profileTab}
                         handleFormSubmit = {this.handleFormSubmit}
                         avatar = {this.state.avatar}
                         email = {this.state.email}
@@ -324,65 +319,18 @@ export default class Account extends React.PureComponent {
                         joiningDate = {this.state.joiningDate}
                         handleDeleteAccount = {this.handleDeleteAccount}
                     />
-                    {/* <div className='tab-pane fade show active' id='nav-profile' role='tabpanel' aria-labelledby='nav-profile-tab'>
-                        <form className='form-row was-validated' onSubmit={this.handleFormSubmit}>
-                            {avatarImage}
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='email'>Email address: </label>
-                                <input className='form-control' id='email' type='email' value={this.state.email} onChange={this.handleEmailInput} required></input>
-                            </div>
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='username'>Username: </label>
-                                <input className='form-control' id='username' type='text' value={this.state.username} onChange={this.handleUsernameInput} required></input>
-                            </div>
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='firstname'>First name: </label>
-                                <input className='form-control' id='firstname' type='text' value={this.state.firstName} onChange={this.handleFirstNameInput} required></input>
-                            </div>
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='lastname'>Last name: </label>
-                                <input className='form-control' id='lastname' type='text' value={this.state.lastName} onChange={this.handleLastNameInput} required></input>
-                            </div>
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='avatar'>Avatar</label>
-                                <input className='form-control' id='avatar' type='file' accept='image/*' onChange={this.handleFileInput}></input>
-                                <img id="avatar" className="preview_img" />
-                            </div>
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='password'>Password to allow changes: </label>
-                                <input className='form-control' id='password' type='password' autoComplete='off' value={this.state.password} onChange={this.handlePasswordInput} required></input>
-                            </div>
-                            <div className='form-group col-sm-12'>
-                                <label htmlFor='joiningDate'>Member since: </label>
-                                <input className='form-control' id='joiningDate' type='date' value={this.state.joiningDate} disabled></input>
-                            </div>
-                            <div className='d-sm-flex justify-content-between col-sm-12'>
-                                <button className='d-lg-block'>Update Information</button>
-                                <button className='d-lg-block' onClick={this.handleDeleteAccount}>Delete Account</button>
-                            </div>
-                        </form>
-                    </div> */}
 
 {/* ############ PASSWORD TAB ################ */}
-                    <div className='tab-pane fade' id='nav-password' role='tabpanel' aria-labelledby='nav-password-tab'>
-                        <form className='form-row was-validated' onSubmit={this.handlePasswordForm}>
-                            <div className='form-group col-sm-12'>
-                                <label htmlFor='oldPassword'>Old Password: </label>
-                                <input className='form-control' id='oldPassword' type='password' autoComplete='off' value={this.state.oldPassword} onChange={this.handleOldPasswordInput} required></input>
-                            </div>
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='newPassword'>New Password: </label>
-                                <input className='form-control' id='newPassword' type='password' autoComplete='off' value={this.state.newPassword} onChange={this.handleNewPasswordInput} required></input>
-                            </div>
-                            <div className='form-group col-sm-6'>
-                                <label htmlFor='newPasswordConfirmation'>Confirm Password: </label>
-                                <input className='form-control' id='newPasswordConfirmation' type='password' autoComplete='off' value={this.state.newPasswordConfirmation} onChange={this.handleNewPasswordConfirmInput} required></input>
-                            </div>
-                            <div className='d-sm-flex justify-content-between col-sm-12'>
-                                <button className='d-lg-block'>Update Information</button>
-                            </div>
-                        </form>
-                    </div>
+                    <PasswordTab 
+                        active = {this.state.passwordTab}
+                        handlePasswordForm = {this.handlePasswordForm}
+                        oldPassword = {this.state.oldPassword}
+                        handleOldPasswordInput = {this.handleOldPasswordInput}
+                        newPassword = {this.state.newPassword}
+                        handleNewPasswordInput = {this.handleNewPasswordInput}
+                        newPasswordConfirmation = {this.state.newPasswordConfirmation}
+                        handleNewPasswordConfirmInput = {this.handleNewPasswordConfirmInput}
+                    />
 
 {/* ############ PASSWORD TAB ################ */}
                     <div className='tab-pane fade' id='nav-password' role='tabpanel' aria-labelledby='nav-password-tab'>
