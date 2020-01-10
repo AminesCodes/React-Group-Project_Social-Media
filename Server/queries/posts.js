@@ -86,9 +86,11 @@ const createPost = async (bodyObj) => {
       INSERT INTO posts (owner_id
         , caption
         , hashtag_str
+        , image_url
       ) VALUES ($/ownerId/
         , $/caption/
         , $/formattedHashtags/
+        , $/imageUrl/
       ) RETURNING *;
     `;
     return await db.one(postQuery, bodyObj);

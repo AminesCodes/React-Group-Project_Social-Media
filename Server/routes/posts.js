@@ -56,16 +56,6 @@ const {
 } = require('../queries/posts.js');
 
 
-// const prepareOffset = (req) => {
-//   if (!req.query.offset || !req.query.offset.trim()) {
-//     return 0;
-//   }
-//   if (isNaN(parseInt(req.query.offset.trim()))) {
-//     throw new Error("400__invalid offset parameter");
-//   }
-//   return parseInt(req.query.offset.trim());
-// }
-
 const processInput = (req, location) => {
   switch (location) {
     case "offset":
@@ -107,18 +97,24 @@ const processInput = (req, location) => {
         throw new Error("401__error: invalid password");
       }
       return req.body.password.trim();
-      // hashtags = "#" + hashtags.split(' ').join('#') + "#";
+    case "caption":
+      if (!req.body.caption || !req.body.caption.trim()) {
+        return ({
+            caption: null,
+            formattedHashtags: null
+        });
+      }
+      const caption = req.body.caption.trim();
+      let words = caption.replace(/[^a-zA-Z0-9 #]/g, "").split(' ');
+      let hashtags = words.filter(word => word[0] === '#');
+      const formattedHashtags = hashtags.length ? hashtags.join('') + "#" : null;
+      return ({
+          caption,
+          formattedHashtags
+      });
     default:
       throw new Error("500__error: you're not supposed to be here");
   }
-}
-
-const parseHashtags = (str) => {
-  if (!str || !str.trim()) {
-    return;
-  }
-  const words = str.trim().split(' ');
-  return words.filter(word => word[0] === '#').join(' ');
 }
 
 
@@ -210,8 +206,7 @@ router.get("/:postId", async (req, res, next) => {
 // createPost: create a single post
 router.post("/add", async (req, res, next) => {
     try {
-      const caption = req.body.caption.trim() || "";
-      const formattedHashtags = parseHashtags(caption) || "";
+      const { caption, formattedHashtags } = processInput(req, "caption");
       const posterId = processInput(req, "posterId");
       const password = processInput(req, "password");
       const authorized = await authenticateUser(posterId, password);
@@ -220,7 +215,7 @@ router.post("/add", async (req, res, next) => {
             ownerId: posterId,
             caption,
             formattedHashtags,
-            // avatarUrl: "hold"
+            imageUrl: "temp"
         });
         res.json({
             status: "success",
