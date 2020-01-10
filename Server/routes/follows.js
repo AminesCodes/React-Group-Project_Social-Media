@@ -1,219 +1,95 @@
 /*
-Server Follows Route | SUITAPP Web App
+Follows Route | Server | SUITAPP Web App
 GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
-// TODO Add check if users exist in create/deleteFollows Route
-
-
 /* IMPORTS */
+//    external
 const express = require('express');
     const router = express.Router();
     
-// local
-const { authenticateUser } = require('../queries/authentication.js'); // for authentication
-const { getUserById } = require('../queries/users.js'); // for checking if user exists after no results
+//    local
+const { handleError, getAuth, checkDoesUserExist } = require('../helpers/globalHelp.js');
+const { processInput, handleSuccess } = require('../helpers/followsHelp.js');
 const { 
   getFollows,
   getFollowers,
-  checkFollowExists,
   createFollow,
-  deleteFollow
+  deleteFollow,
+  checkFollowAlreadyExists
 } = require('../queries/follows.js');
 
 
-/* HELPERS */
-handleError = (err, req, res, next) => {
-  if (res.headersSent) {
-    console.log("err: res headers already exist. passing error to express");
-    return next(err);
-  }
-  let [ code, msg ] = err.message.split('__');
-  if (!msg) {
-    msg = code;
-  }
-  console.log(code[0] === '4' ? "(front)" : "(back)", msg);
-  if (code.length === 3 && !isNaN(code)) {
-    code = parseInt(code);
-    res.status(code);
-  }
-  res.json({
-      status: "fail",
-      message: msg,
-      payload: null
-  });
-};
-
-const handleSuccess = (res, path, data) => {
-  res.json({
-    status: "success",
-    message: `${path} data retrieved`,
-    payload: data.length === 1 ? data[0] : data
-  });
-}
-
-const checkIdParams = (req) => {
-  let problems = [];
-  if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-    problems.push("current user_id");
-  }
-  if (!req.params.targetUserId || isNaN(parseInt(req.params.targetUserId.trim()))) {
-    problems.push("target user_id");
-  }
-  const currentUser = parseInt(req.params.currUserId.trim()) || null;
-  const targetUser = parseInt(req.params.targetUserId.trim()) || null;
-  if (currentUser && targetUser && currentUser === targetUser) {
-    problems.push("duplicate");
-  }
-  // COMPILE MESSAGE
-  if (problems.length) {
-    problems.length == 2
-      ? problems = problems.join(' and ')
-      : problems = problems.join('');
-    return problems;
-  }
-  return false;
-}
-
-
 /* ROUTE HANDLES */
-// getFollows: get all others the user is following
+//    getFollows: get all others the user is following
 router.get("/:currUserId", async (req, res, next) => {
     try {
-      if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-        throw new Error("400__error: invalid currUserId parameter");
-      } else {
-        const currUserId = parseInt(req.params.currUserId.trim());
-        try {
-          const follows = await getFollows(currUserId);
-          if (follows.length === 0) {
-            const userExists = await getUserById(currUserId);
-            if (userExists === 'no match') {
-              throw new Error("400__error: user does not exist");
-            } else {
-              handleSuccess(res, 'follows', follows);
-            }
-          } else {
-            handleSuccess(res, 'follows', follows);
-          }
-        } catch (err) {
-          throw (err);
-        }
-      }
+      const currUserId = processInput(req, "currUserId");
+      const follows = await getFollows(currUserId);
+      await checkDoesUserExist(follows, currUserId);
+      handleSuccess(res, follows, currUserId, "follows");
     } catch (err) {
       handleError(err, req, res, next);
     }
 });
 
-// getFollowers: get all following current user
+//    getFollowers: get all following current user
 router.get("/followers/:currUserId", async (req, res, next) => {
     try {
-      if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-        throw new Error("400__error: invalid currUserId parameter");
-      } else {
-        const currUserId = parseInt(req.params.currUserId.trim());
-        try {
-          const followers = await getFollowers(currUserId);
-          if (followers.length === 0) {
-            const userExists = await getUserById(currUserId);
-            if (userExists === 'no match') {
-              throw new Error("400__error: user does not exist");
-            } else {
-              handleSuccess(res, 'followers', followers);
-            }
-          } else {
-            handleSuccess(res, 'followers', followers);
-          }
-        } catch (err) {
-          throw (err);
-        }
-      }
+      const currUserId = processInput(req, "currUserId");
+      const followers = await getFollowers(currUserId);
+      await checkDoesUserExist(followers, currUserId);
+      handleSuccess(res, followers, currUserId, "followers");
     } catch (err) {
       handleError(err, req, res, next);
     }
 });
 
-// createFollow: make new follow relationship
-router.post("/:currUserId/:targetUserId", async (req, res, next) => {
+//    createFollow: make new follow relationship
+router.post("/add/:currUserId/:targetUserId", async (req, res, next) => {
     try {
-      const paramsCheck = checkIdParams(req);
-      if (paramsCheck) {
-        throw new Error(`400__error: invalid ${paramsCheck} parameter(s)`);
+      const currUserId = processInput(req, "currUserId");
+      const targetUserId = processInput(req, "targetUserId");
+      if (currUserId === targetUserId) {
+        throw new Error("400__error: current and target user_ids are identical")
+      }
+      const password = processInput(req, "password");
+      const [ authorized ] = await Promise.all([
+        getAuth(currUserId, password),
+        checkFollowAlreadyExists(currUserId, targetUserId)
+      ]);
+      if (authorized) {
+        const response = await createFollow(currUserId, targetUserId);
+        res.json({
+            status: "success",
+            message: `follow ${currUserId} -> ${targetUserId} created`,
+            payload: response
+        });
       } else {
-        const currUserId = parseInt(req.params.currUserId.trim());
-        const targetUserId = parseInt(req.params.targetUserId.trim());
-        let password, authorized = null;
-        req.body.password
-          ? password = req.body.password.trim()
-          : false;
-        try {
-          authorized = await authenticateUser(currUserId, password);
-        } catch(err) {
-          throw new Error("500__error: problem during authentication query");
-        }
-        if (authorized) {
-          try {
-            const followExists = await checkFollowExists(currUserId, targetUserId);
-            if (followExists) {
-              throw new Error("403__error: follow already exists");
-            } else {
-              const response = await createFollow(currUserId, targetUserId);
-              res.json({
-                  status: "success",
-                  message: "follow created",
-                  payload: response
-              });
-            }
-          } catch (err) {
-            throw (err);
-          }
-        } else {
-          throw new Error("401__error: authentication issue");
-        }
+        throw new Error("401__error: authentication failure");
       }
     } catch (err) {
       handleError(err, req, res, next);
     }
 });
 
-// deleteFollow: delete follow relationship
+//    deleteFollow: delete follow relationship
 router.patch("/delete/:currUserId/:targetUserId", async (req, res, next) => {
     try {
-      const paramsCheck = checkIdParams(req);
-      if (paramsCheck) {
-        throw new Error(`400__error: invalid ${paramsCheck} parameter(s)`);
+      const currUserId = processInput(req, "currUserId");
+      const targetUserId = processInput(req, "targetUserId");
+      const password = processInput(req, "password");
+      const authorized = await getAuth(currUserId, password);
+      if (authorized) {
+        const response = await deleteFollow(currUserId, targetUserId);
+        res.json({
+            status: "success",
+            message: "follow deleted",
+            payload: response
+        });
       } else {
-        const currUserId = parseInt(req.params.currUserId.trim());
-        const targetUserId = parseInt(req.params.targetUserId.trim());
-        let password, authorized = null;
-        req.body.password
-          ? password = req.body.password.trim()
-          : false;
-        try {
-          authorized = await authenticateUser(currUserId, password);
-        } catch(err) {
-          throw new Error("500__error: problem during authentication query");
-        }
-        if (authorized) {
-          try {
-            const followExists = await checkFollowExists(currUserId, targetUserId);
-            if (!followExists) {
-              throw new Error("400__error: follow does not exist");
-            } else {
-              const response = await deleteFollow(currUserId, targetUserId);
-              res.json({
-                  status: "success",
-                  message: "follow deleted",
-                  payload: response
-              });
-            }
-          } catch (err) {
-            throw (err);
-          }
-        } else {
-          throw new Error("401__error: authentication issue");
-        }
+        throw new Error("401__error: authentication issue");
       }
     } catch (err) {
       handleError(err, req, res, next);
