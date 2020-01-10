@@ -1,130 +1,107 @@
 /*
-Server Posts Route | SUITAPP Web App
+Posts Route | Server | SUITAPP Web App
 GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
+// TODOS
+/* 
+- tweak upload method to preserve filename in server
+- edit post route (for captions [and indirectly hashtags] only)
+*/
+
+
 /* MODULE INITS */
+//    external
 const express = require('express');
-const router = express.Router();
-// Queries
+    const router = express.Router();
+const multer = require('multer');
+    const storage = multer.diskStorage({
+        destination: (request, file, cb) => {
+          cb(null, './public/images/posts');
+        },
+        filename: (request, file, cb) => {
+          const fileName = Date.now() + "-" + file.originalname;
+          cb(null, fileName);
+        }
+    });
+    const fileFilter = (request, file, cb) => {
+      if ((file.mimetype).slice(0, 6) === 'image/') {
+          cb(null, true);
+      } else {
+          cb(null, false);
+      }
+    };
+    const upload = multer({ 
+        storage: storage,
+        fileFilter: fileFilter,
+    });
+//    local
+const { handleError, getAuth, checkDoesUserExist } = require('../helpers/globalHelp.js');
+const { processInput } = require('../helpers/postsHelp.js');
 const { 
   getAllPosts,
   getAllPostsByUser,
-  getAllPostsByHashtag,
+  getAllPostsByHashtags,
   getOnePost,
   createPost,
   deletePost
-} = require('../queries/posts');
-
-
-/* HELPERS */
-const handleError = (req, res, error) => {
-  console.log(error);
-  res.status(500);
-  res.json({
-      status: "fail",
-      message: "error: backend issue",
-      payload: null
-  });
-}
-
-const parseHashtags = (str) => {
-  if (!str || !str.trim()) {
-    return;
-  }
-  const words = str.trim().split(' ');
-  return words.filter(word => word[0] === '#').join(' ');
-}
-
-
-/* MIDDLEWARE */
-const checkPostInputs = (req, res, next) => {
-  let problems = [];
-  if (!req.body.imageUrl || !req.body.imageUrl.trim()) {
-    problems.push("invalid image");
-  }
-  if (!req.body.ownerId || isNaN(parseInt(req.body.ownerId.trim()))) {
-    problems.push("invalid owner id");
-  }
-  // COMPILE MESSAGE
-  if (problems.length) {
-    if (problems.length >= 2) {
-      problems[problems.length - 1] = "and " + problems[problems.length - 1];
-      problems = problems.join(' ');
-    } else {
-      problems = problems.join('');
-    }
-    res.status(404);
-    res.json({
-        status: "fail",
-        message: `error: ${problems}. Please check your inputs and try again.`,
-        payload: null
-    });
-  } else {
-    next();
-  }
-}
+} = require('../queries/posts.js');
 
 
 /* ROUTE HANDLES */
-// allPosts: get global user posts
-router.get("/", async (req, res) => {
+//    getAllPosts: get global user posts. limit 10, optional offset
+router.get("/", async (req, res, next) => {
     try {
-      const allPosts = await getAllPosts();
+      const offset = processInput(req, "offset");
+      const allPosts = await getAllPosts(offset);
       res.json({
           status: "success",
           message: "all posts retrieved",
-          payload: allPosts
+          payload: allPosts.length === 1 ? allPosts[0] : allPosts
       });
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
-// allPostsByUser: get all of a single user's posts
-router.get("/userid/:id", async (req, res) => {
-    if (!req.params.id || isNaN(parseInt(req.params.id))) {
-      handleError(req, res, "invalid user_id parameter");
-    }
-    const userId = parseInt(req.params.id.trim());
+//    getAllPostsByUser: get all of a single user's posts. limit 10, optional offset
+router.get("/userid/:id", async (req, res, next) => {
     try {
-      const allPostsByUser = await getAllPostsByUser(userId);
+        const userId = processInput(req, "userId");
+        const offset = processInput(req, "offset");
+        const allPostsByUser = await getAllPostsByUser(userId, offset);
+        await checkDoesUserExist(allPostsByUser, userId);
+        res.json({
+            status: "success",
+            message: `all posts of user ${userId} retrieved`,
+            payload: allPostsByUser.length === 1 ? allPostsByUser[0] : allPostsByUser
+        });
+    } catch (err) {
+      handleError(err, req, res, next);
+    }
+});
+
+//    getAllPostsByHashtags: get all users' posts by hashtags. limit 10, optional offset
+router.get("/tags", async (req, res, next) => {
+    try {
+      const hashtags = processInput(req, "search hashtags");
+      const offset = processInput(req, "offset");
+      const allPostsByHashtags = await getAllPostsByHashtags(hashtags.formatted, offset);
       res.json({
           status: "success",
-          message: `all posts of user ${userId} retrieved`,
-          payload: allPostsByUser
+          message: `all posts with hashtags '${hashtags.parsed}' retrieved`,
+          payload: allPostsByHashtags
       });
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
-// allPostsByHashtag: get global user posts with specific hashtag
-router.get("/tag/:hashtag", async (req, res) => {
-    if (!req.params.hashtag) {
-      handleError(req, res, "empty hashtag parameter");
-    }
-    const hashtag = req.params.hashtag.trim();
+//    getOnePost: get one single post by post_id
+router.get("/:postId", async (req, res, next) => {
     try {
-      const allPostsByHashtag = await getAllPostsByHashtag(hashtag);
-      res.json({
-          status: "success",
-          message: `all posts with hashtag "${hashtag}" retrieved`,
-          payload: allPostsByHashtag
-      });
-    } catch (err) {
-      handleError(req, res, err);
-    }
-});
-
-// onePost: get one single post by post_id
-router.get("/:postId", async (req, res) => {
-    if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
-      handleError(req, res, "invalid post_id parameter");
-    }
-    const postId = parseInt(req.params.postId);
-    try {
+      const postId = processInput(req, "postId");
       const onePost = await getOnePost(postId);
       res.json({
           status: "success",
@@ -132,45 +109,67 @@ router.get("/:postId", async (req, res) => {
           payload: onePost
       });
     } catch (err) {
-      handleError(req, res, err);
+      if (err.message === "No data returned from the query.") {
+        res
+          .status(404)
+          .json({
+              status: "fail",
+              message: `no post with id ${req.params.postId} found`,
+              payload: null
+          });
+      } else {
+        handleError(err, req, res, next);
+      }
     }
 });
 
-// createPost: create a single post
-router.post("/", checkPostInputs, async (req, res) => {
-    const { imageUrl, caption, ownerId } = req.body;
-    const hashtagString = parseHashtags(caption) || "";
+//    createPost: create a single post
+router.post("/add", upload.single("posts"), async (req, res, next) => {
     try {
-      const response = await createPost({
-          imageUrl,
-          caption,
-          ownerId,
-          hashtagString
-      });
-      res.json({
-          status: "success",
-          message: "post created",
-          payload: response
-      });
+      const imageUrl = processInput(req, "imageUrl");
+      const { caption, formattedHashtags } = processInput(req, "caption");
+      const currUserId = processInput(req, "currUserId");
+      const password = processInput(req, "password");
+      const authorized = await getAuth(currUserId, password);
+      if (authorized) {
+        const response = await createPost({
+            ownerId: currUserId,
+            caption,
+            formattedHashtags,
+            imageUrl
+        });
+        res.json({
+            status: "success",
+            message: "new post created",
+            payload: response
+        });
+      } else {
+        throw new Error("401__error: authentication failure");
+      }
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
-// removePost: delete a post
-router.delete("/:postId", async (req, res) => {
-    if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
-      handleError(req, res, "invalid post_id parameter");
-    }
+//    deletePost: delete a post by post_id
+router.patch("/delete/:postId", async (req, res, next) => {
     try {
-      const response = await deletePost(parseInt(req.params.postId));
-      res.json({
-          status: "success",
-          message: `post ${postId} deleted`,
-          payload: response
-      });
+      const postId = processInput(req, "postId");
+      const currUserId = processInput(req, "currUserId");
+      const password = processInput(req, "password");
+      const authorized = await getAuth(currUserId, password);
+      if (authorized) {
+        const response = await deletePost(postId);
+        res.json({
+            status: "success",
+            message: `post ${postId} deleted`,
+            payload: response
+        });
+      } else {
+        throw new Error("401__error: authentication failure");
+      }
     } catch (err) {
-      handleError(req, res, err);
+      handleError(err, req, res, next);
     }
 });
 
