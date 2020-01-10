@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import ProfileTab from './ProfileTab'
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -37,6 +38,8 @@ export default class Account extends React.PureComponent {
         oldPassword: '',
         newPassword: '',
         newPasswordConfirmation: '',
+        followers: [],
+        following: [],
         waitingForData: true,
         profileTab: 'active',
         profileTabArea: 'true',
@@ -64,6 +67,19 @@ export default class Account extends React.PureComponent {
                     joiningDate: (data.payload.time_created).slice(0, 10),
                     waitingForData: false
                 })
+
+                const promises = []
+                promises.push(axios.get(`http://localhost:3129/follows/${data.payload.id}`)) // Followers
+                promises.push(axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`)) // Following
+
+
+                const response = await Promise.all(promises)
+                console.log(response)
+                this.setState({
+                    followers: response[0].data.payload,
+                    following: response[1].data.payload,
+                })
+
             } catch (err) {
                 this.setState({ waitingForData: false })
                 handleNetworkErrors(err)
@@ -237,6 +253,10 @@ export default class Account extends React.PureComponent {
         this.setState({password: event.target.value})
     }
 
+    handleBioInput = event => {
+        this.setState({bio: event.target.value})
+    }
+
     handleOldPasswordInput = event => {
         this.setState({oldPassword: event.target.value})
     }
@@ -284,7 +304,27 @@ export default class Account extends React.PureComponent {
                 </nav>
 
                 <div className='tab-content' id='nav-tabContent'>
-                    <div className='tab-pane fade show active' id='nav-profile' role='tabpanel' aria-labelledby='nav-profile-tab'>
+{/* ############ PROFILE TAB ################ */}
+                    <ProfileTab 
+                        handleFormSubmit = {this.handleFormSubmit}
+                        avatar = {this.state.avatar}
+                        email = {this.state.email}
+                        handleEmailInput = {this.handleEmailInput}
+                        username = {this.state.username}
+                        handleUsernameInput = {this.handleUsernameInput}
+                        firstName = {this.state.firstName}
+                        handleFirstNameInput = {this.handleFirstNameInput}
+                        lastName = {this.state.lastName}
+                        handleLastNameInput = {this.handleLastNameInput}
+                        handleFileInput = {this.handleFileInput}
+                        password = {this.state.password}
+                        bio = {this.state.bio}
+                        handleBioInput = {this.handleBioInput}
+                        handlePasswordInput = {this.handlePasswordInput}
+                        joiningDate = {this.state.joiningDate}
+                        handleDeleteAccount = {this.handleDeleteAccount}
+                    />
+                    {/* <div className='tab-pane fade show active' id='nav-profile' role='tabpanel' aria-labelledby='nav-profile-tab'>
                         <form className='form-row was-validated' onSubmit={this.handleFormSubmit}>
                             {avatarImage}
                             <div className='form-group col-sm-6'>
@@ -321,7 +361,30 @@ export default class Account extends React.PureComponent {
                                 <button className='d-lg-block' onClick={this.handleDeleteAccount}>Delete Account</button>
                             </div>
                         </form>
+                    </div> */}
+
+{/* ############ PASSWORD TAB ################ */}
+                    <div className='tab-pane fade' id='nav-password' role='tabpanel' aria-labelledby='nav-password-tab'>
+                        <form className='form-row was-validated' onSubmit={this.handlePasswordForm}>
+                            <div className='form-group col-sm-12'>
+                                <label htmlFor='oldPassword'>Old Password: </label>
+                                <input className='form-control' id='oldPassword' type='password' autoComplete='off' value={this.state.oldPassword} onChange={this.handleOldPasswordInput} required></input>
+                            </div>
+                            <div className='form-group col-sm-6'>
+                                <label htmlFor='newPassword'>New Password: </label>
+                                <input className='form-control' id='newPassword' type='password' autoComplete='off' value={this.state.newPassword} onChange={this.handleNewPasswordInput} required></input>
+                            </div>
+                            <div className='form-group col-sm-6'>
+                                <label htmlFor='newPasswordConfirmation'>Confirm Password: </label>
+                                <input className='form-control' id='newPasswordConfirmation' type='password' autoComplete='off' value={this.state.newPasswordConfirmation} onChange={this.handleNewPasswordConfirmInput} required></input>
+                            </div>
+                            <div className='d-sm-flex justify-content-between col-sm-12'>
+                                <button className='d-lg-block'>Update Information</button>
+                            </div>
+                        </form>
                     </div>
+
+{/* ############ PASSWORD TAB ################ */}
                     <div className='tab-pane fade' id='nav-password' role='tabpanel' aria-labelledby='nav-password-tab'>
                         <form className='form-row was-validated' onSubmit={this.handlePasswordForm}>
                             <div className='form-group col-sm-12'>
