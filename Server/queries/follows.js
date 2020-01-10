@@ -51,6 +51,9 @@ const createFollow = async (currentUserId, targetUserId) => {
     `;
     return await db.one(postQuery, { currentUserId, targetUserId });
   } catch(err) {
+    if (err.code === "23503") { // violation of foreign key constraint aka !userId
+      throw new Error("404__error: authentication failure");
+    }
     throw(err);
   }
 }
