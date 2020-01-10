@@ -52,7 +52,7 @@ const createFollow = async (currentUserId, targetUserId) => {
     return await db.one(postQuery, { currentUserId, targetUserId });
   } catch(err) {
     if (err.code === "23503") { // violation of foreign key constraint aka !userId
-      throw new Error("404__error: authentication failure");
+      throw new Error("404__error: at least one user_id does not exist");
     }
     throw(err);
   }
@@ -68,6 +68,9 @@ const deleteFollow = async (currentUserId, targetUserId) => {
     `;
     return await db.one(deleteQuery, { currentUserId, targetUserId });
   } catch(err) {
+    if (err.message === "No data returned from the query.") {
+      throw new Error(`404__error: target follow ${currentUserId} -> ${targetUserId} does not exist`);
+    }
     throw(err);
   }
 }
