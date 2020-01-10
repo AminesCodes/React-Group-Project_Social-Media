@@ -11,7 +11,8 @@ const db = require('../db');
 const getAllPosts = async (offset) => {
   try {
     const getQuery = `
-      SELECT username
+      SELECT posts.id
+        , username
         , posts.time_created
         , image_url
         , caption
@@ -29,7 +30,8 @@ const getAllPosts = async (offset) => {
 const getAllPostsByUser = async (numId, offset) => {
   try {
     const getQuery = `
-      SELECT time_created
+      SELECT id
+        , time_created
         , image_url
         , caption
         , hashtag_str
@@ -47,7 +49,8 @@ const getAllPostsByUser = async (numId, offset) => {
 const getAllPostsByHashtags = async (hashArr, offset) => {
   try {
     const getQuery = `
-      SELECT username
+      SELECT posts.id
+        , username
         , posts.time_created
         , image_url
         , caption
@@ -66,7 +69,8 @@ const getAllPostsByHashtags = async (hashArr, offset) => {
 const getOnePost = async (numId) => {
   try {
     const getQuery = `
-      SELECT username
+      SELECT posts.id
+        , username
         , posts.time_created
         , image_url
         , caption

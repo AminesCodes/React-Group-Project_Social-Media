@@ -4,20 +4,20 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
-// TODO
+// TODOS
 /* 
-- hashtag parse mulitple words => IN?
 - MULTER for image upload
 Just really quick (I didn't read all the code) but we're not getting the imageUrl through the request req.body
 We're supposed to use multer to upload the image (received within the request), once uploaded to the local folder Server/public/images/posts we can use multer params to make the image url that we will store in our database
 this also refers to line 141
 - add upload to createPOst
-
+- edit post route (for captions [and indirectly hashtags] only)
 */
 
 
 
 /* MODULE INITS */
+// external
 const express = require('express');
     const router = express.Router();
 const multer = require('multer');
@@ -41,7 +41,6 @@ const multer = require('multer');
         storage: storage,
         fileFilter: fileFilter,
     });
-
 // local
 const { handleError } = require('../helpers.js');
 const { authenticateUser } = require('../queries/authentication.js'); // for authentication
@@ -56,6 +55,7 @@ const {
 } = require('../queries/posts.js');
 
 
+/* HELPERS */
 const processInput = (req, location) => {
   switch (location) {
     case "offset":
@@ -66,11 +66,13 @@ const processInput = (req, location) => {
         throw new Error("400__error: invalid offset parameter");
       }
       return parseInt(req.query.offset.trim());
+
     case "userId":
       if (!req.params.id || !req.params.id.trim() || isNaN(parseInt(req.params.id))) {
         throw new Error("400__error: invalid user_id parameter");
       }
       return parseInt(req.params.id);
+
     case "search hashtags":
       if (!req.query.hashtags || !req.query.hashtags.trim()) {
         throw new Error("400__error: empty hashtags parameter");
@@ -82,21 +84,25 @@ const processInput = (req, location) => {
           parsed: hashtagsArr.join(', '),
           formatted: formattedHashtagsArr
       });
+
     case "postId":
       if (!req.params.postId || !req.params.postId.trim() || isNaN(parseInt(req.params.postId))) {
         throw new Error("400__error: invalid post_id parameter");
       }
       return parseInt(req.params.postId);
-    case "posterId":
+
+    case "currUserId":
       if (!req.body.currUserId || isNaN(parseInt(req.body.currUserId))) {
         throw new Error("400__error: invalid parsed current user id");
       }
       return parseInt(req.body.currUserId);
+
     case "password":
       if (!req.body.password || !req.body.password.trim()) {
         throw new Error("401__error: invalid password");
       }
       return req.body.password.trim();
+
     case "caption":
       if (!req.body.caption || !req.body.caption.trim()) {
         return ({
@@ -112,8 +118,9 @@ const processInput = (req, location) => {
           caption,
           formattedHashtags
       });
+
     default:
-      throw new Error("500__error: you're not supposed to be here");
+      throw new Error("500__error: you're not supposed to be here.");
   }
 }
 
@@ -123,7 +130,7 @@ const processInput = (req, location) => {
 
 /* ROUTE HANDLES */
 // getAllPosts: get global user posts
-// LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
+// limit 10, optional offset, for feed functionality
 router.get("/", async (req, res, next) => {
     try {
       const offset = processInput(req, "offset");
@@ -139,7 +146,7 @@ router.get("/", async (req, res, next) => {
 });
 
 // getAllPostsByUser: get all of a single user's posts
-// LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
+// limit 10, optional offset, for feed functionality
 router.get("/userid/:id", async (req, res, next) => {
     try {
         const userId = processInput(req, "userId");
@@ -162,7 +169,7 @@ router.get("/userid/:id", async (req, res, next) => {
 });
 
 // getAllPostsByHashtags: get global user posts with specific hashtag
-// LIMITED TO 10 with OPTIONAL OFFSET for feed functionality
+// limit 10, optional offset, for feed functionality
 router.get("/tags", async (req, res, next) => {
     try {
       const hashtags = processInput(req, "search hashtags");
@@ -207,12 +214,12 @@ router.get("/:postId", async (req, res, next) => {
 router.post("/add", async (req, res, next) => {
     try {
       const { caption, formattedHashtags } = processInput(req, "caption");
-      const posterId = processInput(req, "posterId");
+      const currUserId = processInput(req, "currUserId");
       const password = processInput(req, "password");
-      const authorized = await authenticateUser(posterId, password);
+      const authorized = await authenticateUser(currUserId, password);
       if (authorized) {
         const response = await createPost({
-            ownerId: posterId,
+            ownerId: currUserId,
             caption,
             formattedHashtags,
             imageUrl: "temp"
@@ -230,22 +237,27 @@ router.post("/add", async (req, res, next) => {
     }
 });
 
-// // deletePost: delete a post
-// router.delete("/:postId", async (req, res, next) => {
-//     if (!req.params.postId || isNaN(parseInt(req.params.postId))) {
-//       handleError(req, res, "invalid post_id parameter");
-//     }
-//     try {
-//       const response = await deletePost(parseInt(req.params.postId));
-//       res.json({
-//           status: "success",
-//           message: `post ${postId} deleted`,
-//           payload: response
-//       });
-//     } catch (err) {
-//       handleError(err, req, res, next);
-//     }
-// });
+// deletePost: delete a post
+router.patch("/delete/:postId", async (req, res, next) => {
+    try {
+      const postId = processInput(req, "postId");
+      const currUserId = processInput(req, "currUserId");
+      const password = processInput(req, "password");
+      const authorized = await authenticateUser(currUserId, password);
+      if (authorized) {
+        const response = await deletePost(postId);
+        res.json({
+            status: "success",
+            message: `post ${postId} deleted`,
+            payload: response
+        });
+      } else {
+        throw new Error("401__error: authentication failure");
+      }
+    } catch (err) {
+      handleError(err, req, res, next);
+    }
+});
 
 
 /* EXPORT */
