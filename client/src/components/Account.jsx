@@ -1,5 +1,8 @@
 import React from 'react'
+import { Link, Route, Switch } from 'react-router-dom';
 import axios from 'axios'
+
+
 import ProfileTab from './ProfileTab'
 import PasswordTab from './PasswordTab'
 import PersonalPosts from './PersonalPosts'
@@ -25,7 +28,7 @@ const handleNetworkErrors = err => {
 }
 
 export default class Account extends React.PureComponent {
-    state = {
+    initialState = {
         id: '',
         username: '',
         firstName: '',
@@ -50,6 +53,8 @@ export default class Account extends React.PureComponent {
         postsTab: '',
         postsTabArea: 'false'
     }
+
+    state = {... this.initialState}
 
     async componentDidMount() {
         const username = this.props.match.params.username
@@ -76,7 +81,7 @@ export default class Account extends React.PureComponent {
 
 
                 const response = await Promise.all(promises)
-                console.log(response)
+                console.log('RELATIONSHIP: ', response)
                 this.setState({
                     followers: response[0].data.payload,
                     following: response[1].data.payload,
@@ -277,11 +282,11 @@ export default class Account extends React.PureComponent {
     }
 
     handleDeleteAccount = async () => {
-        console.log(this.state)
         if (this.state.password && this.state.id) {
             try {
                 this.setState({ waitingForData: true })
                 await axios.patch(`http://localhost:3129/users/${this.state.id}/delete`, {password: this.state.password})
+                this.setState(this.initialState)
                 this.props.logout()
             } catch (err) {
                 this.setState({ waitingForData: false })
@@ -300,15 +305,18 @@ export default class Account extends React.PureComponent {
             <div className='spinner-border m-5' role='status'>
                 <span className='sr-only  text-center'>Loading...</span>
             </div>
-
+        // console.log(this.props)
         if (!this.state.waitingForData) {
             content = 
             <>
                 <nav>
                     <div className='nav nav-tabs' id='nav-tab' role='tablist'>
-                        <a className={`nav-item nav-link ${this.state.profileTab}`} id='nav-profile-tab' data-toggle='tab' href='#nav-profile' role='tab' aria-controls='nav-profile' aria-selected={this.state.profileTabArea} onClick={() => this.handleTabSelection(1)}>Profile</a>
+                        {/* <a className={`nav-item nav-link ${this.state.profileTab}`} id='nav-profile-tab' data-toggle='tab' href='#nav-profile' role='tab' aria-controls='nav-profile' aria-selected={this.state.profileTabArea} onClick={() => this.handleTabSelection(1)}>Profile</a>
                         <a className={`nav-item nav-link ${this.state.passwordTab}`} id='nav-password-tab' data-toggle='tab' href='#nav-password' role='tab' aria-controls='nav-password' aria-selected={this.state.passwordTabArea} onClick={() => this.handleTabSelection(2)}>Update Password</a>
-                        <a className={`nav-item nav-link ${this.state.postsTab}`}  id='nav-posts-tab' data-toggle='tab' href='#nav-posts' role='tab' aria-controls='nav-posts' aria-selected={this.state.postsTabArea} onClick={() => this.handleTabSelection(3)}>My Posts</a>
+                        <a className={`nav-item nav-link ${this.state.postsTab}`}  id='nav-posts-tab' data-toggle='tab' href='#nav-posts' role='tab' aria-controls='nav-posts' aria-selected={this.state.postsTabArea} onClick={() => this.handleTabSelection(3)}>My Posts</a> */}
+                        <Link className={`nav-item nav-link ${this.state.profileTab}`} id='nav-profile-tab' data-toggle='tab' to='/1' role='tab' aria-controls='nav-profile' aria-selected={this.state.profileTabArea} onClick={() => this.handleTabSelection(1)}>Profile</Link>
+                        <Link className={`nav-item nav-link ${this.state.passwordTab}`} id='nav-password-tab' data-toggle='tab' to='#nav-password' role='tab' aria-controls='nav-password' aria-selected={this.state.passwordTabArea} onClick={() => this.handleTabSelection(2)}>Update Password</Link>
+                        <Link className={`nav-item nav-link ${this.state.postsTab}`}  id='nav-posts-tab' data-toggle='tab' to='#nav-posts' role='tab' aria-controls='nav-posts' aria-selected={this.state.postsTabArea} onClick={() => this.handleTabSelection(3)}>My Posts</Link>
                     </div>
                 </nav>
 
@@ -350,6 +358,7 @@ export default class Account extends React.PureComponent {
 {/* ############ POSTS TAB ################ */}
                     <PersonalPosts
                         active = {this.state.postsTab}
+                        userId = {this.state.id}
                     />
                 </div>
             </>

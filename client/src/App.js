@@ -31,22 +31,22 @@ export default class App extends React.PureComponent {
   render() {
     const pw = sessionStorage.getItem('Parent-Ing_App_KS')
     const uId = sessionStorage.getItem('Parent-Ing_App_UId')
-    const un = sessionStorage.getItem('Parent-Ing_App_Un')
+    const username = sessionStorage.getItem('Parent-Ing_App_Un')
 
     let pageContent = 
       <>
         <div className="jumbotron bg-appColor text-white">
           <div className="container-sm mx-auto">
             <img className='img-fluid d-sm-block mx-auto' src={Logo} alt='app logo'/>
-            <h1 className='text-center'>My App</h1>
+            <h1 className='text-center'>SuitApp</h1>
           </div>
           <LoginSigninForm formSubmit={this.handleFormSubmit}/>
         </div>
         <Intro className='container-sm'/>
       </>
 
-    if (pw && uId && un) {
-      pageContent = <Routing logout={this.handleLogOut}/>
+    if (pw && uId) {
+      pageContent = <Routing user={this.state.loggedUser} username={username} logout={this.handleLogOut}/>
     }
 
     return (
