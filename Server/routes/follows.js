@@ -8,12 +8,14 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 /* IMPORTS */
+//    external
 const express = require('express');
     const router = express.Router();
     
-// local
+//    local
+const { handleError, checkDoesUserExist } = require('../helpers/globalHelp.js');
+const { processInput, handleSuccess } = require('../helpers/followsHelp.js');
 const { authenticateUser } = require('../queries/authentication.js'); // for authentication
-const { getUserById } = require('../queries/users.js'); // for checking if user exists after no results
 const { 
   getFollows,
   getFollowers,
@@ -24,83 +26,38 @@ const {
 
 
 /* HELPERS */
-handleError = (err, req, res, next) => {
-  if (res.headersSent) {
-    console.log("err: res headers already exist. passing error to express");
-    return next(err);
-  }
-  let [ code, msg ] = err.message.split('__');
-  if (!msg) {
-    msg = code;
-  }
-  console.log(code[0] === '4' ? "(front)" : "(back)", msg);
-  if (code.length === 3 && !isNaN(code)) {
-    code = parseInt(code);
-    res.status(code);
-  }
-  res.json({
-      status: "fail",
-      message: msg,
-      payload: null
-  });
-};
-
-const handleSuccess = (res, path, data) => {
-  res.json({
-    status: "success",
-    message: `${path} data retrieved`,
-    payload: data.length === 1 ? data[0] : data
-  });
-}
-
-const checkIdParams = (req) => {
-  let problems = [];
-  if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-    problems.push("current user_id");
-  }
-  if (!req.params.targetUserId || isNaN(parseInt(req.params.targetUserId.trim()))) {
-    problems.push("target user_id");
-  }
-  const currentUser = parseInt(req.params.currUserId.trim()) || null;
-  const targetUser = parseInt(req.params.targetUserId.trim()) || null;
-  if (currentUser && targetUser && currentUser === targetUser) {
-    problems.push("duplicate");
-  }
-  // COMPILE MESSAGE
-  if (problems.length) {
-    problems.length == 2
-      ? problems = problems.join(' and ')
-      : problems = problems.join('');
-    return problems;
-  }
-  return false;
-}
+// const checkIdParams = (req) => {
+//   let problems = [];
+//   if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
+//     problems.push("current user_id");
+//   }
+//   if (!req.params.targetUserId || isNaN(parseInt(req.params.targetUserId.trim()))) {
+//     problems.push("target user_id");
+//   }
+//   const currentUser = parseInt(req.params.currUserId.trim()) || null;
+//   const targetUser = parseInt(req.params.targetUserId.trim()) || null;
+//   if (currentUser && targetUser && currentUser === targetUser) {
+//     problems.push("duplicate");
+//   }
+//   // COMPILE MESSAGE
+//   if (problems.length) {
+//     problems.length == 2
+//       ? problems = problems.join(' and ')
+//       : problems = problems.join('');
+//     return problems;
+//   }
+//   return false;
+// }
 
 
 /* ROUTE HANDLES */
 // getFollows: get all others the user is following
 router.get("/:currUserId", async (req, res, next) => {
     try {
-      if (!req.params.currUserId || isNaN(parseInt(req.params.currUserId.trim()))) {
-        throw new Error("400__error: invalid currUserId parameter");
-      } else {
-        const currUserId = parseInt(req.params.currUserId.trim());
-        try {
-          const follows = await getFollows(currUserId);
-          if (follows.length === 0) {
-            const userExists = await getUserById(currUserId);
-            if (userExists === 'no match') {
-              throw new Error("400__error: user does not exist");
-            } else {
-              handleSuccess(res, 'follows', follows);
-            }
-          } else {
-            handleSuccess(res, 'follows', follows);
-          }
-        } catch (err) {
-          throw (err);
-        }
-      }
+      const currUserId = processInput(req, "currUserId");
+      const follows = await getFollows(currUserId);
+      await checkDoesUserExist(follows, currUserId);
+      handleSuccess(res, follows, currUserId, "follows");
     } catch (err) {
       handleError(err, req, res, next);
     }
@@ -117,13 +74,13 @@ router.get("/followers/:currUserId", async (req, res, next) => {
           const followers = await getFollowers(currUserId);
           if (followers.length === 0) {
             const userExists = await getUserById(currUserId);
-            if (userExists === 'no match') {
+            if (userExists === "no match") {
               throw new Error("400__error: user does not exist");
             } else {
-              handleSuccess(res, 'followers', followers);
+              handleSuccess(res, "followers", followers);
             }
           } else {
-            handleSuccess(res, 'followers', followers);
+            handleSuccess(res, "followers", followers);
           }
         } catch (err) {
           throw (err);
