@@ -6,14 +6,14 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 // TODOS
 /* 
-- MULTER for image upload
-Just really quick (I didn't read all the code) but we're not getting the imageUrl through the request req.body
-We're supposed to use multer to upload the image (received within the request), once uploaded to the local folder Server/public/images/posts we can use multer params to make the image url that we will store in our database
-this also refers to line 141
-- add upload to createPOst
+- test upload to createPOst
+    Just really quick (I didn't read all the code) but we're not getting the imageUrl 
+    through the request req.body. We're supposed to use multer to upload the image 
+    (received within the request), once uploaded to the local folder Server/public/images/posts 
+    we can use multer params to make the image url that we will store in our database
+    this also refers to line 141
 - edit post route (for captions [and indirectly hashtags] only)
 */
-
 
 
 /* MODULE INITS */
@@ -103,6 +103,12 @@ const processInput = (req, location) => {
       }
       return req.body.password.trim();
 
+    case "imageUrl":
+      if (!req.file) {
+        throw new Error("400__error: missing image file");
+      }
+      return "http://" + req.headers.host + "/images/avatars/" + req.file.filename;
+
     case "caption":
       if (!req.body.caption || !req.body.caption.trim()) {
         return ({
@@ -125,12 +131,8 @@ const processInput = (req, location) => {
 }
 
 
-/* MIDDLEWARE */
-
-
 /* ROUTE HANDLES */
-// getAllPosts: get global user posts
-// limit 10, optional offset, for feed functionality
+// getAllPosts: get global user posts. limit 10, optional offset
 router.get("/", async (req, res, next) => {
     try {
       const offset = processInput(req, "offset");
@@ -145,8 +147,7 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-// getAllPostsByUser: get all of a single user's posts
-// limit 10, optional offset, for feed functionality
+// getAllPostsByUser: get all of a single user's posts. limit 10, optional offset
 router.get("/userid/:id", async (req, res, next) => {
     try {
         const userId = processInput(req, "userId");
@@ -168,8 +169,7 @@ router.get("/userid/:id", async (req, res, next) => {
     }
 });
 
-// getAllPostsByHashtags: get global user posts with specific hashtag
-// limit 10, optional offset, for feed functionality
+// getAllPostsByHashtags: get all users' posts by hashtags. limit 10, optional offset
 router.get("/tags", async (req, res, next) => {
     try {
       const hashtags = processInput(req, "search hashtags");
@@ -211,8 +211,9 @@ router.get("/:postId", async (req, res, next) => {
 });
 
 // createPost: create a single post
-router.post("/add", async (req, res, next) => {
+router.post("/add", upload.single("posts"), async (req, res, next) => {
     try {
+      const imageUrl = processInput(req, "imageUrl");
       const { caption, formattedHashtags } = processInput(req, "caption");
       const currUserId = processInput(req, "currUserId");
       const password = processInput(req, "password");
@@ -222,7 +223,7 @@ router.post("/add", async (req, res, next) => {
             ownerId: currUserId,
             caption,
             formattedHashtags,
-            imageUrl: "temp"
+            imageUrl
         });
         res.json({
             status: "success",
@@ -237,7 +238,7 @@ router.post("/add", async (req, res, next) => {
     }
 });
 
-// deletePost: delete a post
+// deletePost: delete a post by post_id
 router.patch("/delete/:postId", async (req, res, next) => {
     try {
       const postId = processInput(req, "postId");
