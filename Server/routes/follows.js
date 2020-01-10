@@ -1,10 +1,7 @@
 /*
-Server Follows Route | SUITAPP Web App
+Follows Route | Server | SUITAPP Web App
 GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
-
-
-// TODO Add check if users exist in create/deleteFollows Route
 
 
 /* IMPORTS */
@@ -20,7 +17,7 @@ const {
   getFollowers,
   createFollow,
   deleteFollow,
-  checkDoesFollowExist
+  checkFollowAlreadyExists
 } = require('../queries/follows.js');
 
 
@@ -54,10 +51,13 @@ router.post("/add/:currUserId/:targetUserId", async (req, res, next) => {
     try {
       const currUserId = processInput(req, "currUserId");
       const targetUserId = processInput(req, "targetUserId");
+      if (currUserId === targetUserId) {
+        throw new Error("400__error: current and target user_ids are identical")
+      }
       const password = processInput(req, "password");
       const [ authorized ] = await Promise.all([
         getAuth(currUserId, password),
-        checkDoesFollowExist(currUserId, targetUserId)
+        checkFollowAlreadyExists(currUserId, targetUserId)
       ]);
       if (authorized) {
         const response = await createFollow(currUserId, targetUserId);
@@ -77,40 +77,19 @@ router.post("/add/:currUserId/:targetUserId", async (req, res, next) => {
 //    deleteFollow: delete follow relationship
 router.patch("/delete/:currUserId/:targetUserId", async (req, res, next) => {
     try {
-      const paramsCheck = checkIdParams(req);
-      if (paramsCheck) {
-        throw new Error(`400__error: invalid ${paramsCheck} parameter(s)`);
+      const currUserId = processInput(req, "currUserId");
+      const targetUserId = processInput(req, "targetUserId");
+      const password = processInput(req, "password");
+      const authorized = await getAuth(currUserId, password);
+      if (authorized) {
+        const response = await deleteFollow(currUserId, targetUserId);
+        res.json({
+            status: "success",
+            message: "follow deleted",
+            payload: response
+        });
       } else {
-        const currUserId = parseInt(req.params.currUserId.trim());
-        const targetUserId = parseInt(req.params.targetUserId.trim());
-        let password, authorized = null;
-        req.body.password
-          ? password = req.body.password.trim()
-          : false;
-        try {
-          authorized = await authenticateUser(currUserId, password);
-        } catch(err) {
-          throw new Error("500__error: problem during authentication query");
-        }
-        if (authorized) {
-          try {
-            const followExists = await checkDoesFollowExist(currUserId, targetUserId);
-            if (!followExists) {
-              throw new Error("400__error: follow does not exist");
-            } else {
-              const response = await deleteFollow(currUserId, targetUserId);
-              res.json({
-                  status: "success",
-                  message: "follow deleted",
-                  payload: response
-              });
-            }
-          } catch (err) {
-            throw (err);
-          }
-        } else {
-          throw new Error("401__error: authentication issue");
-        }
+        throw new Error("401__error: authentication issue");
       }
     } catch (err) {
       handleError(err, req, res, next);

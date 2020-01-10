@@ -1,5 +1,5 @@
 /*
-Server Follows Route Queries | SUITAPP Web App
+Follows Route Queries | Server | SUITAPP Web App
 GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
@@ -75,7 +75,7 @@ const deleteFollow = async (currentUserId, targetUserId) => {
   }
 }
 
-const checkDoesFollowExist = async (currentUserId, targetUserId) => {
+const checkFollowAlreadyExists = async (currentUserId, targetUserId) => {
   try {
     const getQuery = `
       SELECT id
@@ -102,5 +102,5 @@ module.exports = {
   getFollowers,
   createFollow,
   deleteFollow,
-  checkDoesFollowExist
+  checkFollowAlreadyExists
 }
