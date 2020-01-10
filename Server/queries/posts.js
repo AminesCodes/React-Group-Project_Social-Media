@@ -1,5 +1,5 @@
 /*
-Server Posts Route Queries | SUITAPP Web App
+Posts Route Queries | Server | SUITAPP Web App
 GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 

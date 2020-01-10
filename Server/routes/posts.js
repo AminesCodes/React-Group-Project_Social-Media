@@ -1,23 +1,18 @@
 /*
-Server Posts Route | SUITAPP Web App
+Posts Route | Server | SUITAPP Web App
 GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
 // TODOS
 /* 
-- test upload to createPOst
-    Just really quick (I didn't read all the code) but we're not getting the imageUrl 
-    through the request req.body. We're supposed to use multer to upload the image 
-    (received within the request), once uploaded to the local folder Server/public/images/posts 
-    we can use multer params to make the image url that we will store in our database
-    this also refers to line 141
+- tweak upload method to preserve filename in server
 - edit post route (for captions [and indirectly hashtags] only)
 */
 
 
 /* MODULE INITS */
-// external
+//    external
 const express = require('express');
     const router = express.Router();
 const multer = require('multer');
@@ -41,10 +36,9 @@ const multer = require('multer');
         storage: storage,
         fileFilter: fileFilter,
     });
-// local
-const { handleError } = require('../helpers.js');
-const { authenticateUser } = require('../queries/authentication.js'); // for authentication
-const { getUserById } = require('../queries/users.js'); // for checking if user exists after no results
+//    local
+const { handleError, getAuth, checkDoesUserExist } = require('../helpers/globalHelp.js');
+const { processInput } = require('../helpers/postsHelp.js');
 const { 
   getAllPosts,
   getAllPostsByUser,
@@ -55,84 +49,8 @@ const {
 } = require('../queries/posts.js');
 
 
-/* HELPERS */
-const processInput = (req, location) => {
-  switch (location) {
-    case "offset":
-      if (!req.query.offset || !req.query.offset.trim()) {
-        return 0;
-      }
-      if (isNaN(parseInt(req.query.offset.trim()))) {
-        throw new Error("400__error: invalid offset parameter");
-      }
-      return parseInt(req.query.offset.trim());
-
-    case "userId":
-      if (!req.params.id || !req.params.id.trim() || isNaN(parseInt(req.params.id))) {
-        throw new Error("400__error: invalid user_id parameter");
-      }
-      return parseInt(req.params.id);
-
-    case "search hashtags":
-      if (!req.query.hashtags || !req.query.hashtags.trim()) {
-        throw new Error("400__error: empty hashtags parameter");
-      }
-      const hashtagsInput = req.query.hashtags.trim();
-      let hashtagsArr = hashtagsInput.replace(/[^a-zA-Z0-9 ]/g, "").split(" ");
-      const formattedHashtagsArr = hashtagsArr.map(tag => `%#${tag}#%`);
-      return ({
-          parsed: hashtagsArr.join(', '),
-          formatted: formattedHashtagsArr
-      });
-
-    case "postId":
-      if (!req.params.postId || !req.params.postId.trim() || isNaN(parseInt(req.params.postId))) {
-        throw new Error("400__error: invalid post_id parameter");
-      }
-      return parseInt(req.params.postId);
-
-    case "currUserId":
-      if (!req.body.currUserId || isNaN(parseInt(req.body.currUserId))) {
-        throw new Error("400__error: invalid parsed current user id");
-      }
-      return parseInt(req.body.currUserId);
-
-    case "password":
-      if (!req.body.password || !req.body.password.trim()) {
-        throw new Error("401__error: invalid password");
-      }
-      return req.body.password.trim();
-
-    case "imageUrl":
-      if (!req.file) {
-        throw new Error("400__error: missing image file");
-      }
-      return "http://" + req.headers.host + "/images/avatars/" + req.file.filename;
-
-    case "caption":
-      if (!req.body.caption || !req.body.caption.trim()) {
-        return ({
-            caption: null,
-            formattedHashtags: null
-        });
-      }
-      const caption = req.body.caption.trim();
-      let words = caption.replace(/[^a-zA-Z0-9 #]/g, "").split(' ');
-      let hashtags = words.filter(word => word[0] === '#');
-      const formattedHashtags = hashtags.length ? hashtags.join('') + "#" : null;
-      return ({
-          caption,
-          formattedHashtags
-      });
-
-    default:
-      throw new Error("500__error: you're not supposed to be here.");
-  }
-}
-
-
 /* ROUTE HANDLES */
-// getAllPosts: get global user posts. limit 10, optional offset
+//    getAllPosts: get global user posts. limit 10, optional offset
 router.get("/", async (req, res, next) => {
     try {
       const offset = processInput(req, "offset");
@@ -147,18 +65,13 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-// getAllPostsByUser: get all of a single user's posts. limit 10, optional offset
+//    getAllPostsByUser: get all of a single user's posts. limit 10, optional offset
 router.get("/userid/:id", async (req, res, next) => {
     try {
         const userId = processInput(req, "userId");
         const offset = processInput(req, "offset");
         const allPostsByUser = await getAllPostsByUser(userId, offset);
-        if (allPostsByUser.length === 0) {
-          const doesUserExist = await getUserById(userId);
-          if (doesUserExist === 'no match') {
-            throw new Error("400__error: user does not exist");
-          }
-        }
+        await checkDoesUserExist(allPostsByUser, userId);
         res.json({
             status: "success",
             message: `all posts of user ${userId} retrieved`,
@@ -169,7 +82,7 @@ router.get("/userid/:id", async (req, res, next) => {
     }
 });
 
-// getAllPostsByHashtags: get all users' posts by hashtags. limit 10, optional offset
+//    getAllPostsByHashtags: get all users' posts by hashtags. limit 10, optional offset
 router.get("/tags", async (req, res, next) => {
     try {
       const hashtags = processInput(req, "search hashtags");
@@ -185,7 +98,7 @@ router.get("/tags", async (req, res, next) => {
     }
 });
 
-// getOnePost: get one single post by post_id
+//    getOnePost: get one single post by post_id
 router.get("/:postId", async (req, res, next) => {
     try {
       const postId = processInput(req, "postId");
@@ -210,14 +123,14 @@ router.get("/:postId", async (req, res, next) => {
     }
 });
 
-// createPost: create a single post
+//    createPost: create a single post
 router.post("/add", upload.single("posts"), async (req, res, next) => {
     try {
       const imageUrl = processInput(req, "imageUrl");
       const { caption, formattedHashtags } = processInput(req, "caption");
       const currUserId = processInput(req, "currUserId");
       const password = processInput(req, "password");
-      const authorized = await authenticateUser(currUserId, password);
+      const authorized = await getAuth(currUserId, password);
       if (authorized) {
         const response = await createPost({
             ownerId: currUserId,
@@ -238,13 +151,13 @@ router.post("/add", upload.single("posts"), async (req, res, next) => {
     }
 });
 
-// deletePost: delete a post by post_id
+//    deletePost: delete a post by post_id
 router.patch("/delete/:postId", async (req, res, next) => {
     try {
       const postId = processInput(req, "postId");
       const currUserId = processInput(req, "currUserId");
       const password = processInput(req, "password");
-      const authorized = await authenticateUser(currUserId, password);
+      const authorized = await getAuth(currUserId, password);
       if (authorized) {
         const response = await deletePost(postId);
         res.json({
