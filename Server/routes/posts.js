@@ -58,7 +58,7 @@ router.get("/", async (req, res, next) => {
       res.json({
           status: "success",
           message: "all posts retrieved",
-          payload: allPosts.length === 1 ? allPosts[0] : allPosts
+          payload: allPosts
       });
     } catch (err) {
       handleError(err, req, res, next);
@@ -68,15 +68,15 @@ router.get("/", async (req, res, next) => {
 //    getAllPostsByUser: get all of a single user's posts. limit 10, optional offset
 router.get("/userid/:id", async (req, res, next) => {
     try {
-        const userId = processInput(req, "userId");
-        const offset = processInput(req, "offset");
-        const allPostsByUser = await getAllPostsByUser(userId, offset);
-        await checkDoesUserExist(allPostsByUser, userId);
-        res.json({
-            status: "success",
-            message: `all posts of user ${userId} retrieved`,
-            payload: allPostsByUser.length === 1 ? allPostsByUser[0] : allPostsByUser
-        });
+      const userId = processInput(req, "userId");
+      const offset = processInput(req, "offset");
+      const allPostsByUser = await getAllPostsByUser(userId, offset);
+      await checkDoesUserExist(allPostsByUser, userId);
+      res.json({
+          status: "success",
+          message: `all posts of user ${userId} retrieved`,
+          payload: allPostsByUser
+      });
     } catch (err) {
       handleError(err, req, res, next);
     }
