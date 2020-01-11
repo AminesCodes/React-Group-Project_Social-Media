@@ -44,8 +44,6 @@ export default class Account extends React.PureComponent {
         oldPassword: '',
         newPassword: '',
         newPasswordConfirmation: '',
-        followers: [],
-        following: [],
         waitingForData: true,
         profileTab: 'active',
         passwordTab: '',
@@ -53,7 +51,7 @@ export default class Account extends React.PureComponent {
         followTab: '',
     }
 
-    state = {... this.initialState}
+    state = {...this.initialState}
 
     async componentDidMount() {
         const username = this.props.match.params.username
@@ -73,18 +71,6 @@ export default class Account extends React.PureComponent {
                     joiningDate: (data.payload.time_created).slice(0, 10),
                     waitingForData: false
                 })
-
-                const promises = []
-                promises.push(axios.get(`http://localhost:3129/follows/${data.payload.id}`)) // Followers
-                promises.push(axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`)) // Following
-
-
-                const response = await Promise.all(promises)
-                this.setState({
-                    followers: response[0].data.payload,
-                    following: response[1].data.payload,
-                })
-
             } catch (err) {
                 this.setState({ waitingForData: false })
                 handleNetworkErrors(err)
@@ -324,8 +310,7 @@ export default class Account extends React.PureComponent {
                 <Switch>
                     <Route exact path={`/:username/account/`} render={props => (<ProfileTab 
                         active = {this.state.profileTab}
-                        followers = {this.state.followers}
-                        following = {this.state.following}
+                        userId = {this.state.id}
                         handleTabSelection = {this.handleTabSelection}
                         handleFormSubmit = {this.handleFormSubmit}
                         avatar = {this.state.avatar}
