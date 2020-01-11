@@ -40,10 +40,10 @@ export default class Routing extends React.PureComponent {
                                 <Link className='nav-link mb-0 h6 text-dark' to='/'>Feed</Link>
                             </li>
                             <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-dark' to={`/${this.props.username}/account`}>Account</Link>
+                                <Link className='nav-link mb-0 h6 text-dark' to={`/${this.props.username}/following`}>Following</Link>
                             </li>
                             <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-dark' to={`/${this.props.username}/following`}>Following</Link>
+                                <Link className='nav-link mb-0 h6 text-dark' to={`/${this.props.username}/account`}>Account</Link>
                             </li>
                             <li className='navbar-nav float-right'>
                                 <div className='btn-nav float-right'>
@@ -57,8 +57,8 @@ export default class Routing extends React.PureComponent {
                 <Switch>
                     <Route exact path='/' component={Feed} />
                     <Route path={`/undefined/:page`} component= {ErrorNotFound} />
-                    <Route path={`/:username/account`} render={props => (<Account username={this.props.username} logout={this.props.logout} {...props} /> )} />
                     <Route path={`/:username/following`} render={props => (<Feed username={this.props.username} {...props} /> )} />
+                    <Route path={`/:username/account`} render={props => (<Account username={this.props.username} logout={this.props.logout} {...props} /> )} />
                     <Route exact component= {ErrorNotFound} />
                 </Switch>
             </>

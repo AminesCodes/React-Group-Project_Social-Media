@@ -10,7 +10,11 @@ export default class ProfileTab extends React.PureComponent {
     render() {
         return (
             <div className={`tab-pane fade show ${this.props.active}`}>
-                <Avatar avatar={this.props.avatar} />
+                <div className='d-sm-flex justify-content-between col-sm-12'>
+                    <Avatar avatar={this.props.avatar} className='d-lg-block'/>
+                    <p className='d-lg-block'>Followers:<span className="badge badge-light"> {this.props.followers.length}</span></p>
+                    <p className='d-lg-block'>Following:<span className="badge badge-light"> {this.props.following.length}</span></p>
+                </div>
                 <form className='form-row was-validated' onSubmit={e => this.props.handleFormSubmit(e)}>
                     <div className='form-group col-sm-6'>
                         <label htmlFor='email'>Email address: </label>
@@ -42,10 +46,11 @@ export default class ProfileTab extends React.PureComponent {
                         <textarea className='form-control' id='bio' rows='5' value={this.props.bio} onChange={e =>this.props.handleBioInput(e)}></textarea>
                     </div>
                     <div className='d-sm-flex justify-content-between col-sm-12'>
-                        <button className='d-lg-block'>Update Information</button>
+                        <p className='d-lg-block'>User since: {this.props.joiningDate}</p>
+                        <button className='btn btn-primary d-lg-block'>Update Information</button>
                     </div>
                 </form>
-                <button className='d-lg-block' onClick={e => this.props.handleDeleteAccount(e)}>Delete Account</button>
+                <button className='btn btn-danger d-lg-block' onClick={e => this.props.handleDeleteAccount(e)}>Delete Account</button>
             </div>
         )
     }

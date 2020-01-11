@@ -6,6 +6,7 @@ import axios from 'axios'
 import ProfileTab from './ProfileTab'
 import PasswordTab from './PasswordTab'
 import PersonalPosts from './PersonalPosts'
+import Relationships from './Relationships'
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -78,7 +79,6 @@ export default class Account extends React.PureComponent {
 
 
                 const response = await Promise.all(promises)
-                console.log('RELATIONSHIP: ', response)
                 this.setState({
                     followers: response[0].data.payload,
                     following: response[1].data.payload,
@@ -138,7 +138,6 @@ export default class Account extends React.PureComponent {
                 }
 
                 const { data } = await axios.put(`http://localhost:3129/users/${id}`, userInfo)
-                console.log(data.payload)
                 this.setState({
                     username: data.payload.username,
                     firstName: data.payload.firstname,
@@ -210,7 +209,6 @@ export default class Account extends React.PureComponent {
         //         }
 
         //         const { data } = await axios.patch(`http://localhost:3129/users/${id}/password`, updateData)
-        //         console.log(data)
         //         if (data.status === 'success') {
         //             sessionStorage.setItem('Parent-Ing_App_KS', newPassword);
         //             toast.success('Password updated successfully ',
@@ -289,24 +287,27 @@ export default class Account extends React.PureComponent {
 
     // ############ RENDER ############
     render() {
-        console.log(this.props)
+        console.log('FOLLOWERS: ', this.state.followers)
+        console.log('FOLLOWING: ', this.state.following)
         let content =
             <div className='spinner-border m-5' role='status'>
                 <span className='sr-only  text-center'>Loading...</span>
             </div>
-        // console.log(this.props)
         if (!this.state.waitingForData) {
             content = 
             <>
                 <ul className="nav nav-tabs">
                     <li className="nav-item">
-                      <Link className={`nav-link ${this.state.profileTab}`} to={`${this.props.match.url}`} onClick={() => this.handleTabSelection(1)}>Profile</Link>
+                      <Link className={`nav-link ${this.state.profileTab}`} to={`${this.props.match.url}`} >Profile</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className={`nav-link ${this.state.passwordTab}`} to={`${this.props.match.url}/password`} onClick={() => this.handleTabSelection(2)}>Update Password</Link>
+                      <Link className={`nav-link ${this.state.passwordTab}`} to={`${this.props.match.url}/password`} >Update Password</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className={`nav-link ${this.state.postsTab}`} to={`${this.props.match.url}/posts`} onClick={() => this.handleTabSelection(3)}>My Posts</Link>
+                      <Link className={`nav-link ${this.state.postsTab}`} to={`${this.props.match.url}/posts`} >My Posts</Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className={`nav-link ${this.state.postsTab}`} to={`${this.props.match.url}/relationships`} >Follows</Link>
                     </li>
                 </ul>
 
@@ -314,6 +315,8 @@ export default class Account extends React.PureComponent {
                 <Switch>
                     <Route exact path={`/:username/account/`} render={props => (<ProfileTab 
                         active = {this.state.profileTab}
+                        followers = {this.state.followers}
+                        following = {this.state.following}
                         handleTabSelection = {this.handleTabSelection}
                         handleFormSubmit = {this.handleFormSubmit}
                         avatar = {this.state.avatar}
@@ -348,6 +351,14 @@ export default class Account extends React.PureComponent {
                     />
                     <Route path={`/:username/account/posts`} render={props => (<PersonalPosts
                         active = {this.state.postsTab}
+                        handleTabSelection = {this.handleTabSelection}
+                        userId = {this.state.id}
+                        {...props} /> )} 
+                    />
+                    <Route path={`/:username/account/relationships`} render={props => (<Relationships
+                        active = {this.state.postsTab}
+                        followers = {this.state.followers}
+                        following = {this.state.following}
                         handleTabSelection = {this.handleTabSelection}
                         userId = {this.state.id}
                         {...props} /> )} 
