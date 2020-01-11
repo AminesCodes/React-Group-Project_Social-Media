@@ -1,9 +1,46 @@
 import React from 'react';
 import Avatar from './Avatar';
+import axios from 'axios'
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const handleNetworkErrors = err => {
+    if (err.response) {
+        if (err.response.data.message) {
+            toast.error(err.response.data.message,
+                { position: toast.POSITION.TOP_CENTER });
+        }
+    } else if (err.message) {
+        toast.error(err.message,
+            { position: toast.POSITION.TOP_CENTER });
+    } else {
+        toast.error('Sorry, an error occurred, try again later',
+            { position: toast.POSITION.TOP_CENTER });
+        console.log('Error', err);
+    }
+}
 
 export default class ProfileTab extends React.PureComponent {
-    componentDidMount() {
+    state = {
+        followers: [],
+        following: [],
+    }
+    async componentDidMount() {
         this.props.handleTabSelection(1)
+        try {
+            const promises = []
+            promises.push(axios.get(`http://localhost:3129/follows/${this.props.userId}`)) // Followers
+            promises.push(axios.get(`http://localhost:3129/follows/followers/${this.props.userId}`)) //     Following
+
+            const response = await Promise.all(promises)
+            this.setState({
+                followers: response[0].data.payload,
+                following: response[1].data.payload,
+            })
+        } catch (err) {
+            handleNetworkErrors(err)
+        }
     }
     
     // ##################### RENDER ######################
@@ -12,8 +49,8 @@ export default class ProfileTab extends React.PureComponent {
             <div className={`tab-pane fade show ${this.props.active}`}>
                 <div className='d-sm-flex justify-content-between col-sm-12'>
                     <Avatar avatar={this.props.avatar} className='d-lg-block'/>
-                    <p className='d-lg-block'>Followers:<span className="badge badge-light"> {this.props.followers.length}</span></p>
-                    <p className='d-lg-block'>Following:<span className="badge badge-light"> {this.props.following.length}</span></p>
+                    <p className='d-lg-block'>Followers:<span className="badge badge-light"> {this.state.followers.length}</span></p>
+                    <p className='d-lg-block'>Following:<span className="badge badge-light"> {this.state.following.length}</span></p>
                 </div>
                 <form className='form-row was-validated' onSubmit={e => this.props.handleFormSubmit(e)}>
                     <div className='form-group col-sm-6'>
@@ -35,7 +72,6 @@ export default class ProfileTab extends React.PureComponent {
                     <div className='form-group col-sm-6'>
                         <label htmlFor='avatarUpload'>Avatar</label>
                         <input className='form-control' id='avatarUpload' type='file' accept='image/*' onChange={e => this.props.handleFileInput(e)}></input>
-                        <img id="avatarUpload" className="preview_img" alt='File upload preview'/>
                     </div>
                     <div className='form-group col-sm-6'>
                         <label htmlFor='password'>Password to allow changes: </label>
