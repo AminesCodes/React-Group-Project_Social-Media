@@ -22,7 +22,7 @@ const handleNetworkErrors = err => {
         toast.error(err.message,
             { position: toast.POSITION.TOP_CENTER });
     } else {
-        toast.error('Sorry, an error occured, try again later',
+        toast.error('Sorry, an error occurred, try again later',
             { position: toast.POSITION.TOP_CENTER });
         console.log('Error', err);
     }
@@ -50,6 +50,7 @@ export default class Account extends React.PureComponent {
         profileTab: 'active',
         passwordTab: '',
         postsTab: '',
+        followTab: '',
     }
 
     state = {... this.initialState}
@@ -100,18 +101,28 @@ export default class Account extends React.PureComponent {
                 profileTab: 'active',
                 passwordTab: '',
                 postsTab: '',
+                followTab: ''
             })
         } else if (ref === 2) {
             this.setState({
                 profileTab: '',
                 passwordTab: 'active',
                 postsTab: '',
+                followTab: ''
             })
         } else if (ref === 3) {
             this.setState({
                 profileTab: '',
                 passwordTab: '',
                 postsTab: 'active',
+                followTab: ''
+            })
+        } else if (ref === 4) {
+            this.setState({
+                profileTab: '',
+                passwordTab: '',
+                postsTab: '',
+                followTab: 'active'
             })
         }
     }
@@ -287,8 +298,6 @@ export default class Account extends React.PureComponent {
 
     // ############ RENDER ############
     render() {
-        console.log('FOLLOWERS: ', this.state.followers)
-        console.log('FOLLOWING: ', this.state.following)
         let content =
             <div className='spinner-border m-5' role='status'>
                 <span className='sr-only  text-center'>Loading...</span>
@@ -307,7 +316,7 @@ export default class Account extends React.PureComponent {
                       <Link className={`nav-link ${this.state.postsTab}`} to={`${this.props.match.url}/posts`} >My Posts</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className={`nav-link ${this.state.postsTab}`} to={`${this.props.match.url}/relationships`} >Follows</Link>
+                      <Link className={`nav-link ${this.state.followTab}`} to={`${this.props.match.url}/relationships`} >Follows</Link>
                     </li>
                 </ul>
 
@@ -356,9 +365,8 @@ export default class Account extends React.PureComponent {
                         {...props} /> )} 
                     />
                     <Route path={`/:username/account/relationships`} render={props => (<Relationships
-                        active = {this.state.postsTab}
-                        followers = {this.state.followers}
-                        following = {this.state.following}
+                        active = {this.state.followTab}
+                        userId = {this.state.id}
                         handleTabSelection = {this.handleTabSelection}
                         userId = {this.state.id}
                         {...props} /> )} 
