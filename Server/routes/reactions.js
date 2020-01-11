@@ -85,7 +85,7 @@ router.get('/post/all/:postId', async (request, response) => {
                 response.status(400)
                 response.json({
                     status: 'fail',
-                    message: 'Wrong Route',
+                    message: 'No reactions returned.',
                     payload: null,
                 })
             }
@@ -121,7 +121,7 @@ router.get('/comment/all/:commentId', async (request, response) => {
                 response.status(400)
                 response.json({
                     status: 'fail',
-                    message: 'Wrong Route',
+                    message: 'No reactions returned.',
                     payload: null,
                 })
             }
