@@ -81,11 +81,11 @@ VALUES
 INSERT INTO posts
 (image_url, caption, owner_id, hashtag_str)
 VALUES
-('http://localhost:3129/images/posts/abby1.jpeg', '#HappyNewYear everyone! I hope it is filled with joy, love and experiences that fulfill you. No matter the difficulty the new year brings, you can get through it. I look forward to sharing new adventures with you!', 1, 'HappyNewYear'),
-('http://localhost:3129/images/posts/abby2.jpeg', 'My #Winter White Girl cosplay is complete.', 1, 'Winter'),
-('http://localhost:3129/images/posts/abby3.jpeg', 'The #Tardis broke a things-whirly so I’m trying this human transport! Allonsy!', 1, 'Tardis'),
-('http://localhost:3129/images/posts/abby4.jpeg', 'Headed to the #Marriott floor! #dragoncon #strangerthings', 1, 'Marriott dragoncon strangerthings'),
-('http://localhost:3129/images/posts/nova1.jpeg','“Your life stopped being your own the moment you were bit by that spider.” #cindymoon #silk #spiderverse #cosplay', 2, 'cindymoon silk spiderverse cosplay'),
+('http://localhost:3129/images/posts/abby1.jpeg', '#HappyNewYear everyone! I hope it is filled with joy, love and experiences that fulfill you. No matter the difficulty the new year brings, you can get through it. I look forward to sharing new adventures with you!', 1, '#HappyNewYear#'),
+('http://localhost:3129/images/posts/abby2.jpeg', 'My #Winter White Girl #cosplay is complete.', 1, '#Winter#cosplay#'),
+('http://localhost:3129/images/posts/abby3.jpeg', 'The #Tardis broke a things-whirly so I’m trying this human transport! Allonsy!', 1, '#Tardis#'),
+('http://localhost:3129/images/posts/abby4.jpeg', 'Headed to the #Marriott floor! #cosplay2020 #dragoncon #strangerthings', 1, '#Marriott#cosplay2020#dragoncon#strangerthings#'),
+('http://localhost:3129/images/posts/nova1.jpeg','“Your life stopped being your own the moment you were bit by that spider.” #cindymoon #silk #spiderverse #cosplay', 2, '#cindymoon#silk#spiderverse#cosplay#'),
 ('http://localhost:3129/images/posts/nova2.jpeg', 'Look. I’m not all that attractive outside of all the cosplay makeup. I am a hermit with greasy hair, acne, half of my face is sunken in, one eye is bigger than the other, my eyes are different shapes, shit I’m even missing half my teeth. But I love #hotwings. So I win.', 2, 'hotwings'),
 ('http://localhost:3129/images/posts/nova3.jpeg', 'Out on the #Marriott floor come say hi!', 2, 'Marriott'),
 ('http://localhost:3129/images/posts/nova4.jpeg', '“Come on live a little, while you can.” This is from #2014 but it’s still one of my favorite #cosplay photos!', 2, '2014 cosplay'),

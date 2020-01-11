@@ -1,5 +1,5 @@
 /*
-Server Posts Route Queries | SUITAPP Web App
+Posts Route Queries | Server | SUITAPP Web App
 GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
@@ -8,50 +8,59 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 const db = require('../db');
 
 
-const getAllPosts = async () => {
+const getAllPosts = async (offset) => {
   try {
     const getQuery = `
-      SELECT image_url
-        , caption
-        , time_created
+      SELECT posts.id
         , username
+        , posts.time_created
+        , image_url
+        , caption
+        , hashtag_str
       FROM posts INNER JOIN users ON (posts.owner_id = users.id)
-      ORDER BY posts.time_created DESC;
+      ORDER BY posts.time_created DESC
+      LIMIT 10 OFFSET $/offset/;
     `;
-    return await db.any(getQuery);
+    return await db.any(getQuery, { offset });
   } catch(err) {
     throw(err);
   }
 }
 
-const getAllPostsByUser = async (numId) => {
+const getAllPostsByUser = async (numId, offset) => {
   try {
     const getQuery = `
-      SELECT image_url
-        , caption
+      SELECT id
         , time_created
+        , image_url
+        , caption
+        , hashtag_str
       FROM posts
       WHERE owner_id = $/id/
-      ORDER BY time_created DESC;
+      ORDER BY time_created DESC
+      LIMIT 10 OFFSET $/offset/;
     `;
-    return await db.any(getQuery, { id: numId });
+    return await db.any(getQuery, { id: numId, offset });
   } catch(err) {
     throw(err);
   }
 }
 
-const getAllPostsByHashtag = async (strTag) => {
+const getAllPostsByHashtags = async (hashArr, offset) => {
   try {
     const getQuery = `
-      SELECT image_url
-        , caption
-        , time_created
+      SELECT posts.id
         , username
+        , posts.time_created
+        , image_url
+        , caption
+        , hashtag_str
       FROM posts INNER JOIN users ON (posts.owner_id = users.id)
-      WHERE hashtag_str LIKE $/hashStr/
-      ORDER BY posts.time_created DESC;
+      WHERE hashtag_str ILIKE ANY($/hashArr/)
+      ORDER BY posts.time_created DESC
+      LIMIT 10 OFFSET $/offset/;
     `;
-    return await db.any(getQuery, { hashStr: `%${strTag}%` });
+    return await db.any(getQuery, { hashArr, offset });
   } catch(err) {
     throw(err);
   }
@@ -60,11 +69,14 @@ const getAllPostsByHashtag = async (strTag) => {
 const getOnePost = async (numId) => {
   try {
     const getQuery = `
-      SELECT image_url
+      SELECT posts.id
+        , username
+        , posts.time_created
+        , image_url
         , caption
-        , time_created
-      FROM posts
-      WHERE id = $/id/
+        , hashtag_str
+      FROM posts INNER JOIN users ON (posts.owner_id = users.id)
+      WHERE posts.id = $/id/
     `;
     return await db.one(getQuery, { id: numId });
   } catch(err) {
@@ -75,14 +87,14 @@ const getOnePost = async (numId) => {
 const createPost = async (bodyObj) => {
   try {
     const postQuery = `
-      INSERT INTO posts (image_url
+      INSERT INTO posts (owner_id
         , caption
-        , owner_id
         , hashtag_str
-      ) VALUES ($/imageUrl/
+        , image_url
+      ) VALUES ($/ownerId/
         , $/caption/
-        , $/ownerId/
-        , $/hashtagString/
+        , $/formattedHashtags/
+        , $/imageUrl/
       ) RETURNING *;
     `;
     return await db.one(postQuery, bodyObj);
@@ -109,7 +121,7 @@ const deletePost = async (numId) => {
 module.exports = {
   getAllPosts,
   getAllPostsByUser,
-  getAllPostsByHashtag,
+  getAllPostsByHashtags,
   getOnePost,
   createPost,
   deletePost
