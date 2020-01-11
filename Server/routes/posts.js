@@ -140,12 +140,9 @@ router.patch("/edit/:postId", async (req, res, next) => {
     const { caption, formattedHashtags } = processInput(req, "caption");
     const currUserId = processInput(req, "currUserId");
     const password = processInput(req, "password");
-    const [ authenticated, ownerId ] = await Promise.all([
-        getAuth(currUserId, password),
-        getPostOwner(postId)
-    ]);
-    if (authenticated && ownerId === currUserId) {
-      const response = await editPost({ id: postId, caption, formattedHashtags });
+    const authenticated = getAuth(currUserId, password);
+    if (authenticated) {
+      const response = await editPost({ id: postId, currUserId, caption, formattedHashtags });
       res.json({
           status: "success",
           message: `post ${postId} edited`,
@@ -165,12 +162,9 @@ router.patch("/delete/:postId", async (req, res, next) => {
       const postId = processInput(req, "postId");
       const currUserId = processInput(req, "currUserId");
       const password = processInput(req, "password");
-      const [ authenticated, ownerId ] = await Promise.all([
-          getAuth(currUserId, password),
-          getPostOwner(postId)
-      ]);
-      if (authenticated && ownerId === currUserId) {
-        const response = await deletePost(postId);
+      const authenticated = getAuth(currUserId, password);
+      if (authenticated) {
+        const response = await deletePost(postId, currUserId);
         res.json({
             status: "success",
             message: `post ${postId} deleted`,

@@ -114,28 +114,32 @@ const editPost = async (bodyObj) => {
       SET caption = $/caption/
         , hashtag_str = $/formattedHashtags/
       WHERE id = $/id/
+        AND owner_id = $/currUserId/
       RETURNING *;
     `;
     return await db.one(patchQuery, bodyObj);
   } catch(err) {
     if (err.message === "No data returned from the query.") {
-      throw new Error(`404__error: post ${bodyObj.id} does not exist`);
+      throw new Error(`404__error: post ${bodyObj.id} by owner ${
+        bodyObj.currUserId} does not exist`);
     }
     throw(err);
   }
 }
 
-const deletePost = async (numId) => {
+const deletePost = async (postId, currUserId) => {
   try {
     const deleteQuery = `
       DELETE FROM posts
       WHERE id = $/id/
+        AND owner_id = $/currUserId/
       RETURNING *;
     `;
-    return await db.one(deleteQuery, { id: numId });
+    return await db.one(deleteQuery, { id: postId, currUserId });
   } catch(err) {
     if (err.message === "No data returned from the query.") {
-      throw new Error(`404__error: post ${numId} does not exist`);
+      throw new Error(`404__error: post ${postId} by owner ${
+        currUserId} does not exist`);
     }
     throw(err);
   }
