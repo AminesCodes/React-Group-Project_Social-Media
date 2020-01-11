@@ -32,12 +32,12 @@ const addCommentToPost = async (postId, commenterId, body) => {
     }
 }
 
-const editComment = async (commentId, body) => {
+const editComment = async (commentId, commenterId, body) => {
     try {
         const requestQuery = `
             UPDATE comments
-            SET comment_body = $2
-            WHERE id = $1
+            SET comment_body = $3
+            WHERE id = $1 AND commenter_id = $2
             RETURNING *`
         return await db.one(requestQuery, [commentId, body])
     } catch (err) {
@@ -45,13 +45,13 @@ const editComment = async (commentId, body) => {
     }
 }
 
-const deleteComment = async (commentId) => {
+const deleteComment = async (commentId, commenterId) => {
     try {
         const requestQuery = `
         DELETE FROM comments
-        WHERE id = $1 
+        WHERE id = $1 AND commenter_id = $2
         RETURNING *`
-        return await db.one(requestQuery, commentId)
+        return await db.one(requestQuery, [commentId, commenterId])
     } catch (err) {
         throw err
     }
