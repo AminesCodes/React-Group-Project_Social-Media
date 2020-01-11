@@ -4,13 +4,6 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
-// TODOS
-/* 
-- tweak upload method to preserve filename in server
-- edit post route (for captions [and indirectly hashtags] only)
-*/
-
-
 /* MODULE INITS */
 //    external
 const express = require('express');
@@ -32,10 +25,7 @@ const multer = require('multer');
           cb(null, false);
       }
     };
-    const upload = multer({ 
-        storage: storage,
-        fileFilter: fileFilter,
-    });
+    const upload = multer({ storage, fileFilter });
 //    local
 const { handleError, getAuth, checkDoesUserExist } = require('../helpers/globalHelp.js');
 const { processInput } = require('../helpers/postsHelp.js');
@@ -45,7 +35,9 @@ const {
   getAllPostsByHashtags,
   getOnePost,
   createPost,
-  deletePost
+  editPost,
+  deletePost,
+  getPostOwner
 } = require('../queries/posts.js');
 
 
@@ -109,17 +101,7 @@ router.get("/:postId", async (req, res, next) => {
           payload: onePost
       });
     } catch (err) {
-      if (err.message === "No data returned from the query.") {
-        res
-          .status(404)
-          .json({
-              status: "fail",
-              message: `no post with id ${req.params.postId} found`,
-              payload: null
-          });
-      } else {
-        handleError(err, req, res, next);
-      }
+      handleError(err, req, res, next);
     }
 });
 
@@ -130,8 +112,8 @@ router.post("/add", upload.single("posts"), async (req, res, next) => {
       const { caption, formattedHashtags } = processInput(req, "caption");
       const currUserId = processInput(req, "currUserId");
       const password = processInput(req, "password");
-      const authorized = await getAuth(currUserId, password);
-      if (authorized) {
+      const authenticated = await getAuth(currUserId, password);
+      if (authenticated) {
         const response = await createPost({
             ownerId: currUserId,
             caption,
@@ -151,15 +133,38 @@ router.post("/add", upload.single("posts"), async (req, res, next) => {
     }
 });
 
+//    editPost: edit a post by post_id
+router.patch("/edit/:postId", async (req, res, next) => {
+  try {
+    const postId = processInput(req, "postId");
+    const { caption, formattedHashtags } = processInput(req, "caption");
+    const currUserId = processInput(req, "currUserId");
+    const password = processInput(req, "password");
+    const authenticated = getAuth(currUserId, password);
+    if (authenticated) {
+      const response = await editPost({ id: postId, currUserId, caption, formattedHashtags });
+      res.json({
+          status: "success",
+          message: `post ${postId} edited`,
+          payload: response
+      });
+    } else {
+      throw new Error("401__error: authentication failure");
+    }
+  } catch (err) {
+    handleError(err, req, res, next);
+  }
+});
+
 //    deletePost: delete a post by post_id
 router.patch("/delete/:postId", async (req, res, next) => {
     try {
       const postId = processInput(req, "postId");
       const currUserId = processInput(req, "currUserId");
       const password = processInput(req, "password");
-      const authorized = await getAuth(currUserId, password);
-      if (authorized) {
-        const response = await deletePost(postId);
+      const authenticated = getAuth(currUserId, password);
+      if (authenticated) {
+        const response = await deletePost(postId, currUserId);
         res.json({
             status: "success",
             message: `post ${postId} deleted`,

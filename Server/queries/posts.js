@@ -19,6 +19,7 @@ const getAllPosts = async (offset) => {
         , hashtag_str
       FROM posts INNER JOIN users ON (posts.owner_id = users.id)
       ORDER BY posts.time_created DESC
+        , posts.id ASC
       LIMIT 10 OFFSET $/offset/;
     `;
     return await db.any(getQuery, { offset });
@@ -80,6 +81,9 @@ const getOnePost = async (numId) => {
     `;
     return await db.one(getQuery, { id: numId });
   } catch(err) {
+    if (err.message === "No data returned from the query.") {
+      throw new Error(`404__error: post ${numId} does not exist`);
+    }
     throw(err);
   }
 }
@@ -103,15 +107,57 @@ const createPost = async (bodyObj) => {
   }
 }
 
-const deletePost = async (numId) => {
+const editPost = async (bodyObj) => {
+  try {
+    const patchQuery = `
+      UPDATE posts
+      SET caption = $/caption/
+        , hashtag_str = $/formattedHashtags/
+      WHERE id = $/id/
+        AND owner_id = $/currUserId/
+      RETURNING *;
+    `;
+    return await db.one(patchQuery, bodyObj);
+  } catch(err) {
+    if (err.message === "No data returned from the query.") {
+      throw new Error(`404__error: post ${bodyObj.id} by owner ${
+        bodyObj.currUserId} does not exist`);
+    }
+    throw(err);
+  }
+}
+
+const deletePost = async (postId, currUserId) => {
   try {
     const deleteQuery = `
       DELETE FROM posts
       WHERE id = $/id/
+        AND owner_id = $/currUserId/
       RETURNING *;
     `;
-    return await db.one(deleteQuery, { id: numId });
+    return await db.one(deleteQuery, { id: postId, currUserId });
   } catch(err) {
+    if (err.message === "No data returned from the query.") {
+      throw new Error(`404__error: post ${postId} by owner ${
+        currUserId} does not exist`);
+    }
+    throw(err);
+  }
+}
+
+const getPostOwner = async (numId) => {
+  try {
+    const getQuery = `
+      SELECT owner_id
+      FROM posts
+      WHERE id = $/id/;
+    `;
+    const { owner_id } = await db.one(getQuery, { id: numId });
+    return owner_id;
+  } catch(err) {
+    if (err.message === "No data returned from the query.") {
+      throw new Error(`404__error: post ${numId} does not exist`);
+    }
     throw(err);
   }
 }
@@ -124,5 +170,7 @@ module.exports = {
   getAllPostsByHashtags,
   getOnePost,
   createPost,
-  deletePost
+  editPost,
+  deletePost,
+  getPostOwner
 }
