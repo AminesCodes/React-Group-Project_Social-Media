@@ -178,7 +178,7 @@ router.put('/:commentId/:userId', async (request, response) => {
                     })
             } else {
                 try {
-                    const editExistingComment = await editComment(commentId, body);
+                    const editExistingComment = await editComment(commentId, userId, body);
                     response.json({
                         status: 'success',
                         message: `Successfully updated the comment: ${commentId}`,
@@ -229,7 +229,7 @@ router.patch('/:commentId/:userId', async (request, response) => {
                     })
             } else {
                 try {
-                    const deleteExistingComment = await deleteComment(commentId);
+                    const deleteExistingComment = await deleteComment(commentId, userId);
                     response.json({
                         status: 'success',
                         message: `Successfully deleted the comment: ${commentId}`,
