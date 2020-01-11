@@ -21,7 +21,7 @@ CREATE TABLE users
     avatar_url TEXT DEFAULT '',
     bio VARCHAR (500) DEFAULT '',
     light_theme BOOLEAN NOT NULL DEFAULT TRUE,
-    time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE posts
@@ -31,7 +31,7 @@ CREATE TABLE posts
     caption VARCHAR,
     owner_id INT REFERENCES users(id) ON DELETE CASCADE,
     hashtag_str TEXT,
-    time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE comments
@@ -40,7 +40,7 @@ CREATE TABLE comments
     post_id INT REFERENCES posts(id) ON DELETE CASCADE,
     commenter_id INT REFERENCES users(id) ON DELETE CASCADE,
     comment_body VARCHAR,
-    time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP 
+    time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP 
 );
 
 CREATE TABLE reactions
@@ -50,7 +50,7 @@ CREATE TABLE reactions
     comment_id INT REFERENCES comments(id) ON DELETE CASCADE,
     reactor_id INT REFERENCES users(id) ON DELETE CASCADE,
     emoji_type INT,
-    time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP 
+    time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP 
 );
 
 CREATE TABLE follows
@@ -58,7 +58,7 @@ CREATE TABLE follows
     id SERIAL PRIMARY KEY,
     follower_id INT REFERENCES users(id) ON DELETE CASCADE,
     followed_user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP 
+    time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP 
 );
 
 
