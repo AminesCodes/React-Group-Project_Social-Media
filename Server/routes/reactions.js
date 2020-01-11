@@ -285,8 +285,6 @@ router.patch('/delete/:reactionId', async (request, response) => {
     const password = request.body.password;
     const validReactionId = isValidId(reactionId);
     const validReactorId = isValidId(reactorId);
-    console.log(validReactionId, "Valid ReactionId")
-    console.log(validReactorId, "Valid ReactorID")
 
     if (!validReactionId || !validReactorId) {
         response.status(404)
