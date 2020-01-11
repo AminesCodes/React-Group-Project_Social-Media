@@ -53,7 +53,7 @@ export default class Account extends React.PureComponent {
         followTab: '',
     }
 
-    state = {... this.initialState}
+    state = {...this.initialState}
 
     async componentDidMount() {
         const username = this.props.match.params.username
