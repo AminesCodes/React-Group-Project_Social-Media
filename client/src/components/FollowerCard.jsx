@@ -5,7 +5,7 @@ export default function FollowerCard(props) {
     const ButtonText = props.btn
     return (
         <div className='m-2 p-2'>
-            <div className="card">
+            <div className='card border border-light rounded'>
                 <div className="card-img-top d-flex align-items-center bg-light">
                     <div>
                         <Avatar avatar={props.avatar} />
