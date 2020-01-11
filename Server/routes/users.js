@@ -121,7 +121,7 @@ router.patch('/login', async (request, response) => {
                 response.status(401)
                 response.json({
                     status: 'fail',
-                    message: 'Invalid user',
+                    message: 'User Authentication Issue',
                     payload: null,
                 })
             }

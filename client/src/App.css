@@ -1,3 +1,74 @@
 .App {
-  text-align: center;
+  background-color: burlywood;
 }
+
+.bg-appColor {
+  background-color: #6dc55a;
+}
+
+.avatarImage {
+  display: block;
+  width: 100px;
+  height: 100px;
+  object-fit: scale-down;
+  border-radius: 50%;
+  border: solid black 1px
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.ph-area {
+  position: absolute;
+  top: 0;
+  padding: 7px 0 0 13px;
+  transition: all 200ms;
+  opacity: 0.5;
+  font-family: merienda;
+  color: black;
+}
+
+.form-control:focus + .ph-area,
+.form-control:valid + .ph-area {
+  transform: translate3d(0, -100%, 0);
+  opacity: 1;
+  color: #fff;
+}
+
+.right-text {
+  text-align: right;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+  font-style: italic;
+  font-weight: bolder;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+@media (max-width: 800px) {
+  .wrapper{
+      width: 100%;
+  }
+}
+
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+

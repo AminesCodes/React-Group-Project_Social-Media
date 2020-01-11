@@ -18,8 +18,8 @@ CREATE TABLE users
     normalized_username VARCHAR (20) UNIQUE NOT NULL,
     user_password VARCHAR (30) NOT NULL,
     email VARCHAR (30) UNIQUE NOT NULL,
-    avatar_url TEXT,
-    bio VARCHAR (500),
+    avatar_url TEXT DEFAULT '',
+    bio VARCHAR (500) DEFAULT '',
     light_theme BOOLEAN NOT NULL DEFAULT TRUE,
     time_created DATE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
