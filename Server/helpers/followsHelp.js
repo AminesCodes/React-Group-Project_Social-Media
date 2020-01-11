@@ -33,7 +33,7 @@ const handleSuccess = (res, resultArray, currUserId, dataName) => {
   res.json({
     status: "success",
     message: `${dataName} of user ${currUserId} retrieved`,
-    payload: resultArray.length === 1 ? resultArray[0] : resultArray
+    payload: resultArray
   });
 }
 
