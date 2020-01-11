@@ -47,11 +47,8 @@ export default class Account extends React.PureComponent {
         following: [],
         waitingForData: true,
         profileTab: 'active',
-        profileTabArea: 'true',
         passwordTab: '',
-        passwordTabArea: 'false',
         postsTab: '',
-        postsTabArea: 'false'
     }
 
     state = {... this.initialState}
@@ -101,29 +98,20 @@ export default class Account extends React.PureComponent {
         if (ref === 1) {
             this.setState({
                 profileTab: 'active',
-                profileTabArea: 'true',
                 passwordTab: '',
-                passwordTabArea: 'false',
                 postsTab: '',
-                postsTabArea: 'false'
             })
         } else if (ref === 2) {
             this.setState({
                 profileTab: '',
-                profileTabArea: 'false',
                 passwordTab: 'active',
-                passwordTabArea: 'true',
                 postsTab: '',
-                postsTabArea: 'false'
             })
         } else if (ref === 3) {
             this.setState({
                 profileTab: '',
-                profileTabArea: 'false',
                 passwordTab: '',
-                passwordTabArea: 'false',
                 postsTab: 'active',
-                postsTabArea: 'true'
             })
         }
     }
@@ -301,6 +289,7 @@ export default class Account extends React.PureComponent {
 
     // ############ RENDER ############
     render() {
+        console.log(this.props)
         let content =
             <div className='spinner-border m-5' role='status'>
                 <span className='sr-only  text-center'>Loading...</span>
@@ -309,21 +298,23 @@ export default class Account extends React.PureComponent {
         if (!this.state.waitingForData) {
             content = 
             <>
-                <nav>
-                    <div className='nav nav-tabs' id='nav-tab' role='tablist'>
-                        {/* <a className={`nav-item nav-link ${this.state.profileTab}`} id='nav-profile-tab' data-toggle='tab' href='#nav-profile' role='tab' aria-controls='nav-profile' aria-selected={this.state.profileTabArea} onClick={() => this.handleTabSelection(1)}>Profile</a>
-                        <a className={`nav-item nav-link ${this.state.passwordTab}`} id='nav-password-tab' data-toggle='tab' href='#nav-password' role='tab' aria-controls='nav-password' aria-selected={this.state.passwordTabArea} onClick={() => this.handleTabSelection(2)}>Update Password</a>
-                        <a className={`nav-item nav-link ${this.state.postsTab}`}  id='nav-posts-tab' data-toggle='tab' href='#nav-posts' role='tab' aria-controls='nav-posts' aria-selected={this.state.postsTabArea} onClick={() => this.handleTabSelection(3)}>My Posts</a> */}
-                        <Link className={`nav-item nav-link ${this.state.profileTab}`} id='nav-profile-tab' data-toggle='tab' to='/1' role='tab' aria-controls='nav-profile' aria-selected={this.state.profileTabArea} onClick={() => this.handleTabSelection(1)}>Profile</Link>
-                        <Link className={`nav-item nav-link ${this.state.passwordTab}`} id='nav-password-tab' data-toggle='tab' to='#nav-password' role='tab' aria-controls='nav-password' aria-selected={this.state.passwordTabArea} onClick={() => this.handleTabSelection(2)}>Update Password</Link>
-                        <Link className={`nav-item nav-link ${this.state.postsTab}`}  id='nav-posts-tab' data-toggle='tab' to='#nav-posts' role='tab' aria-controls='nav-posts' aria-selected={this.state.postsTabArea} onClick={() => this.handleTabSelection(3)}>My Posts</Link>
-                    </div>
-                </nav>
+                <ul className="nav nav-tabs">
+                    <li className="nav-item">
+                      <Link className={`nav-link ${this.state.profileTab}`} to={`${this.props.match.url}`} onClick={() => this.handleTabSelection(1)}>Profile</Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className={`nav-link ${this.state.passwordTab}`} to={`${this.props.match.url}/password`} onClick={() => this.handleTabSelection(2)}>Update Password</Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className={`nav-link ${this.state.postsTab}`} to={`${this.props.match.url}/posts`} onClick={() => this.handleTabSelection(3)}>My Posts</Link>
+                    </li>
+                </ul>
 
-                <div className='tab-content' id='nav-tabContent'>
 {/* ############ PROFILE TAB ################ */}
-                    <ProfileTab 
+                <Switch>
+                    <Route exact path={`/:username/account/`} render={props => (<ProfileTab 
                         active = {this.state.profileTab}
+                        handleTabSelection = {this.handleTabSelection}
                         handleFormSubmit = {this.handleFormSubmit}
                         avatar = {this.state.avatar}
                         email = {this.state.email}
@@ -340,12 +331,12 @@ export default class Account extends React.PureComponent {
                         handleBioInput = {this.handleBioInput}
                         handlePasswordInput = {this.handlePasswordInput}
                         joiningDate = {this.state.joiningDate}
-                        handleDeleteAccount = {this.handleDeleteAccount}
+                        handleDeleteAccount = {this.handleDeleteAccount} 
+                        {...props} /> )}
                     />
-
-{/* ############ PASSWORD TAB ################ */}
-                    <PasswordTab 
+                    <Route path={`/:username/account/password`} render={props => (<PasswordTab 
                         active = {this.state.passwordTab}
+                        handleTabSelection = {this.handleTabSelection}
                         handlePasswordForm = {this.handlePasswordForm}
                         oldPassword = {this.state.oldPassword}
                         handleOldPasswordInput = {this.handleOldPasswordInput}
@@ -353,14 +344,16 @@ export default class Account extends React.PureComponent {
                         handleNewPasswordInput = {this.handleNewPasswordInput}
                         newPasswordConfirmation = {this.state.newPasswordConfirmation}
                         handleNewPasswordConfirmInput = {this.handleNewPasswordConfirmInput}
+                        {...props} /> )} 
                     />
-
-{/* ############ POSTS TAB ################ */}
-                    <PersonalPosts
+                    <Route path={`/:username/account/posts`} render={props => (<PersonalPosts
                         active = {this.state.postsTab}
+                        handleTabSelection = {this.handleTabSelection}
                         userId = {this.state.id}
+                        {...props} /> )} 
                     />
-                </div>
+                    {/* <Route exact component= {ErrorNotFound} /> */}
+                </Switch>
             </>
                 
         }
