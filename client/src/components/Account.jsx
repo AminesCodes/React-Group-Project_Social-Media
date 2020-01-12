@@ -351,7 +351,6 @@ export default class Account extends React.PureComponent {
                     />
                     <Route path={`/:username/account/relationships`} render={props => (<Relationships
                         active = {this.state.followTab}
-                        userId = {this.state.id}
                         handleTabSelection = {this.handleTabSelection}
                         userId = {this.state.id}
                         {...props} /> )} 
