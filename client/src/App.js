@@ -1,16 +1,25 @@
-import React from 'react';
-import './App.css';
+/*
+Sitewide Styling | Client | SUITAPP Web App
+GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
+*/
 
-import Logo from './media/logo.png'
-import LoginSigninForm from './components/LoginSigninForm'
-import Intro from './components/Intro'
-import Routing from './components/Routing'
 
+import React, { PureComponent } from 'react';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+    import 'react-toastify/dist/ReactToastify.css';
+
+import './App.css'; // this must stay before component imports
+
+import LoginSigninForm from './components/LoginSigninForm';
+import Intro from './components/Intro';
+import Routing from './components/Routing';
+
 toast.configure();
 
-export default class App extends React.PureComponent {
+const imgLogo = require('./assets/images/logo.png');
+
+
+export default class App extends PureComponent {
   state = {
     loggedUser: '',
   }
@@ -18,14 +27,15 @@ export default class App extends React.PureComponent {
   handleFormSubmit = (user, password) => {
     sessionStorage.setItem('Parent-Ing_App_KS', password);
     sessionStorage.setItem('Parent-Ing_App_UId', user.id);
-    sessionStorage.setItem('Parent-Ing_App_Un', user.username)
-    this.setState({loggedUser: user})
+    sessionStorage.setItem('Parent-Ing_App_Un', user.username);
+    this.setState({loggedUser: user});
   }
 
   handleLogOut = () => {
     sessionStorage.clear();
     this.setState({loggedUser: null})
   }
+
 
   // ###################### RENDER ######################
   render() {
@@ -37,7 +47,7 @@ export default class App extends React.PureComponent {
       <>
         <div className="jumbotron bg-appColor text-white">
           <div className="container-sm mx-auto">
-            <img className='img-fluid d-sm-block mx-auto' src={Logo} alt='app logo'/>
+            <img className='img-fluid d-sm-block mx-auto' src={imgLogo} alt='app logo'/>
             <h1 className='text-center'>SuitApp</h1>
           </div>
           <LoginSigninForm formSubmit={this.handleFormSubmit}/>
