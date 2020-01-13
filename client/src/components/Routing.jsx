@@ -38,13 +38,13 @@ export default class Routing extends React.PureComponent {
                     <div className='collapse navbar-collapse justify-content-end' id='collapsibleNavbar'>
                         <ul className='navbar-nav'>
                             <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-dark' to='/'>Feed</Link>
+                                <Link className='nav-link mb-0 h6 text-light' to='/'>Feed</Link>
                             </li>
                             <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-dark' to={`/${this.props.username}/following`}>Following</Link>
+                                <Link className='nav-link mb-0 h6 text-light' to={`/${this.props.username}/following`}>Following</Link>
                             </li>
                             <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-dark' to={`/${this.props.username}/account`}>Account</Link>
+                                <Link className='nav-link mb-0 h6 text-light' to={`/${this.props.username}/account`}>Account</Link>
                             </li>
                             <li className='navbar-nav float-right'>
                                 <div className='btn-nav float-right'>

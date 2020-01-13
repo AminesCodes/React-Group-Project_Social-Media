@@ -28,13 +28,22 @@ font-family: 'Lato', sans-serif;
 } 
 
 
+/* COLOR THEME
+white [gallery]: #f1efef
+cyan [bright turquiose]: #0cd6c9
+hot pink [shocking pink]: #f310c2
+purple [scarlet gum]: #391868
+lavender [rum]: #7d698d
+*/
+
+
 /* BASE APP STYLES */
 .App {
-  background-color: burlywood;
+  background-color: #7d698d; /* old (dark goldenrod): burlywood; */
 }
 
 .bg-appColor {
-  background-color: #6dc55a;
+  background-color: #391868; /* old (lime): #6dc55a */;
 }
 
 .avatarImage {
@@ -70,6 +79,10 @@ font-family: 'Lato', sans-serif;
 
 .right-text {
   text-align: right;
+}
+
+a.nav-link {
+  color: white;
 }
 
 .nav-link:hover {
