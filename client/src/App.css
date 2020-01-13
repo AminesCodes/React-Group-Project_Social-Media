@@ -5,7 +5,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 /* FONT INITS 
-font-family: 'Alegreya Sans', sans-serif;
+font-family: 'AlegreyaSans-Black', sans-serif;
 font-family: 'Lato', sans-serif;
 */
 @font-face {
@@ -39,7 +39,8 @@ lavender [rum]: #7d698d
 
 /* BASE APP STYLES */
 .App {
-  background-color: #7d698d; /* old (dark goldenrod): burlywood; */
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9em;
 }
 
 .bg-appColor {
