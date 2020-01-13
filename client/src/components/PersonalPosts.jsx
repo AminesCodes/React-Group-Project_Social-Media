@@ -3,6 +3,7 @@ import axios from 'axios'
 
 import PostThumbnail from './PostThumbnail'
 import PostLightBox from './PostLightBox'
+import UploadPost from './UploadPost'
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -107,6 +108,10 @@ export default class PersonalPosts extends React.PureComponent {
             handleNetworkErrors(err)
         }
     }
+
+    reloadPosts = () => {
+        this.getUserPosts(this.props.userId)
+    }
     
     // ##################### RENDER ######################
     render() {
@@ -117,6 +122,7 @@ export default class PersonalPosts extends React.PureComponent {
         return (
             <div className={`container tab-pane ${this.props.active}`}>
                 <div className='d-flex flex-wrap'>
+                    <UploadPost userId={this.props.userId} reloadPosts={this.reloadPosts}/>
                     {this.state.userPosts.map((post, index) => <PostThumbnail index={index} key={post.image_url+post.time_created} id={post.id} image={post.image_url} tags={post.hashtag_str} handlePicClick={this.handlePicClick}/>)}
                 </div>
                 {post}

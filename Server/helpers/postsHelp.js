@@ -55,13 +55,13 @@ const processInput = (req, location) => {
       if (!req.file) {
         throw new Error("400__error: missing image file");
       }
-      return "http://" + req.headers.host + "/images/avatars/" + req.file.filename;
+      return "http://" + req.headers.host + "/images/posts/" + req.file.filename;
 
     case "caption":
       if (!req.body.caption || !req.body.caption.trim()) {
         return ({
-            caption: null,
-            formattedHashtags: null
+            caption: '',
+            formattedHashtags: ''
         });
       }
       const caption = req.body.caption.trim();
