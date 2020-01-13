@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, Route, Switch } from 'react-router-dom';
 
-import Logo from '../media/logo.png'
-import Feed from './Feed'
-import Account from './Account'
-import ErrorNotFound from './ErrorNotFound'
+import Feed from './Feed';
+import Account from './Account';
+import ErrorNotFound from './ErrorNotFound';
+
+import { ReactComponent as Logo } from '../assets/images/logo_200112.svg';
 
 export default class Routing extends React.PureComponent {
     state = {
@@ -26,7 +27,7 @@ export default class Routing extends React.PureComponent {
             <>
                 <nav className='navbar navbar-expand-md navbar-light bg-appColor'>
                     <Link className='navbar-brand' to='/'>
-                        <img className='img-fluid' src={Logo} alt='app logo' width='130px' />
+                        <Logo className='img-fluid' alt='SuitApp Logo' title='SuitApp Logo' height='108px' width='130px' />
                     </Link>
                     <form onSubmit={this.handleSearchForm}>
                         <input type="search" value={this.state.search} onChange={this.handleSearchInput}/>
@@ -37,13 +38,13 @@ export default class Routing extends React.PureComponent {
                     <div className='collapse navbar-collapse justify-content-end' id='collapsibleNavbar'>
                         <ul className='navbar-nav'>
                             <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-dark' to='/'>Feed</Link>
+                                <Link className='nav-link mb-0 h6 text-light' to='/'>Feed</Link>
                             </li>
                             <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-dark' to={`/${this.props.username}/following`}>Following</Link>
+                                <Link className='nav-link mb-0 h6 text-light' to={`/${this.props.username}/following`}>Following</Link>
                             </li>
                             <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-dark' to={`/${this.props.username}/account`}>Account</Link>
+                                <Link className='nav-link mb-0 h6 text-light' to={`/${this.props.username}/account`}>Account</Link>
                             </li>
                             <li className='navbar-nav float-right'>
                                 <div className='btn-nav float-right'>
