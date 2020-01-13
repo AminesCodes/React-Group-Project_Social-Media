@@ -93,7 +93,6 @@ export default class PersonalPosts extends React.PureComponent {
     
     // ##################### RENDER ######################
     render() {
-        console.log(this.state.followers)
         return (
             <div className={`d-md-flex justify-content-center mb-3 tab-pane ${this.props.active}`}>
                 <div className='container-sm border border-dark rounded m-2 align-self-start'>

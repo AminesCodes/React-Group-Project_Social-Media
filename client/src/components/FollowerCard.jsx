@@ -2,7 +2,6 @@ import React from 'react'
 import Avatar from './Avatar'
 
 export default function FollowerCard(props) {
-    console.log(props)
     return (
         <div className='m-2 p-2'>
             <div className='card border border-light rounded'>
