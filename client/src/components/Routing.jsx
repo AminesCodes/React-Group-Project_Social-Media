@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, Route, Switch } from 'react-router-dom';
 
-import Logo from '../media/logo.png'
 import Feed from './Feed'
 import Account from './Account'
 import ErrorNotFound from './ErrorNotFound'
@@ -26,7 +25,7 @@ export default class Routing extends React.PureComponent {
             <>
                 <nav className='navbar navbar-expand-md navbar-light bg-appColor'>
                     <Link className='navbar-brand' to='/'>
-                        <img className='img-fluid' src={Logo} alt='app logo' width='130px' />
+                        <img className='img-fluid' src={require('../assets/images/logo.png')} alt='app logo' width='130px' />
                     </Link>
                     <form onSubmit={this.handleSearchForm}>
                         <input type="search" value={this.state.search} onChange={this.handleSearchInput}/>
