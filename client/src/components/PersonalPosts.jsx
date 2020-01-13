@@ -34,51 +34,90 @@ export default class PersonalPosts extends React.PureComponent {
         userPosts: [],
         targetPostId: 0,
         targetPost: null,
+        targetPostCaption: '',
         displayTargetPost: false,
     }
 
-    async componentDidMount() {
-        this.props.handleTabSelection(3)
+    getUserPosts = async (userId) => {
         try {
-            const { data } = await axios.get(`http://localhost:3129/posts/userid/${this.props.userId}`)
+            const { data } = await axios.get(`http://localhost:3129/posts/userid/${userId}`)
             this.setState({ userPosts: data.payload })
         } catch (err) {
             handleNetworkErrors(err)
         }
     }
 
-    handleDeletePost = async (postId) => {
-        console.log(postId)
+    componentDidMount() {
+        this.props.handleTabSelection(3)
+        this.getUserPosts(this.props.userId)
     }
 
-    handlePicClick = async (postId) => {
+    handlePicClick = async (index) => {
+        this.setState({
+            targetPostId: this.state.userPosts[index].id,
+            targetPost: this.state.userPosts[index],
+            targetPostCaption: this.state.userPosts[index].caption,
+            displayTargetPost: true
+        })
+    }
+
+    handleClosePost = () => {
+        this.setState({ displayTargetPost: false })
+    }
+
+    handleForm = async (event, postId) => {
+        event.preventDefault()
+
         try {
-            const { data } = await axios.get(`http://localhost:3129/posts/${postId}`)
-            this.setState({
-                targetPostId: postId,
-                targetPost: data.payload,
-                displayTargetPost: true
-            })
+            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+            const user = {
+                password: pw,
+                currUserId: this.props.userId,
+                caption: this.state.targetPostCaption
+            }
+            const { data } = await axios.patch(`http://localhost:3129/posts/edit/${postId}`, user)
+            if (data.status === 'success') {
+                this.getUserPosts(this.props.userId)
+                toast.success('✓',
+                    { position: toast.POSITION.BOTTOM_CENTER });
+            }
+
         } catch (err) {
             handleNetworkErrors(err)
         }
     }
 
-    handleClosePost = () => {
+    handleCaptionInput = event => {
+        this.setState({targetPostCaption: event.target.value})
+    }
 
+    handleDeletePost = async (postId) => {
+        try {
+            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+            const user = {
+                password: pw,
+                currUserId: this.props.userId,
+            }
+            const { data } = await axios.patch(`http://localhost:3129/posts/delete/${postId}`, user)
+            if (data.status === 'success') {
+                this.getUserPosts(this.props.userId)
+                this.setState({displayTargetPost: false})
+            }
+        } catch (err) {
+            handleNetworkErrors(err)
+        }
     }
     
     // ##################### RENDER ######################
     render() {
-        console.log(this.state.targetPost)
         let post = null
         if (this.state.displayTargetPost) {
-            post = <PostLightBox />
+            post = <PostLightBox postId={this.state.targetPostId} caption={this.state.targetPostCaption} image={this.state.targetPost.image_url} timestamp={this.state.targetPost.time_created} handleClosePost={this.handleClosePost} handleDeletePost={this.handleDeletePost} handleCaptionInput={this.handleCaptionInput} handleForm={this.handleForm}/>
         }
         return (
-            <div className={`tab-pane ${this.props.active}`}>
+            <div className={`container tab-pane ${this.props.active}`}>
                 <div className='d-flex flex-wrap'>
-                    {this.state.userPosts.map(post => <PostThumbnail key={post.image_url+post.time_created} id={post.id} image={post.image_url} tags={post.hashtag_str} handlePicClick={this.handlePicClick}/>)}
+                    {this.state.userPosts.map((post, index) => <PostThumbnail index={index} key={post.image_url+post.time_created} id={post.id} image={post.image_url} tags={post.hashtag_str} handlePicClick={this.handlePicClick}/>)}
                 </div>
                 {post}
             </div>

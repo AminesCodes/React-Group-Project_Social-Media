@@ -41,6 +41,10 @@
   text-align: right;
 }
 
+.cursorPointer:hover {
+  cursor: pointer;
+}
+
 .nav-link:hover {
   text-decoration: underline;
   font-style: italic;
