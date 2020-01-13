@@ -14,9 +14,11 @@ import LoginSigninForm from './components/LoginSigninForm';
 import Intro from './components/Intro';
 import Routing from './components/Routing';
 
+import { ReactComponent as Logo } from './assets/images/logo_200112.svg';
+
 toast.configure();
 
-const imgLogo = require('./assets/images/logo.png');
+// const imgLogo = require('./assets/images/logo.png');
 
 
 export default class App extends PureComponent {
@@ -47,7 +49,7 @@ export default class App extends PureComponent {
       <>
         <div className="jumbotron bg-appColor text-white">
           <div className="container-sm mx-auto">
-            <img className='img-fluid d-sm-block mx-auto' src={imgLogo} alt='app logo'/>
+            <Logo className='img-fluid d-sm-block mx-auto' alt='SuitApp Logo' title="SuitApp Logo" />
             <h1 className='text-center'>SuitApp</h1>
           </div>
           <LoginSigninForm formSubmit={this.handleFormSubmit}/>
