@@ -28,9 +28,9 @@ CREATE TABLE posts
 (
     id SERIAL PRIMARY KEY,
     image_url TEXT NOT NULL,
-    caption VARCHAR,
+    caption VARCHAR DEFAULT '',
     owner_id INT REFERENCES users(id) ON DELETE CASCADE,
-    hashtag_str TEXT,
+    hashtag_str TEXT DEFAULT '',
     time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -39,7 +39,7 @@ CREATE TABLE comments
     id SERIAL PRIMARY KEY,
     post_id INT REFERENCES posts(id) ON DELETE CASCADE,
     commenter_id INT REFERENCES users(id) ON DELETE CASCADE,
-    comment_body VARCHAR,
+    comment_body VARCHAR NOT NULL,
     time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP 
 );
 
@@ -49,7 +49,7 @@ CREATE TABLE reactions
     post_id INT REFERENCES posts(id) ON DELETE CASCADE,
     comment_id INT REFERENCES comments(id) ON DELETE CASCADE,
     reactor_id INT REFERENCES users(id) ON DELETE CASCADE,
-    emoji_type INT,
+    emoji_type INT NOT NULL,
     time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP 
 );
 
@@ -96,7 +96,7 @@ VALUES
 ('http://localhost:3129/images/posts/cursed1.jpeg', 'Welcome, my dear #spiderlings! I''m a #horror #cosplayer / #streamer with a #spider obsession, here to cause a spook.', 4, 'spiderlings horror cosplayer streamer spider'),
 ('http://localhost:3129/images/posts/cursed2.jpeg', '#HappyNewYear ''s Eve to all! Hope your #Holidays were enjoyable- mine sure were terrific... 🔪 #HappyNewYear', 4, 'NewYearsEve Holidays HappyNewYear'),
 ('http://localhost:3129/images/posts/cursed3.jpeg', 'It''s #Friday the 13th, so how about getting #lucky?', 4, 'Friday lucky'),
-('http://localhost:3129/images/posts/cursed4.jpeg', NULL, 4, NULL),
+('http://localhost:3129/images/posts/cursed4.jpeg', '', 4, ''),
 ('http://localhost:3129/images/posts/mh1.jpeg', 'Just pure fierceness #Renekton #fire #scorchedearthrenekton #8ft #supercon #floridasupercon #LeagueOfLegends #LeagueOfLegendsCosplay #Supercon2019', 5, 'Renekton fire scorchedearthrenekton 8ft supercon floridasupercon LeagueOfLegends LeagueOfLegendsCosplay Supercon2019'),
 ('http://localhost:3129/images/posts/mh2.jpeg', 'I’m proud of my students this year. We have Kha’Zix as well as Ziggs. On the right we have another one of my students as Cassie Cage from MK. #Supercon2019 #MortalKombat #cassiecage #ziggs #khazix #renekton #cosplay #leagueoflegendscosplay', 5, 'Supercon2019 MortalKombat cassiecage ziggs khazix renekton cosplay leagueoflegendscosplay'),
 ('http://localhost:3129/images/posts/mh3.jpeg', 'Getting suited up for Supercon. How’s he looking? #renekton #supercon #supercon2019 #leagueoflegends #floridasupercon #greatness #riotgames #leagueoflegendscosplay', 5, 'renekton supercon supercon2019 leagueoflegends floridasupercon greatness riotgames leagueoflegendscosplay'),
@@ -113,7 +113,7 @@ VALUES
 ('http://localhost:3129/images/posts/dan2.jpeg', 'I want to make another Nightwing cosplay soon. Maybe my own design inspired by others that have shown up in the comics/shows/games. What are some of your favourite Nightwing/Dick Grayson looks? 📸: Bri Lan Imagery #nightwing #cosplay #dccomics', 8, 'nightwing cosplay dccomics'),
 ('http://localhost:3129/images/posts/dan3.jpeg', 'The first of many shots showing my new cosplay of Hiccup from How To Train Your Dragon! 📸: #MrPaulTran #HowToTrainYourDragon #cosplay #holmat2019 #HolidayMatsuri #toothless', 8, 'MrPaulTran HowToTrainYourDragon cosplay holmat2019 HolidayMatsuri toothless'),
 ('http://localhost:3129/images/posts/dan4.jpeg', 'Happy #Friday from your favourite eye beam boy ❤️ #xmen #cosplay #marvel', 8, 'Friday xmen cosplay marvel'),
-('http://localhost:3129/images/posts/dan5.jpeg', NULL, 8, NULL);
+('http://localhost:3129/images/posts/dan5.jpeg', '', 8, '');
 
 INSERT INTO comments
 (post_id, commenter_id, comment_body)

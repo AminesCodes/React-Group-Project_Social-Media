@@ -81,6 +81,10 @@ lavender [rum]: #7d698d
   text-align: right;
 }
 
+.cursorPointer:hover {
+  cursor: pointer;
+}
+
 a.nav-link {
   color: white;
 }

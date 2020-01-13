@@ -30,13 +30,27 @@ export default class PersonalPosts extends React.PureComponent {
     getRelations = async (userId) => {
         try {
             const promises = []
-            promises.push(axios.get(`http://localhost:3129/follows/${userId}`)) // Followers
-            promises.push(axios.get(`http://localhost:3129/follows/followers/${userId}`)) //     Following
+            promises.push(axios.get(`http://localhost:3129/follows/${userId}`)) // Following
+            promises.push(axios.get(`http://localhost:3129/follows/followers/${userId}`)) //     Followers
 
             const response = await Promise.all(promises)
+            const following = response[0].data.payload
+            const followers = response[1].data.payload
+            const followingMap = {}
+            for (let follow of following) {
+                followingMap[follow.follow] = true
+                follow.activeBtn = ''
+            }
+            for (let follow of followers) {
+                if (followingMap[follow.follower]) {
+                    follow.activeBtn = 'disabled'
+                } else {
+                    follow.activeBtn = ''
+                }
+            }
             this.setState({
-                followers: response[0].data.payload,
-                following: response[1].data.payload,
+                following: following,
+                followers: followers,
             })
         } catch (err) {
             handleNetworkErrors(err)
@@ -47,6 +61,7 @@ export default class PersonalPosts extends React.PureComponent {
         this.props.handleTabSelection(4)
         await this.getRelations(this.props.userId)
     }
+
 
     handleUnfollowButton = async (targetId) => {
         try {
@@ -78,16 +93,17 @@ export default class PersonalPosts extends React.PureComponent {
     
     // ##################### RENDER ######################
     render() {
+        console.log(this.state.followers)
         return (
-            <div className={`d-md-flex justify-content-center mb-3 tab-pane fade show ${this.props.active}`}>
-                <div className='container-sm border border-dark rounded m-2'>
-                    <strong>Following :</strong> 
-                    {this.state.followers.map(follow => <FollowCard username={follow.follow} userId={follow.followed_user_id} avatar={follow.avatar_url} key={follow.avatar_url+follow.follow} btn='Unfollow' buttonClick={this.handleUnfollowButton}/>)}
+            <div className={`d-md-flex justify-content-center mb-3 tab-pane ${this.props.active}`}>
+                <div className='container-sm border border-dark rounded m-2 align-self-start'>
+                    <strong>Following <span className='badge badge-light'>{this.state.following.length}</span></strong> 
+                    {this.state.following.map(follow => <FollowCard username={follow.follow} userId={follow.followed_user_id} avatar={follow.avatar_url} active={follow.activeBtn} key={follow.avatar_url+follow.follow} btn='Unfollow' buttonClick={this.handleUnfollowButton}/>)}
                 </div>
                 
-                <div className='container-sm border border-dark rounded m-2'>
-                    <strong>Followers :</strong> 
-                    {this.state.following.map(follow => <FollowCard username={follow.follower} userId={follow.follower_id} avatar={follow.avatar_url} key={follow.avatar_url+follow.follower} btn='Follow' buttonClick={this.handleFollowButton}/>)}
+                <div className='container-sm border border-dark rounded m-2 align-self-start'>
+                    <strong>Followers <span className='badge badge-light'>{this.state.followers.length}</span></strong> 
+                    {this.state.followers.map(follow => <FollowCard username={follow.follower} userId={follow.follower_id} avatar={follow.avatar_url} active={follow.activeBtn} key={follow.avatar_url+follow.follower} btn='Follow' buttonClick={this.handleFollowButton}/>)}
                 </div>
             </div>
         )
