@@ -1,68 +1,61 @@
-import React from 'react';
-import { Link, Route, Switch } from 'react-router-dom';
+import React, { PureComponent } from 'react';
+import { Route, Switch } from 'react-router-dom';
 
+import './Routing.css';
+
+import TopBar from './TopBar';
+import SideBar from './SideBar';
 import Feed from './Feed';
+import Persona from './Persona';
+import Events from './Events';
 import Account from './Account';
+import AboutSA from './AboutSA';
 import ErrorNotFound from './ErrorNotFound';
 
-import { ReactComponent as Logo } from '../assets/images/logo_200112.svg';
 
-export default class Routing extends React.PureComponent {
-    state = {
-        search: ''
-    }
+export default class Routing extends PureComponent {
+  state = {
+    search: ''
+  }
 
-    handleSearchForm = async (event) => {
-        event.preventDefault()
-    }
+  handleSearchForm = async (event) => {
+    event.preventDefault()
+  }
 
-    handleSearchInput = event => {
-        this.setState({search: event.target.value})
-    }
+  handleSearchInput = event => {
+    this.setState({search: event.target.value})
+  }
 
 
-    //################ RENDER ###########
-    render() {
-        return (
-            <>
-                <nav className='navbar navbar-expand-md navbar-light bg-appColor'>
-                    <Link className='navbar-brand' to='/'>
-                        <Logo className='img-fluid' alt='SuitApp Logo' title='SuitApp Logo' height='108px' width='130px' />
-                    </Link>
-                    <form onSubmit={this.handleSearchForm}>
-                        <input type="search" value={this.state.search} onChange={this.handleSearchInput}/>
-                    </form>
-                    <button className='navbar-toggler' type='button' data-toggle='collapse' data-target='#collapsibleNavbar'>
-                        <span className='navbar-toggler-icon'></span>
-                    </button>
-                    <div className='collapse navbar-collapse justify-content-end' id='collapsibleNavbar'>
-                        <ul className='navbar-nav'>
-                            <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-light' to='/'>Feed</Link>
-                            </li>
-                            <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-light' to={`/${this.props.username}/following`}>Following</Link>
-                            </li>
-                            <li className='nav-item'>
-                                <Link className='nav-link mb-0 h6 text-light' to={`/${this.props.username}/account`}>Account</Link>
-                            </li>
-                            <li className='navbar-nav float-right'>
-                                <div className='btn-nav float-right'>
-                                    <Link className='btn btn-secondary btn-small navbar-btn' to='/' onClick={this.props.logout}>Logout</Link>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+  // ################ RENDER ###########
+  render() {
+    return (
+        <div className="maingrid bs container-fluid">
 
-                <Switch>
-                    <Route exact path='/' component={Feed} />
-                    <Route path={`/undefined/:page`} component= {ErrorNotFound} />
-                    <Route path={`/:username/following`} render={props => (<Feed username={this.props.username} {...props} /> )} />
-                    <Route path={`/:username/account`} render={props => (<Account username={this.props.username} logout={this.props.logout} {...props} /> )} />
-                    <Route exact component= {ErrorNotFound} />
-                </Switch>
-            </>
-        )
-    }
+            <div className="j-topbar bs row">
+                <div className="bs col">
+                    <TopBar username={this.props.username} />
+                </div>
+            </div>
+
+            <div className="j-stage bs row">
+                <div className="j-col-2 bs col-2">
+                    <SideBar username={this.props.username} logout={this.props.logout} />
+                </div>
+                <div className="bs col">
+                    <Switch>
+                        <Route exact path='/' component={Feed} />
+                        <Route path={'/undefined/:page'} component={ErrorNotFound} />
+                        <Route path={'/:username/feed'} render={props => (<Feed username={this.props.username} {...props} /> )} />
+                        <Route path={'/:username/persona'} render={props => (<Persona username={this.props.username} {...props} /> )} />
+                        <Route path={'/:username/events'} render={props => (<Events username={this.props.username} {...props} /> )} />
+                        <Route path={'/about'} render={props => (<AboutSA username={this.props.username} {...props} /> )} />
+                        <Route path={'/:username/account'} render={props => (<Account username={this.props.username} logout={this.props.logout} {...props} /> )} />
+                        <Route exact component={ErrorNotFound} />
+                    </Switch>
+                </div>
+            </div>
+        </div>
+    )
+  }
 }

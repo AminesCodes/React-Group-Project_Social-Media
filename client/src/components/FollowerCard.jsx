@@ -11,7 +11,7 @@ export default function FollowerCard(props) {
                     </div>
                     <strong className='col p-2 m-0'>{props.username}</strong>
                 </div>
-                <a className={`btn btn-sm btn-info w-90 m-2 ${props.active}`} href='#' onClick={e => props.buttonClick(props.userId)} >{props.btn}</a>
+                <button className={`btn btn-sm btn-info w-90 m-2 ${props.active}`} onClick={e => props.buttonClick(props.userId)}>{props.btn}</button>
             </div>
         </div>
     )
