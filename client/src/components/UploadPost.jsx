@@ -1,6 +1,11 @@
 import React from 'react'
 import axios from 'axios'
 
+import { ReactComponent as Close } from '../assets/images/icons/times-circle-solid.svg';
+import { ReactComponent as Save } from '../assets/images/icons/save-solid.svg';
+import { ReactComponent as Edit } from '../assets/images/icons/edit-solid.svg';
+
+
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -99,6 +104,7 @@ export default class UploadPost extends React.PureComponent{
             position: this.state.position,
             top: '10%',
             width: '90%',
+            height: '80%',
             backgroundColor: backgroundColor,
         }
         const imageStyle = {
@@ -111,15 +117,15 @@ export default class UploadPost extends React.PureComponent{
         if (this.state.imageFile) {
             form = 
                 <div className='card position-relative' style={{width: '100%', height: '100%', backgroundColor: backgroundColor}}>
-                    <button className='position-absolute' onClick={this.handleClosePost}>Close</button>
+                    <Close className='position-absolute icon' onClick={this.handleClosePost} />
                     <div className='card-img-top' style={{width: '100%', height: '80%'}}>
                         <img src={this.state.imagePreview} alt='Card' style={imageStyle}/>
                     </div>
                     <div className='card-body p-1' style={{width: '100%', height: '20%'}}>
                         <form className='d-flex' onSubmit={this.handleForm}>
                             <div className='d-flex flex-column'>
-                                <label className='flex-grow-1' htmlFor='captionText'>Caption: </label>
-                                <button>Post</button>
+                                <label className='flex-grow-1' htmlFor='captionText'><Edit className='icon flex-grow-1'/></label>
+                                <button className='btn btn-primary'><Save style={{width: '35px'}}/></button>
                             </div>
                             <textarea className='rounded flex-grow-1' id='captionText' value={this.state.caption} onChange={this.handleCaptionInput}></textarea>
                         </form>
@@ -131,7 +137,7 @@ export default class UploadPost extends React.PureComponent{
             <div className='container rounded m-2 p-2' style={divStyle}>
                 <div className='d-flex justify-content-around'>
                     <label className='' htmlFor='postUpload'>Share something</label>
-                    <input className='' id='postUpload' type='file' accept='image/*' onChange={this.handleFileInput}></input>
+                    <input className='' id='postUpload' type='file' accept='image/*' onInput={this.handleFileInput} onChange={e => e.target.value = null}></input>
                 </div>
                 {form}
             </div>
