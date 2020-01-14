@@ -142,7 +142,7 @@ export default class LoginSigninFrom extends React.PureComponent {
                 </div>
                 <div className='form-group col-md-6'>
                     <input className='form-check-input' id='defaultCheck' type='checkbox' checked={this.state.ageCheck} onClick={this.handleAgeCheck}/>
-                    <label className='form-check-label' for='defaultCheck'>I confirm I'm 13 or over</label>
+                    <label className='form-check-label' htmlFor='defaultCheck'>I confirm I'm 13 or over</label>
                 </div>
             </>
         }
