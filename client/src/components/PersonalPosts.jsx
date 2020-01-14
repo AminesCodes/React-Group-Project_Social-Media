@@ -117,7 +117,7 @@ export default class PersonalPosts extends React.PureComponent {
     render() {
         let post = null
         if (this.state.displayTargetPost) {
-            post = <PostLightBox postId={this.state.targetPostId} caption={this.state.targetPostCaption} image={this.state.targetPost.image_url} timestamp={this.state.targetPost.time_created} handleClosePost={this.handleClosePost} handleDeletePost={this.handleDeletePost} handleCaptionInput={this.handleCaptionInput} handleForm={this.handleForm}/>
+            post = <PostLightBox userId={this.props.userId} postId={this.state.targetPostId} caption={this.state.targetPostCaption} image={this.state.targetPost.image_url} timestamp={this.state.targetPost.time_created} handleClosePost={this.handleClosePost} handleDeletePost={this.handleDeletePost} handleCaptionInput={this.handleCaptionInput} handleForm={this.handleForm}/>
         }
         return (
             <div className={`container tab-pane ${this.props.active}`}>

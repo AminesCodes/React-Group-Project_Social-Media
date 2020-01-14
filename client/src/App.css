@@ -86,7 +86,7 @@ lavender [rum]: #7d698d
 }
 
 .icon {
-  z-index: 2;
+  z-index: 1;
   height: 30px;
   width: 30px;
   padding: 5px;
