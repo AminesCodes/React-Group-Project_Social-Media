@@ -43,9 +43,21 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
   transition: 0.5s color;
 }
 
+.j-sidebar .j-logout.nav-link:hover {
+  color: orange;
+}
+
 .j-sidebar .nav-link.active {
   color: #39838a;
   text-decoration: none;
   font-style: normal;
   cursor: default;
+}
+
+.j-sidenav-divider {
+  height: 2px;
+  width: 88px;
+  margin: 13px 3px 39px 22px;
+
+  background-color: #000;
 }

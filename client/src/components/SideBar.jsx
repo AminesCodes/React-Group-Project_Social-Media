@@ -70,7 +70,18 @@ export default class SideBar extends PureComponent {
                   </Route> 
               </li>
               <li className='nav-item'>
-                  <Link className='nav-link' to='/' onClick={this.props.logout}>Logout</Link>
+                  <Link className='j-logout nav-link' to='/' onClick={this.props.logout}>Logout</Link>
+              </li>
+              <div className='j-sidenav-divider'></div>
+              <li className='nav-item'>
+                  <NavLink className='nav-link' to={`/about`}>About</NavLink>
+                  <Route path={'/about'}>
+                    <ul>
+                      <li>
+                        <NavLink className='j-sub-nav' exact to={`/about`}>SuitApp</NavLink>
+                      </li>
+                    </ul>
+                  </Route> 
               </li>
           </ul>
     );

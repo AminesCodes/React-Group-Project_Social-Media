@@ -6,7 +6,10 @@ import './Routing.css';
 import TopBar from './TopBar';
 import SideBar from './SideBar';
 import Feed from './Feed';
+import Persona from './Persona';
+import Events from './Events';
 import Account from './Account';
+import AboutSA from './AboutSA';
 import ErrorNotFound from './ErrorNotFound';
 
 
@@ -44,6 +47,9 @@ export default class Routing extends PureComponent {
                         <Route exact path='/' component={Feed} />
                         <Route path={'/undefined/:page'} component={ErrorNotFound} />
                         <Route path={'/:username/feed'} render={props => (<Feed username={this.props.username} {...props} /> )} />
+                        <Route path={'/:username/persona'} render={props => (<Persona username={this.props.username} {...props} /> )} />
+                        <Route path={'/:username/events'} render={props => (<Events username={this.props.username} {...props} /> )} />
+                        <Route path={'/about'} render={props => (<AboutSA username={this.props.username} {...props} /> )} />
                         <Route path={'/:username/account'} render={props => (<Account username={this.props.username} logout={this.props.logout} {...props} /> )} />
                         <Route exact component={ErrorNotFound} />
                     </Switch>

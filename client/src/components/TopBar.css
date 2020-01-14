@@ -37,8 +37,13 @@ div.mb-3 {
 }
 
 .j-navbar span.input-group-text, .j-navbar input.form-control {
-  padding: .1rem .75rem;
+  padding: .1rem .75rem 0em .75rem;
   height: 1.5em;
+}
+
+.j-navbar span.input-group-text { /* hashtag left side */
+  padding-right: 0.4em;
+  padding-left: 0.4em;
 }
 
 .j-navbar span.input-group-text {
