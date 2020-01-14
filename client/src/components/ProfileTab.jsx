@@ -71,7 +71,7 @@ export default class ProfileTab extends React.PureComponent {
                     </div>
                     <div className='form-group col-sm-6'>
                         <label htmlFor='avatarUpload'>Avatar</label>
-                        <input className='form-control' id='avatarUpload' type='file' accept='image/*' onChange={e => this.props.handleFileInput(e)}></input>
+                        <input className='form-control' id='avatarUpload' type='file' accept='image/*' onInput={e => this.props.handleFileInput(e)} onChange={e => e.target.value=null}></input>
                     </div>
                     <div className='form-group col-sm-6'>
                         <label htmlFor='password'>Password to allow changes: </label>
