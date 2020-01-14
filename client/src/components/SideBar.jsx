@@ -5,38 +5,74 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
-import { Link, Route, Switch } from 'react-router-dom';
+import { NavLink, Link, Route } from 'react-router-dom';
 
-// import './SideBar.css';
+import './SideBar.css';
 
 
 export default class SideBar extends PureComponent {
   state = {
-    search: ''
+
   }
 
 
   // ################ RENDER ###########
   render() {
     return (
-      <div className='collapse navbar-collapse justify-content-end' id='collapsibleNavbar'>
-          <ul className='navbar-nav'>
+          <ul className='j-sidebar nav flex-column'>
               <li className='nav-item'>
-                  <Link className='nav-link mb-0 h6 text-light' to='/'>Feed</Link>
+                  <NavLink className='nav-link' to={`/${this.props.username}/feed`}>Home</NavLink>
+                  <Route path={'/*/feed'}>
+                    <ul>
+                      <li>
+                        <NavLink className='j-sub-nav' exact to={`/${this.props.username}/feed`}>Your Feed</NavLink>
+                      </li>
+                      <li>
+                        <NavLink className='j-sub-nav' to={`/${this.props.username}/feed/all`}>Explore</NavLink>
+                      </li>
+                    </ul>
+                  </Route> 
               </li>
               <li className='nav-item'>
-                  <Link className='nav-link mb-0 h6 text-light' to={`/${this.props.username}/following`}>Following</Link>
+                  <NavLink className='nav-link' to={`/${this.props.username}/persona`}>Persona</NavLink>
+                  <Route path={'/*/persona'}>
+                    <ul>
+                      <li>
+                        <NavLink className='j-sub-nav' exact to={`/${this.props.username}/persona`}>Appreciator</NavLink>
+                      </li>
+                      <li>
+                        <NavLink className='j-sub-nav' to={`/${this.props.username}/persona/cosplayer`}>Cosplayer</NavLink>
+                      </li>
+                      <li>
+                        <NavLink className='j-sub-nav' to={`/${this.props.username}/persona/designer`}>Designer</NavLink>
+                      </li>
+                    </ul>
+                  </Route> 
               </li>
               <li className='nav-item'>
-                  <Link className='nav-link mb-0 h6 text-light' to={`/${this.props.username}/account`}>Account</Link>
+                  <NavLink className='nav-link' to={`/${this.props.username}/events`}>Events</NavLink>
+                  <Route path={'/*/events'}>
+                    <ul>
+                      <li>
+                        <NavLink className='j-sub-nav' exact to={`/${this.props.username}/events`}>Events Hub</NavLink>
+                      </li>
+                    </ul>
+                  </Route> 
               </li>
-              <li className='navbar-nav float-right'>
-                  <div className='btn-nav float-right'>
-                      <Link className='btn btn-secondary btn-small navbar-btn' to='/' onClick={this.props.logout}>Logout</Link>
-                  </div>
+              <li className='nav-item'>
+                  <NavLink className='nav-link' to={`/${this.props.username}/account`}>Account</NavLink>
+                  <Route path={'/*/account'}>
+                    <ul>
+                      <li>
+                        <NavLink className='j-sub-nav' exact to={`/${this.props.username}/account`}>Edit My Account</NavLink>
+                      </li>
+                    </ul>
+                  </Route> 
+              </li>
+              <li className='nav-item'>
+                  <Link className='nav-link' to='/' onClick={this.props.logout}>Logout</Link>
               </li>
           </ul>
-      </div>
     );
   }
 }

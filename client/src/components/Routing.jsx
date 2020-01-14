@@ -37,13 +37,13 @@ export default class Routing extends PureComponent {
 
             <div className="j-stage bs row">
                 <div className="j-col-2 bs col-2">
-                    <SideBar />
+                    <SideBar username={this.props.username} logout={this.props.logout} />
                 </div>
                 <div className="bs col">
                     <Switch>
                         <Route exact path='/' component={Feed} />
                         <Route path={'/undefined/:page'} component={ErrorNotFound} />
-                        <Route path={'/:username/following'} render={props => (<Feed username={this.props.username} {...props} /> )} />
+                        <Route path={'/:username/feed'} render={props => (<Feed username={this.props.username} {...props} /> )} />
                         <Route path={'/:username/account'} render={props => (<Account username={this.props.username} logout={this.props.logout} {...props} /> )} />
                         <Route exact component={ErrorNotFound} />
                     </Switch>

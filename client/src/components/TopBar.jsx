@@ -31,7 +31,7 @@ export default class TopBar extends PureComponent {
   // ################ RENDER ###########
   render() {
     return (
-      <nav className='j-navbar navbar navbar-expand-md navbar-light bg-appColor'>
+      <nav className='j-navbar navbar navbar-expand-md'>
       
           <UsernameSign username={this.props.username} />
 
@@ -45,7 +45,7 @@ export default class TopBar extends PureComponent {
               <div className="input-group-prepend">
                 <span className="input-group-text" id="basic-addon1">#</span>
               </div>
-              <input type="search" value={this.state.search} onChange={this.handleSearchInput} className="form-control" placeholder="hashtags search" aria-label="hashtags" aria-describedby="basic-addon1" />
+              <input type="search" value={this.state.search} onChange={this.handleSearchInput} className="form-control" placeholder="search hashtags" aria-label="hashtags" aria-describedby="basic-addon1" />
             </div>
           </form>
 

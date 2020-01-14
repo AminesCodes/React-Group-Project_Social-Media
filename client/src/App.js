@@ -63,7 +63,7 @@ export default class App extends PureComponent {
     }
 
     return (
-      <div className="App vh-100">
+      <div className="App">
         {pageContent}
       </div>
     );

@@ -14,18 +14,18 @@ font-family: 'Lato', sans-serif;
   font-weight: black;
   font-style: normal;
 }
-/* @font-face {
-  font-family: 'AlegreyaSans-BlackItalic';
-  src: url('./assets/fonts/Alegreya_Sans/AlegreyaSans-BlackItalic.ttf') format('truetype');
-  font-weight: black;
-  font-style: italic;
-} */
 @font-face {
+  font-family: 'Mukta';
+  src: url('./assets/fonts/Mukta/Mukta-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+/* @font-face {
   font-family: 'Lato';
   src: url('./assets/fonts/Lato/Lato-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-} 
+}  */
 
 
 /* COLOR THEME
@@ -39,7 +39,7 @@ lavender [rum]: #7d698d
 
 /* BASE APP STYLES */
 .App {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Mukta', sans-serif;
   font-size: 0.9em;
 }
 

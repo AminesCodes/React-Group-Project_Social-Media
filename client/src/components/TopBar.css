@@ -8,6 +8,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  justify-content: flex-start;
   align-items: flex-end;
 
   padding: 0px;
@@ -28,6 +29,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 .j-navbar form {
   width: 340px;
+  margin: 3px 22px 4px auto;
 }
 
 div.mb-3 {

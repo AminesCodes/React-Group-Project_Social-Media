@@ -1,0 +1,51 @@
+/*
+SideBar Component Styling | Client | SUITAPP Web App
+GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
+*/
+
+
+.j-sidebar {
+  padding-top: 33px;
+}
+
+.j-sidebar .nav-link {
+  margin: 19px 3px 6px 22px;
+  padding: 0px;
+  width: fit-content;
+
+  font-family: 'AlegreyaSans-Black', sans-serif;
+  font-size: 18px;
+  color: #6bb7c3; /* #B8D1C9; */
+  text-shadow:
+    0px 0px 4px #000,
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+.j-sidebar .j-sub-nav {
+  display: block;
+  margin: 6px 3px 6px 28px;
+
+  font-size: 15px;
+  color: #000;
+  font-family: 'AlegreyaSans-Black', sans-serif;
+}
+
+.j-sidebar .j-sub-nav.active {
+  color: #F1EFEF;
+}
+
+.j-sidebar .nav-link:hover {
+  color: gold;
+  font-style: normal;
+  transition: 0.5s color;
+}
+
+.j-sidebar .nav-link.active {
+  color: #39838a;
+  text-decoration: none;
+  font-style: normal;
+  cursor: default;
+}
