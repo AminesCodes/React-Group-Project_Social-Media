@@ -37,6 +37,7 @@ export default class PostLightBox extends React.PureComponent {
         reactions: [],
         displayComments: false,
         showComments: false,
+        newComment: '',
     }
 
     getAllCommentsAndReactions = async (postId) => {
@@ -51,7 +52,6 @@ export default class PostLightBox extends React.PureComponent {
                 comments: response[0].data.payload,
                 // reactions: response[1].data.payload,
             })
-            console.log(response[0].data.payload)
         } catch (err) {
             handleNetworkErrors(err)
         }
@@ -68,12 +68,36 @@ export default class PostLightBox extends React.PureComponent {
         this.setState({showComments: false})
     }
 
+    handleAddCommentForm = async (event) => {
+        event.preventDefault()
+
+        try {
+            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+            const requestBody = {
+                password: pw,
+                body: this.state.newComment,
+            }
+            const { data } = await axios.post(`http://localhost:3129/comments/${this.props.postId}/${this.props.userId}`, requestBody)
+            if (data.status === 'success') {
+                this.getAllCommentsAndReactions(this.props.postId)
+                this.setState({newComment: ''})
+            }
+        } catch (err) {
+            handleNetworkErrors(err)
+        }
+    }
+
+    handleCommentInput = event => {
+        this.setState({newComment: event.target.value})
+    }
+
     // ######################## RENDER ###################
     render() {
         const backgroundColor = 'rgba(77, 73, 73, 0.542)'
         const divStyle = {
             position: 'absolute',
             top: '3%',
+            left: '2%',
             height: '95%',
             width: '100%',
             backgroundColor: backgroundColor,
@@ -87,7 +111,7 @@ export default class PostLightBox extends React.PureComponent {
 
         let commentsContainer = null
         if (this.state.showComments) {
-            commentsContainer = <Comments userId={this.props.userId} postId={this.props.postId} allComments={this.state.comments}/>
+            commentsContainer = <Comments userId={this.props.userId} postId={this.props.postId} allComments={this.state.comments} handleCloseComments={this.handleCloseComments} handleCommentInput={this.handleCommentInput} commentText={this.state.newComment} handleAddCommentForm={this.handleAddCommentForm} reloadComments={this.getAllCommentsAndReactions}/>
         }
     
         return ( 

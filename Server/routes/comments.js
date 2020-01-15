@@ -84,7 +84,7 @@ router.get('/:postId', async (request, response) => {
                     const targetPost = await getOnePost(postId)
                     response.json({
                         status: 'success',
-                        message: `Successfully retrieved all comments related to the post: ${postId}`,
+                        message: `Post: ${postId} has no comments yet`,
                         payload: allCommentsByPostId,
                     })
                 } catch (err) {
@@ -202,21 +202,21 @@ router.put('/:commentId/:userId', async (request, response) => {
 
 
 // DELETE A COMMENT
-router.patch('/:commentId/:userId', async (request, response) => {
+router.patch('/:commentId/delete', async (request, response) => {
     const commentId = request.params.commentId;
-    const userId = request.params.userId;
-    const { password, body } = request.body;
+    const { password, userId } = request.body;
     const validCommentId = isValidId(commentId);
     const validUserId = isValidId(userId);
 
-    if (!validCommentId || !validUserId) {
+    console.log(password, validUserId, userId)
+    if (!validCommentId) {
         response.status(404)
         response.json({
             status: 'fail',     
             message: 'Wrong route',
             payload: null,
         })
-    } else if (!password || !body) {
+    } else if (!password || !validUserId) {
         response.status(400)
         response.json({
             status: 'fail',
