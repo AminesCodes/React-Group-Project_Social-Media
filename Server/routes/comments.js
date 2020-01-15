@@ -8,6 +8,8 @@ const {
     deleteComment
 } = require('../queries/comments');
 
+const { getOnePost } = require('../queries/posts');
+
 const { authenticateUser } = require('../queries/authentication')
 
 const handleError = (response, err) => {
@@ -78,12 +80,16 @@ router.get('/:postId', async (request, response) => {
                     payload: allCommentsByPostId,
                 })
             } else {
-                response.status(400)
-                response.json({
-                    status: 'fail',
-                    message: 'Wrong Route',
-                    payload: null,
-                })
+                try {
+                    const targetPost = await getOnePost(postId)
+                    response.json({
+                        status: 'success',
+                        message: `Successfully retrieved all comments related to the post: ${postId}`,
+                        payload: allCommentsByPostId,
+                    })
+                } catch (err) {
+                    handleError(response, err)
+                }
             }
         } catch (err) {
             handleError(response, err)

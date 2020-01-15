@@ -86,6 +86,22 @@ lavender [rum]: #7d698d
   cursor: pointer;
 }
 
+.icon {
+  z-index: 1;
+  height: 30px;
+  width: 30px;
+  padding: 5px;
+  cursor: pointer;
+  fill: red;
+}
+
+.timestampSpan {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  color: white;
+}
+
 a.nav-link {
   color: white;
 }

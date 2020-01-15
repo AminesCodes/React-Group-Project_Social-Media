@@ -6,8 +6,10 @@ const getAllCommentsByPostId = async (postId) => {
             SELECT comments.id AS comment_id
                 , username
                 , commenter_id
+                , avatar_url
                 , post_id
                 , comment_body
+                , comments.time_created
             FROM comments INNER JOIN users
             ON commenter_id = users.id
             WHERE post_id = $1
