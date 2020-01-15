@@ -5,7 +5,6 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
-import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 // import './Feed.css';
@@ -21,30 +20,34 @@ export default class Feed extends PureComponent {
   }
 
   async componentDidMount() {
-    console.log("componentDidMount");
+    // console.log("componentDidMount ran");
     await this.getFeed();
   }
 
-  async componentDidUpdate(prevProps,prevState) {
-    console.log("componentDidUpdate");
-    if (this.props.location.pathname !== prevProps.location.pathname) {
-      console.log("RELOAD", this.props.match.isExact);
+  async componentDidUpdate(prevProps, prevState) {
+    // console.log("componentDidUpdate ran");
+    const arePathnamesSame = this.props.location.pathname === prevProps.location.pathname;
+    const areSearchesSame = this.props.location.search === prevProps.location.search;
+    if (!arePathnamesSame || !areSearchesSame) {
+      // console.log("RERUNNING GETFEED");
       await this.getFeed();
     }
   }
 
   getSearches = () => {
       let process = new URLSearchParams(this.props.location.search);
-      return process.get("search");
+      const string = process.get("search");
+      // console.log("searchCheck: ", string);
+      return string;
   }
 
   getFeed = async () => {
-    let url = 'http://localhost:3129/posts/';
+    let url = 'http://localhost:3129/posts/';             // location parse begins at global feed
     const pathname = this.props.location.pathname;
     const searchString = this.getSearches();
-    if (!pathname.includes("all")) {
+    if (!pathname.includes("all")) {                      // switch to follows feed
       url += `follows/${this.uId}`;
-    } else if (searchString) {
+    } else if (searchString) {                            // switch to hashtags feed
       url += `tags/?hashtags=${searchString}`;
     }
     const response = await axios.get(url);
@@ -55,7 +58,7 @@ export default class Feed extends PureComponent {
 
   // ############## RENDER ################
   render() {
-    console.log("render, posts: ", this.state.posts);
+    // console.log("render ran, posts: ", this.state.posts);
     const postsList = this.state.posts.map(post => {
         return(
             <PostCard
