@@ -32,17 +32,17 @@ export default class Routing extends PureComponent {
     return (
         <div className="maingrid bs container-fluid">
 
-            <div className="j-topbar bs row">
-                <div className="bs col">
+            <div className="j-topbar row">
+                <div className="col">
                     <TopBar username={this.props.username} />
                 </div>
             </div>
 
-            <div className="j-stage bs row">
-                <div className="j-col-2 bs col-2">
+            <div className="j-stage row">
+                <div className="j-sidebar-container j-col-2 col-2">
                     <SideBar username={this.props.username} logout={this.props.logout} />
                 </div>
-                <div className="bs col">
+                <div className="j-main col">
                     <Switch>
                         <Route exact path='/' component={Feed} />
                         <Route path={'/undefined/:page'} component={ErrorNotFound} />
