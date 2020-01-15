@@ -5,7 +5,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
-// import { NavLink, Link, Route } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 // import './Feed.css';
@@ -21,17 +21,41 @@ export default class Feed extends PureComponent {
   }
 
   async componentDidMount() {
-    const url = 'http://localhost:3129/posts/';
+    console.log("componentDidMount");
+    await this.getFeed();
+  }
+
+  async componentDidUpdate(prevProps,prevState) {
+    console.log("componentDidUpdate");
+    if (this.props.location.pathname !== prevProps.location.pathname) {
+      console.log("RELOAD", this.props.match.isExact);
+      await this.getFeed();
+    }
+  }
+
+  getSearches = () => {
+      let process = new URLSearchParams(this.props.location.search);
+      return process.get("search");
+  }
+
+  getFeed = async () => {
+    let url = 'http://localhost:3129/posts/';
+    const pathname = this.props.location.pathname;
+    const searchString = this.getSearches();
+    if (!pathname.includes("all")) {
+      url += `follows/${this.uId}`;
+    } else if (searchString) {
+      url += `tags/?hashtags=${searchString}`;
+    }
     const response = await axios.get(url);
-    const joined = this.state.posts.concat(response.data.payload);
-    this.setState({
-        posts: joined
+    this.setState((prevState, props) => {
+        return {posts: response.data.payload}
     });
   }
 
   // ############## RENDER ################
   render() {
-
+    console.log("render, posts: ", this.state.posts);
     const postsList = this.state.posts.map(post => {
         return(
             <PostCard

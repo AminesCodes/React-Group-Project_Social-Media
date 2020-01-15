@@ -32,6 +32,7 @@ const { processInput } = require('../helpers/postsHelp.js');
 const { 
   getAllPosts,
   getAllPostsByUser,
+  getAllPostsByUsersFollows,
   getAllPostsByHashtags,
   getOnePost,
   createPost,
@@ -72,6 +73,23 @@ router.get("/userid/:id", async (req, res, next) => {
     } catch (err) {
       handleError(err, req, res, next);
     }
+});
+
+//    getAllPostsByUsersFollows: get all posts by a single user's follows. limit 10, optional offset
+router.get("/follows/:id", async (req, res, next) => {
+  try {
+    const currUserId = processInput(req, "userId");
+    const offset = processInput(req, "offset");
+    const allPostsByUsersFollows = await getAllPostsByUsersFollows(currUserId, offset);
+    await checkDoesUserExist(allPostsByUsersFollows, currUserId);
+    res.json({
+        status: "success",
+        message: `all posts by user ${currUserId}'s follows retrieved`,
+        payload: allPostsByUsersFollows
+    });
+  } catch (err) {
+    handleError(err, req, res, next);
+  }
 });
 
 //    getAllPostsByHashtags: get all users' posts by hashtags. limit 10, optional offset
