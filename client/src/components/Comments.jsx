@@ -1,7 +1,10 @@
 import React from 'react'
 
 import CommentCard from './CommentCard'
-// import { ReactComponent as Close } from '../assets/images/icons/times-circle-solid.svg';
+
+import { ReactComponent as Close } from '../assets/images/icons/times-circle-solid.svg';
+import { ReactComponent as Edit } from '../assets/images/icons/edit-solid.svg';
+import { ReactComponent as Save } from '../assets/images/icons/save-solid.svg';
 
 export default class Comments extends React.PureComponent {
 
@@ -13,35 +16,33 @@ export default class Comments extends React.PureComponent {
             zIndex: 1,
             position: 'absolute',
             top: '3%',
+            left: '2%',
             height: '95%',
             width: '100%',
             backgroundColor: backgroundColor,
+            overflow: 'scroll'
+        }
+        const iconStyle = {
+            zIndex: 1,
+            height: '30px',
+            width: '30px',
+            padding: '0 5px',
+            marginBottom: '10px',
+            cursor: 'pointer',
+            fill: 'red',
         }
         
         return (
             <div className='container rounded' style={divStyle}>
-                {this.props.allComments.map(comment => <CommentCard key={comment.comment_id + comment.username} avatar={comment.avatar_url} username={comment.username} comment={comment.comment_body} timestamp={comment.time_created}/>)}
-                {/* <div className='card position-relative' style={{width: '100%', height: '100%', backgroundColor: backgroundColor}}>
-                    <Close className='position-absolute icon' onClick={this.props.handleClosePost} />
-                    <div className='card-img-top position-relative' style={{width: '100%', height: '80%'}}>
-                        <TrashCan className='icon' style={{position: 'absolute', top: '0', right: '0'}} onClick={() => this.props.handleDeletePost(this.props.postId)}/>
-                        <img src={this.props.image} alt='Card' style={imageStyle}/>
-                        <span className='timestampSpan'>{new Date(this.props.timestamp).toLocaleString()}</span>
+                <Close className='' style={iconStyle} onClick={this.props.handleCloseComments} />
+                <form className='d-flex p-3' onSubmit={e => this.props.handleAddCommentForm(e)} style={{width: '100%'}}>
+                    <div className='d-flex flex-column'>
+                        <label htmlFor='newComment'><Edit className='icon flex-grow-1'/></label>
+                        <button className='btn btn-primary'><Save style={{width: '30px'}}/></button>
                     </div>
-                    <div className='card-body p-1' style={{width: '100%', height: '20%'}}>
-                        <form className='d-flex' onSubmit={e => this.props.handleForm(e, this.props.postId)} style={{width: '100%', height: '83%'}}>
-                            <div className='d-flex flex-column'>
-                                <label htmlFor='captionEdit'><Edit className='icon flex-grow-1'/></label>
-                                <button className='btn btn-primary'><Save style={{width: '30px'}}/></button>
-                            </div>
-                            <textarea className='rounded flex-grow-1' id='captionEdit' value={this.props.caption} onChange={e => this.props.handleCaptionInput(e)}></textarea>
-                        </form>
-                        <div className='d-flex justify-content-between'>
-                            <span className='text-white p-0 m-0'>Reactions <span>num</span></span>
-                            <span className='text-white p-0 m-0'>Comments <span>num</span></span>
-                        </div>
-                    </div>
-                </div> */}
+                    <textarea className='rounded flex-grow-1' id='newComment' value={this.props.commentText} onChange={e => this.props.handleCommentInput(e)}></textarea>
+                </form>
+                {this.props.allComments.map(comment => <CommentCard key={comment.comment_id + comment.username} postId={this.props.postId} commentId={comment.comment_id} avatar={comment.avatar_url} username={comment.username} comment={comment.comment_body} timestamp={comment.time_created} userId={this.props.userId} commenterId={comment.commenter_id} reloadComments={this.props.reloadComments} />)}
             </div>
         )
     }
