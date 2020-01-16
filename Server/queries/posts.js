@@ -13,7 +13,9 @@ const getAllPosts = async (offset) => {
     const getQuery = `
       SELECT posts.id
         , username
+        , avatar_url
         , posts.time_created
+        , title
         , image_url
         , caption
         , hashtag_str
@@ -31,14 +33,45 @@ const getAllPosts = async (offset) => {
 const getAllPostsByUser = async (numId, offset) => {
   try {
     const getQuery = `
-      SELECT id
-        , time_created
+      SELECT posts.id
+        , username
+        , avatar_url
+        , posts.time_created
+        , title
         , image_url
         , caption
         , hashtag_str
-      FROM posts
+      FROM posts INNER JOIN users ON (posts.owner_id = users.id)
       WHERE owner_id = $/id/
-      ORDER BY time_created DESC
+      ORDER BY posts.time_created DESC
+        , posts.id ASC
+      LIMIT 10 OFFSET $/offset/;
+    `;
+    return await db.any(getQuery, { id: numId, offset });
+  } catch(err) {
+    throw(err);
+  }
+}
+
+const getAllPostsByUsersFollows = async (numId, offset) => {
+  try {
+    const getQuery = `
+      SELECT posts.id
+      , username
+      , avatar_url
+      , posts.time_created
+      , title
+      , image_url
+      , caption
+      , hashtag_str
+      FROM posts INNER JOIN users ON (posts.owner_id = users.id)
+      WHERE owner_id IN (
+          SELECT followed_user_id
+          FROM follows
+          WHERE follower_id = $/id/
+          )
+      ORDER BY posts.time_created DESC
+      , posts.id ASC
       LIMIT 10 OFFSET $/offset/;
     `;
     return await db.any(getQuery, { id: numId, offset });
@@ -52,7 +85,9 @@ const getAllPostsByHashtags = async (hashArr, offset) => {
     const getQuery = `
       SELECT posts.id
         , username
+        , avatar_url
         , posts.time_created
+        , title
         , image_url
         , caption
         , hashtag_str
@@ -72,7 +107,9 @@ const getOnePost = async (numId) => {
     const getQuery = `
       SELECT posts.id
         , username
+        , avatar_url
         , posts.time_created
+        , title
         , image_url
         , caption
         , hashtag_str
@@ -167,6 +204,7 @@ const getPostOwner = async (numId) => {
 module.exports = {
   getAllPosts,
   getAllPostsByUser,
+  getAllPostsByUsersFollows,
   getAllPostsByHashtags,
   getOnePost,
   createPost,
