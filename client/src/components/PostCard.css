@@ -109,6 +109,10 @@ li.j-post-card {
   font-family: 'AlegreyaSans-Black', sans-serif;
   color: #000;
   font-size: 1.2em;
+  width: inherit;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .j-post-hashtag-link {
