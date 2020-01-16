@@ -35,6 +35,7 @@ export default class PersonalPosts extends React.PureComponent {
         userPosts: [],
         targetPostId: 0,
         targetPost: null,
+        targetPostTitle: '',
         targetPostCaption: '',
         displayTargetPost: false,
     }
@@ -57,6 +58,7 @@ export default class PersonalPosts extends React.PureComponent {
         this.setState({
             targetPostId: this.state.userPosts[index].id,
             targetPost: this.state.userPosts[index],
+            targetPostTitle: this.state.userPosts[index].title,
             targetPostCaption: this.state.userPosts[index].caption,
             displayTargetPost: true
         })
@@ -71,21 +73,25 @@ export default class PersonalPosts extends React.PureComponent {
 
         try {
             const pw = sessionStorage.getItem('Parent-Ing_App_KS')
-            const user = {
+            const requestBody = {
                 password: pw,
                 currUserId: this.props.userId,
-                caption: this.state.targetPostCaption
+                title: this.state.targetPostTitle,
+                caption: this.state.targetPostCaption,
             }
-            const { data } = await axios.patch(`http://localhost:3129/posts/edit/${postId}`, user)
+            const { data } = await axios.patch(`http://localhost:3129/posts/edit/${postId}`, requestBody)
             if (data.status === 'success') {
                 this.getUserPosts(this.props.userId)
                 toast.success('✓',
                     { position: toast.POSITION.BOTTOM_CENTER });
             }
-
         } catch (err) {
             handleNetworkErrors(err)
         }
+    }
+
+    handleTitleInput = event => {
+        this.setState({targetPostTitle: event.target.value})
     }
 
     handleCaptionInput = event => {
@@ -117,7 +123,7 @@ export default class PersonalPosts extends React.PureComponent {
     render() {
         let post = null
         if (this.state.displayTargetPost) {
-            post = <PostLightBox userId={this.props.userId} postId={this.state.targetPostId} caption={this.state.targetPostCaption} image={this.state.targetPost.image_url} timestamp={this.state.targetPost.time_created} handleClosePost={this.handleClosePost} handleDeletePost={this.handleDeletePost} handleCaptionInput={this.handleCaptionInput} handleForm={this.handleForm}/>
+            post = <PostLightBox userId={this.props.userId} postId={this.state.targetPostId} title={this.state.targetPostTitle} caption={this.state.targetPostCaption} image={this.state.targetPost.image_url} timestamp={this.state.targetPost.time_created} handleClosePost={this.handleClosePost} handleDeletePost={this.handleDeletePost} handleTitleInput={this.handleTitleInput} handleCaptionInput={this.handleCaptionInput} handleForm={this.handleForm}/>
         }
         return (
             <div className={`container tab-pane ${this.props.active}`}>
