@@ -125,12 +125,15 @@ export default class PostLightBox extends React.PureComponent {
                         <span className='timestampSpan'>{new Date(this.props.timestamp).toLocaleString()}</span>
                     </div>
                     <div className='card-body p-1' style={{width: '100%', height: '20%'}}>
-                        <form className='d-flex' onSubmit={e => this.props.handleForm(e, this.props.postId)} style={{width: '100%', height: '83%'}}>
-                            <div className='d-flex flex-column'>
-                                <label htmlFor='captionEdit'><Edit className='icon flex-grow-1'/></label>
+                        <form className='row' onSubmit={e => this.props.handleForm(e, this.props.postId)} style={{width: '100%', height: '83%'}}>
+                            <div className='col-1'>
+                                <label htmlFor='titleEdit'><Edit className='icon flex-grow-1'/></label>
                                 <button className='btn btn-primary'><Save style={{width: '30px'}}/></button>
                             </div>
-                            <textarea className='rounded flex-grow-1' id='captionEdit' value={this.props.caption} onChange={e => this.props.handleCaptionInput(e)}></textarea>
+                            <div className='col-11 d-flex flex-column'>
+                                <input className='rounded mb-1' type='text' id='titleEdit' value={this.props.title} onChange={e => this.props.handleTitleInput(e)} />
+                                <textarea className='rounded flex-grow-1' value={this.props.caption} onChange={e => this.props.handleCaptionInput(e)} />
+                            </div>
                         </form>
                         <div className='d-flex justify-content-between'>
                             <span className='text-white p-0 m-0 cursorPointer'>Reactions <span>{this.state.reactions.length}</span></span>
