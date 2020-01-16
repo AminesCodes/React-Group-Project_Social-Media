@@ -1,6 +1,7 @@
 import React from 'react'
 
 import CommentCard from './CommentCard'
+
 import { ReactComponent as Close } from '../assets/images/icons/times-circle-solid.svg';
 import { ReactComponent as Edit } from '../assets/images/icons/edit-solid.svg';
 import { ReactComponent as Save } from '../assets/images/icons/save-solid.svg';

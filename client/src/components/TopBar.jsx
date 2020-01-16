@@ -5,22 +5,27 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
-import { Link } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 
 import './TopBar.css';
 
 import UsernameSign from './UsernameSign';
 
 // import { ReactComponent as Logo } from '../assets/images/logo_200112.svg';
-const imgLogo = require('../assets/images/logo-quick.png');
+const imgLogo = require('../assets/images/logo-quick2.png');
 
-export default class TopBar extends PureComponent {
+class TopBar extends PureComponent {
   state = {
     search: ''
   }
 
   handleSearchForm = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
+    console.log(this.props.history)
+    this.props.history.push({
+        pathname: `/${this.props.username}/feed/all`,
+        search: `?search=${this.state.search}`
+    });
   }
 
   handleSearchInput = event => {
@@ -57,3 +62,5 @@ export default class TopBar extends PureComponent {
     )
   }
 }
+
+export default withRouter(TopBar);

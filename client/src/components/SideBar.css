@@ -5,6 +5,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 .j-sidebar {
+  position: fixed;
   padding-top: 33px;
 }
 
