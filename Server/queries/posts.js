@@ -15,6 +15,7 @@ const getAllPosts = async (offset) => {
         , username
         , avatar_url
         , posts.time_created
+        , title
         , image_url
         , caption
         , hashtag_str
@@ -32,15 +33,18 @@ const getAllPosts = async (offset) => {
 const getAllPostsByUser = async (numId, offset) => {
   try {
     const getQuery = `
-      SELECT id
-        , time_created
+      SELECT posts.id
+        , username
+        , avatar_url
+        , posts.time_created
+        , title
         , image_url
         , caption
         , hashtag_str
-      FROM posts
+      FROM posts INNER JOIN users ON (posts.owner_id = users.id)
       WHERE owner_id = $/id/
-      ORDER BY time_created DESC
-        , id ASC
+      ORDER BY posts.time_created DESC
+        , posts.id ASC
       LIMIT 10 OFFSET $/offset/;
     `;
     return await db.any(getQuery, { id: numId, offset });
@@ -56,6 +60,7 @@ const getAllPostsByUsersFollows = async (numId, offset) => {
       , username
       , avatar_url
       , posts.time_created
+      , title
       , image_url
       , caption
       , hashtag_str
@@ -82,6 +87,7 @@ const getAllPostsByHashtags = async (hashArr, offset) => {
         , username
         , avatar_url
         , posts.time_created
+        , title
         , image_url
         , caption
         , hashtag_str
@@ -103,6 +109,7 @@ const getOnePost = async (numId) => {
         , username
         , avatar_url
         , posts.time_created
+        , title
         , image_url
         , caption
         , hashtag_str
