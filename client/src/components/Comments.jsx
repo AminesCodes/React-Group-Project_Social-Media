@@ -19,6 +19,7 @@ export default class Comments extends React.PureComponent {
             height: '95%',
             width: '100%',
             backgroundColor: backgroundColor,
+            overflow: 'scroll'
         }
         const iconStyle = {
             zIndex: 1,

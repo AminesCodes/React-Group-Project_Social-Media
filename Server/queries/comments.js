@@ -41,7 +41,7 @@ const editComment = async (commentId, commenterId, body) => {
             SET comment_body = $3
             WHERE id = $1 AND commenter_id = $2
             RETURNING *`
-        return await db.one(requestQuery, [commentId, body])
+        return await db.one(requestQuery, [commentId, commenterId, body])
     } catch (err) {
         throw err
     }

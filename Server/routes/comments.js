@@ -28,7 +28,6 @@ const handleError = (response, err) => {
             payload: null,
         })
     } else { 
-        console.log(err)
         response.status(500)
         response.json({
             status: 'fail',
@@ -39,7 +38,7 @@ const handleError = (response, err) => {
 }
 
 const isValidId = (id) => {
-    if (!isNaN(parseInt(id)) && id.length === (parseInt(id) + '').length) {
+    if (!isNaN(parseInt(id)) && (id+'').length === (parseInt(id) + '').length) {
         return true
     }
     return false
@@ -151,21 +150,20 @@ router.post('/:postId/:userId', async (request, response) => {
 
 
 // EDIT A COMMENT
-router.put('/:commentId/:userId', async (request, response) => {
+router.put('/:commentId', async (request, response) => {
     const commentId = request.params.commentId;
-    const userId = request.params.userId;
-    const { password, body } = request.body;
+    const { password, userId, body } = request.body;
     const validCommentId = isValidId(commentId);
     const validUserId = isValidId(userId);
 
-    if (!validCommentId || !validUserId) {
+    if (!validCommentId) {
         response.status(404)
         response.json({
             status: 'fail',     
             message: 'Wrong route',
             payload: null,
         })
-    } else if (!password || !body) {
+    } else if (!password || !validUserId || !body) {
         response.status(400)
         response.json({
             status: 'fail',
@@ -191,6 +189,7 @@ router.put('/:commentId/:userId', async (request, response) => {
                         payload: editExistingComment,
                     })
                 } catch (err) {
+                    console.log(err)
                     handleError(response, err)
                 }
             }

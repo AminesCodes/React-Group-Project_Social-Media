@@ -46,11 +46,28 @@ export default class CommentCard extends React.PureComponent {
     handleEditForm = async (event) => {
         event.preventDefault()
 
-        try {
-
-            this.reloadComments(this.props.postId)
-        } catch (err) {
-            handleNetworkErrors(err)
+        if (this.state.comment && this.state.comment !== this.props.comment) {
+            try {
+                const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+                const requestBody = {
+                    password: pw,
+                    userId: this.props.userId,
+                    body: this.state.comment
+                }
+                const { data } = await axios.put(`http://localhost:3129/comments/${this.props.commentId}`, requestBody)
+                console.log(data)
+                if (data.status === 'success') {
+                    this.props.reloadComments(this.props.postId)
+                    this.setState({
+                        showForm: false,
+                        // comment: this.props.comment
+                    })
+                }
+            } catch (err) {
+                handleNetworkErrors(err)
+            }
+        } else if (this.state.comment === this.props.comment){
+            this.setState({ showForm: false })
         }
     }
 
@@ -63,12 +80,11 @@ export default class CommentCard extends React.PureComponent {
             const pw = sessionStorage.getItem('Parent-Ing_App_KS')
             const requestBody = {
                 password: pw,
-                userId: this.props.userId+'',
+                userId: this.props.userId,
             }
-            console.log(requestBody)
-            const { data } = await axios.patch(`http://localhost:3129/comments/${this.props.postId}/delete`, requestBody)
+            const { data } = await axios.patch(`http://localhost:3129/comments/${this.props.commentId}/delete`, requestBody)
             if (data.status === 'success') {
-                this.reloadComments(this.props.postId)
+                this.props.reloadComments(this.props.postId)
             }
         } catch (err) {
             handleNetworkErrors(err)
