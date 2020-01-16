@@ -12,7 +12,7 @@ import './TopBar.css';
 import UsernameSign from './UsernameSign';
 
 // import { ReactComponent as Logo } from '../assets/images/logo_200112.svg';
-const imgLogo = require('../assets/images/logo-quick.png');
+const imgLogo = require('../assets/images/logo-quick2.png');
 
 class TopBar extends PureComponent {
   state = {

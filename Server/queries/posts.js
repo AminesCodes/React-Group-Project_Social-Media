@@ -13,6 +13,7 @@ const getAllPosts = async (offset) => {
     const getQuery = `
       SELECT posts.id
         , username
+        , avatar_url
         , posts.time_created
         , image_url
         , caption
@@ -53,6 +54,7 @@ const getAllPostsByUsersFollows = async (numId, offset) => {
     const getQuery = `
       SELECT posts.id
       , username
+      , avatar_url
       , posts.time_created
       , image_url
       , caption
@@ -78,6 +80,7 @@ const getAllPostsByHashtags = async (hashArr, offset) => {
     const getQuery = `
       SELECT posts.id
         , username
+        , avatar_url
         , posts.time_created
         , image_url
         , caption
@@ -98,6 +101,7 @@ const getOnePost = async (numId) => {
     const getQuery = `
       SELECT posts.id
         , username
+        , avatar_url
         , posts.time_created
         , image_url
         , caption

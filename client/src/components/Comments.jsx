@@ -1,7 +1,7 @@
 import React from 'react'
 
 import CommentCard from './CommentCard'
-import { ReactComponent as Close } from '../assets/images/icons/times-circle-solid.svg';
+// import { ReactComponent as Close } from '../assets/images/icons/times-circle-solid.svg';
 
 export default class Comments extends React.PureComponent {
 

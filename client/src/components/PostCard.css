@@ -5,5 +5,122 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 li.j-post-card {
-  height: 200px;
+  display: block;
+  background: #F1EFEF;
+  box-shadow: 6px 4px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  width: min-content;
+  margin: 50px 11px 40px 3px;
+  padding: 11px;
+  padding-bottom: 16px;
+
+  position: relative;
+}
+
+.j-post-userbox {
+  z-index: 100;
+  position: absolute;
+  top: 11px;
+  left: -22px;
+  padding: 11px;
+  border-radius: 16px;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  /* border: solid 3px #513e6b;
+  background-color: #fff; */
+}
+
+.j-post--username {
+  background-color: #fff;
+  border: solid 2px #341560;
+  border-radius: 18px;
+  padding: 3px 11px 2px 11px;
+  text-align: center;
+}
+
+.j-post--avatar {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 18px;
+  margin-top: 2px;
+  margin-left: 1px;
+  border: solid 2px #341560;
+  position: relative;
+  top: -4px;
+}
+
+.j-post-grid {
+  display: grid;
+  grid-template-columns: 373px min-content;
+  grid-template-rows: 60px 80px auto min-content;
+}
+
+.j-post--postimg-box {
+  grid-row: span 3;
+}
+
+.j-post--postimg {
+  height: 390px;
+  border-radius: 8px;
+  margin-right: 32px;
+
+  z-index: 80;
+  position: relative;
+  top: -25px;
+  left: 0px;
+}
+
+.j-post-banner-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 6px 16px 6px 100px;
+}
+
+.j-post-date {
+  color: #aaa;
+}
+
+.j-post-caption {
+  padding: 6px 16px 6px 81px;
+  text-align: right;
+  font-size: 1.3em;
+  line-height: 1.3em;
+}
+
+.j-post-hashtags-box {
+  grid-column: span 2;
+}
+
+.j-post-hashtags-hr {
+  height: 2px;
+  width: auto;
+  background-color: #000;
+  margin: 3px 15px;
+}
+
+.j-post-hashtags {
+  padding: 6px 19px 6px 19px;
+  font-family: 'AlegreyaSans-Black', sans-serif;
+  color: #000;
+  font-size: 1.2em;
+}
+
+.j-post-hashtag-link {
+  margin: 0px 3px;
+
+  color: #000;
+}
+
+.j-post-hashtag-link:hover {
+  color: #f310c2;
+}
+
+.j-shadow {
+  box-shadow: 6px 4px 10px rgba(0, 0, 0, 0.45);
 }

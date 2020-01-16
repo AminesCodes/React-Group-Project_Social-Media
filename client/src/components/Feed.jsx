@@ -5,6 +5,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 // import './Feed.css';
@@ -56,26 +57,54 @@ export default class Feed extends PureComponent {
     });
   }
 
+  // handleClickHashtag = async (event) => {
+  //   event.preventDefault();
+  //   console.log(this.props.history)
+  //   this.props.history.push({
+  //       pathname: `/${this.props.username}/feed/all`,
+  //       search: `?search=${this.state.search}`
+  //   });
+  // }
+
   // ############## RENDER ################
   render() {
     // console.log("render ran, posts: ", this.state.posts);
     const postsList = this.state.posts.map(post => {
+        let tagData = post.hashtag_str;
+        let hashtags = tagData.split('#');
+        hashtags = hashtags.filter(el => !!el).map(tag => {
+            return (
+              <Link 
+                key={post.id + tag} 
+                to={`/${this.props.username}/feed/all?search=${tag}`} 
+                className="j-post-hashtag-link" 
+              >
+                {'#' + tag}
+              </Link>
+            );
+        });
+
+        // const hashtagsStr = hashtags.join(' ');
+
+        const timestamp = new Date(post.time_created);
         return(
             <PostCard
               key={post.id} 
               username={post.username} 
+              avatar_url={post.avatar_url} 
               caption={post.caption} 
-              hashtag_str={post.hashtag_str} 
+              hashtags={hashtags} 
               id={post.id} 
               image_url={post.image_url} 
-              time_created={post.time_created}
+              time_created={timestamp.toUTCString()}
+
+              handleClickHashtag={this.handleClickHashtag}
             />
         );
     });
 
     return (
       <>
-        <p>FEED | Home page: {this.pw}, {this.uId}</p>
         {postsList}
       </>
     )
