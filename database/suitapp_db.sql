@@ -27,7 +27,7 @@ CREATE TABLE users
 CREATE TABLE posts
 (
     id SERIAL PRIMARY KEY,
-    title VARCHAR (35) DEFAULT ''
+    title VARCHAR (35) DEFAULT '',
     image_url TEXT NOT NULL,
     caption VARCHAR DEFAULT '',
     owner_id INT REFERENCES users(id) ON DELETE CASCADE,
