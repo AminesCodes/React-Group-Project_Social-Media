@@ -6,9 +6,10 @@ const getAllReactionsByPostId = async (postId) => {
             SELECT reactions.id AS reaction_id
                 , emoji_type
                 , reactor_id
+                , username
                 , post_id
-                , time_created
-            FROM reactions
+                , reactions.time_created
+            FROM reactions JOIN users ON (reactor_id = users.id)
             WHERE post_id = $1
             ORDER BY reactions.id ASC`
         return await db.any(requestQuery, postId)

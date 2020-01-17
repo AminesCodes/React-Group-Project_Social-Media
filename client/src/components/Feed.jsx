@@ -83,20 +83,22 @@ export default class Feed extends PureComponent {
               </Link>
             );
         });
-
-        // const hashtagsStr = hashtags.join(' ');
+        const calcedGridStyle = { gridTemplateColumns: (!post.title && !post.caption) ? "min-content" : "373px min-content" }
 
         const timestamp = new Date(post.time_created);
+
         return(
             <PostCard
               key={post.id} 
               username={post.username} 
               avatar_url={post.avatar_url} 
+              gridStyle={calcedGridStyle}
+              title={post.title} 
               caption={post.caption} 
               hashtags={hashtags} 
               id={post.id} 
               image_url={post.image_url} 
-              time_created={timestamp.toUTCString()}
+              time_created={timestamp.toLocaleString()}
 
               handleClickHashtag={this.handleClickHashtag}
             />
