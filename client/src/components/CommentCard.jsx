@@ -48,7 +48,7 @@ export default class CommentCard extends React.PureComponent {
 
         if (this.state.comment && this.state.comment !== this.props.comment) {
             try {
-                const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+                const pw = sessionStorage.getItem('Suit_App_KS')
                 const requestBody = {
                     password: pw,
                     userId: this.props.userId,
@@ -77,7 +77,7 @@ export default class CommentCard extends React.PureComponent {
 
     handleDeleteComment = async () => {
         try {
-            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+            const pw = sessionStorage.getItem('Suit_App_KS')
             const requestBody = {
                 password: pw,
                 userId: this.props.userId,

@@ -72,7 +72,7 @@ export default class PostLightBox extends React.PureComponent {
         event.preventDefault()
 
         try {
-            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+            const pw = sessionStorage.getItem('Suit_App_KS')
             const requestBody = {
                 password: pw,
                 body: this.state.newComment,

@@ -20,11 +20,11 @@ export default function PostCard(props) {
       <div className="j-post-grid">
 
         <div className="reactionHold"></div>
-        <div className="j-post--postimg-box">
-          <img className="j-post--postimg j-shadow" src={props.image_url} alt="Post" />
+        <div className="j-post--posting-box">
+          <img className="j-post--posting j-shadow" src={props.image_url} alt="Post" />
         </div>
         <div className="j-post-banner-box">
-          <h3 className="j-post-title">{/*props.title*/}</h3>
+          <h3 className="j-post-title">{props.title}</h3>
           <p className="j-post-date">{props.time_created}</p>
         </div>
         <p className="j-post-caption">{props.caption}</p>

@@ -14,8 +14,8 @@ import PostCard from './PostCard';
 
 
 export default class Feed extends PureComponent {
-  pw = sessionStorage.getItem('Parent-Ing_App_KS');
-  uId = sessionStorage.getItem('Parent-Ing_App_UId');
+  pw = sessionStorage.getItem('Suit_App_KS');
+  // uId = sessionStorage.getItem('Suit_App_UId');
   state = {
     posts: []
   }
@@ -47,7 +47,7 @@ export default class Feed extends PureComponent {
     const pathname = this.props.location.pathname;
     const searchString = this.getSearches();
     if (!pathname.includes("all")) {                      // switch to follows feed
-      url += `follows/${this.uId}`;
+      url += `follows/${this.props.userId}`;
     } else if (searchString) {                            // switch to hashtags feed
       url += `tags/?hashtags=${searchString}`;
     }
@@ -92,11 +92,12 @@ export default class Feed extends PureComponent {
               key={post.id} 
               username={post.username} 
               avatar_url={post.avatar_url} 
+              title={post.title}
               caption={post.caption} 
               hashtags={hashtags} 
               id={post.id} 
               image_url={post.image_url} 
-              time_created={timestamp.toUTCString()}
+              time_created={timestamp.toLocaleString()}
 
               handleClickHashtag={this.handleClickHashtag}
             />
