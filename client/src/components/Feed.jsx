@@ -52,23 +52,24 @@ export default class Feed extends PureComponent {
       url += `tags/?hashtags=${searchString}`;
     }
     const response = await axios.get(url);
+    const postsArray = response.data.payload;
+    for (let post of postsArray) {
+      const [ postComments, postReactions ] = await Promise.all([
+        await axios.get(`http://localhost:3129/comments/${post.id}`),
+        await axios.get(`http://localhost:3129/reactions/post/all/${post.id}`)
+      ]);
+      post["comments"] = postComments.data.payload;
+      post["reactions"] = postReactions.data.payload;
+    }
     this.setState((prevState, props) => {
-        return {posts: response.data.payload}
+        return {posts: postsArray}
     });
   }
-
-  // handleClickHashtag = async (event) => {
-  //   event.preventDefault();
-  //   console.log(this.props.history)
-  //   this.props.history.push({
-  //       pathname: `/${this.props.username}/feed/all`,
-  //       search: `?search=${this.state.search}`
-  //   });
-  // }
 
   // ############## RENDER ################
   render() {
     // console.log("render ran, posts: ", this.state.posts);
+
     const postsList = this.state.posts.map(post => {
         let tagData = post.hashtag_str;
         let hashtags = tagData.split('#');
