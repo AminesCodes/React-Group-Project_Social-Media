@@ -57,6 +57,7 @@ li.j-post-card {
   display: grid;
   /* grid-template-columns: 373px min-content; // made dynamic in Feed.jsx */
   grid-template-rows: 40px 80px auto min-content;
+  min-width: 589px;
 }
 
 .j-post--postimg-box {

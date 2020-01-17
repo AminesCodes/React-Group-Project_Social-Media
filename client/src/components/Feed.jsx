@@ -11,6 +11,7 @@ import axios from 'axios';
 // import './Feed.css';
 
 import PostCard from './PostCard';
+import CommentCard from './CommentCard'
 
 
 export default class Feed extends PureComponent {
@@ -71,6 +72,29 @@ export default class Feed extends PureComponent {
     // console.log("render ran, posts: ", this.state.posts);
 
     const postsList = this.state.posts.map(post => {
+
+        // CREATE COMMENTS
+        let commentsAttachment = []
+        if (post.comments) {
+          commentsAttachment = post.comments.map(comment => {
+              return (
+                <CommentCard 
+                  key={post.id + comment.username + comment.comment_id} 
+                  commentId={comment.comment_id} 
+                  avatar={comment.avatar_url} 
+                  username={comment.username} 
+                  comment={comment.comment_body} 
+                  timestamp={comment.time_created} 
+                  userId={this.props.userId} 
+                  commenterId={comment.commenter_id} 
+                  // postId={this.props.postId} 
+                  // reloadComments={this.props.reloadComments} 
+                />
+              );
+          });
+        }
+
+        // CREATE HASHTAGS COMPONENTS
         let tagData = post.hashtag_str;
         let hashtags = tagData.split('#');
         hashtags = hashtags.filter(el => !!el).map((tag, index) => {
@@ -84,8 +108,12 @@ export default class Feed extends PureComponent {
               </Link>
             );
         });
-        const calcedGridStyle = { gridTemplateColumns: (!post.title && !post.caption) ? "min-content" : "373px min-content" }
 
+        // CREATE DYNAMIC POST WIDTH ON EMPTY TEXTS PROP
+        const calcedImgStyle = { marginRight: (!post.title && !post.caption) ? "auto" : false };
+        const calcedGridStyle = { gridTemplateColumns: (!post.title && !post.caption) ? "min-content" : "373px min-content" };
+
+        // FORMAT TIMESTAMP PROP
         const timestamp = new Date(post.time_created);
 
         return(
@@ -93,13 +121,17 @@ export default class Feed extends PureComponent {
               key={post.id} 
               username={post.username} 
               avatar_url={post.avatar_url} 
-              gridStyle={calcedGridStyle}
               title={post.title} 
               caption={post.caption} 
               hashtags={hashtags} 
               id={post.id} 
               image_url={post.image_url} 
               time_created={timestamp.toLocaleString()}
+              
+              imgStyle={calcedImgStyle} 
+              gridStyle={calcedGridStyle}
+
+              comments={commentsAttachment}
 
               handleClickHashtag={this.handleClickHashtag}
             />

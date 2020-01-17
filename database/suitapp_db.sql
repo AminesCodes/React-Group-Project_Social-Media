@@ -83,7 +83,7 @@ INSERT INTO posts
 (title, image_url, caption, owner_id, hashtag_str)
 VALUES
 ('Happy New Year!', 'http://localhost:3129/images/posts/abby1.jpeg', '#HappyNewYear everyone! I hope it is filled with joy, love and experiences that fulfill you. No matter the difficulty the new year brings, you can get through it. I look forward to sharing new adventures with you!', 1, '#HappyNewYear#'),
-('So White', 'http://localhost:3129/images/posts/abby2.jpeg', 'My #Winter White Girl #cosplay is complete.', 1, '#Winter#cosplay#'),
+('Winter Be HERRR', 'http://localhost:3129/images/posts/abby2.jpeg', 'My #Winter White Girl #cosplay is complete.', 1, '#Winter#cosplay#'),
 ('It''s Doctor "Whom"', 'http://localhost:3129/images/posts/abby3.jpeg', 'The #Tardis broke a things-whirly so I’m trying this human transport! Allonsy!', 1, '#Tardis#'),
 ('COME FIND ME!', 'http://localhost:3129/images/posts/abby4.jpeg', 'Headed to the #Marriott floor! #cosplay2020 #dragoncon #strangerthings', 1, '#Marriott#cosplay2020#dragoncon#strangerthings#'),
 ('Caught In My Web', 'http://localhost:3129/images/posts/nova1.jpeg','“Your life stopped being your own the moment you were bit by that spider.” #cindymoon #silk #spiderverse #cosplay', 2, '#cindymoon#silk#spiderverse#cosplay#'),
@@ -119,12 +119,11 @@ VALUES
 INSERT INTO comments
 (post_id, commenter_id, comment_body)
 VALUES
+(1, 2, 'Oppan Gangnam Style Gangnam Style Op op op op oppan Gangnam Style Gangnam Style Op op op op oppan Gangnam Style.'),
 (1, 3, 'From this day on I shall be known as Bob. For Bob is a good name and I am good. But if you want you can just call me Sally.'),
 (1, 2, 'I see you have something to talk about. Well, I have something to shout about. Infact something to sing about. But I''ll just keep quiet and let you carry on.'),
 (1, 6, 'And everything is going to the beat And everything is going to the beat And everything is going.'),
-(2, 2, 'Oppan Gangnam Style Gangnam Style Op op op op oppan Gangnam Style Gangnam Style Op op op op oppan Gangnam Style.'),
-(2, 7, 'I see trees of green........ red roses too I see em bloom..... for me and for you And I think to myself.... what a wonderful world.'),
-(2, 4, 'People always told me be careful of what you do And dont go around breaking young girls'' hearts And mother always told me be careful of who you love And be careful of what you do cause the lie becomes the truth.'),
+(3, 7, 'I see trees of green........ red roses too I see em bloom..... for me and for you And I think to myself.... what a wonderful world.'),
 (3, 3, 'And everything is going to the beat And everything is going to the beat And everything is going...'),
 (3, 8, 'Buddy you''re a young man hard man Shoutin'' in the street gonna take on the world some day You got blood on yo'' face You big disgrace Wavin'' your banner all over the place.'),
 (3, 4, 'Engaging. It keeps your mind occupied while you wait.'),
@@ -156,6 +155,7 @@ VALUES
 (12, 2, 'Can''t wait to try it out.'),
 (12, 5, 'Exquisite. So appealing.'),
 (13, 8, 'I like your shot =)'),
+(13, 4, 'People always told me be careful of what you do And dont go around breaking young girls'' hearts And mother always told me be careful of who you love And be careful of what you do cause the lie becomes the truth.'),
 (13, 6, 'I want to learn this kind of notification! Teach me.'),
 (13, 1, 'Just sublime m8'),
 (14, 5, 'Violet. Designgasmed all over this!'),

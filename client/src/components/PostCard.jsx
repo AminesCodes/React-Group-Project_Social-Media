@@ -21,7 +21,7 @@ export default function PostCard(props) {
 
         <div className="reactionHold"></div>
         <div className="j-post--postimg-box">
-          <img className="j-post--postimg j-shadow" src={props.image_url} alt="Post" />
+          <img className="j-post--postimg j-shadow" src={props.image_url} style={props.imgStyle} alt="Post" />
         </div>
         <div className="j-post-banner-box">
           {/* <div className="j-post-hashtags-hr">T</div> */}
@@ -36,9 +36,10 @@ export default function PostCard(props) {
             </div>
             <p className="j-post-date">{props.time_created}</p>
           </div>
+          <div className="j-post-hashtags-hr" style={{ display: props.comments.length ? "block" : "none" }} />
         </div>
-
       </div>
+      {props.comments}
     </li>
   );
 }
