@@ -59,11 +59,11 @@ li.j-post-card {
   grid-template-rows: 60px 80px auto min-content;
 }
 
-.j-post--postimg-box {
+.j-post--posting-box {
   grid-row: span 3;
 }
 
-.j-post--postimg {
+.j-post--posting {
   height: 390px;
   border-radius: 8px;
   margin-right: 32px;

@@ -10,8 +10,8 @@ import React, { PureComponent } from 'react';
 // import './Persona.css';
 
 export default class Persona extends PureComponent {
-  pw = sessionStorage.getItem('Parent-Ing_App_KS');
-  uId = sessionStorage.getItem('Parent-Ing_App_UId');
+  pw = sessionStorage.getItem('Suit_App_KS');
+  uId = sessionStorage.getItem('Suit_App_UId');
   state = {
 
   }
