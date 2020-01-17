@@ -42,8 +42,8 @@ export default class Persona extends PureComponent {
     username: '',
     avatar: '',
     bio: '',
-    followers: [],
     posts: [],
+    followers: [],
     newPost: null,
     title: '',
     caption: '',
@@ -65,24 +65,48 @@ export default class Persona extends PureComponent {
       promises.push(axios.get(`http://localhost:3129/posts/userid/${data.payload.id}`))
       promises.push(axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`))
       const response = await Promise.all(promises)
+
+      const allFollowers = response[1].data.payload
+      const randomIndexes = []
+      this.getRandomFollowers(randomIndexes, 3, {}, allFollowers.length)
+      const randomFollows = randomIndexes.map(num => allFollowers[num])
+      // console.log(randomFollows)
       this.setState({
         posts: response[0].data.payload,
-        followers: response[1].data.payload,
+        followers: randomFollows,
       })
     } catch (err) {
       handleNetworkErrors(err)
     }
   }
 
+  getRandomFollowers = (arr, num, tracker, max) => {
+    const randomId = Math.floor(Math.random() * max)
+    if (arr.length === num) {
+      return
+    }
+    if (tracker[randomId]) {
+      this.getRandomFollowers(arr, num, tracker, max)
+    } else {
+      tracker[randomId] = true
+      arr.push(randomId)
+      this.getRandomFollowers(arr, num, tracker, max)
+    }
+  }
   
   // ################ RENDER ###########
   render() {
     // console.log(this.props)
     // console.log(this.state.targetUsername)
+    let myDisplay = null
+    if (this.state.followers.length) {
+      console.log(this.state.followers[0].follower)
+      
+    }
     return (
       <div className='container-fluid'>
-      
-      </div>
+        {this.state.followers.map(user => <p>{user.follower}</p>)}
+   </div>
     );
   }
 }
