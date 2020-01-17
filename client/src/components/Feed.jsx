@@ -73,10 +73,10 @@ export default class Feed extends PureComponent {
     const postsList = this.state.posts.map(post => {
         let tagData = post.hashtag_str;
         let hashtags = tagData.split('#');
-        hashtags = hashtags.filter(el => !!el).map(tag => {
+        hashtags = hashtags.filter(el => !!el).map((tag, index) => {
             return (
               <Link 
-                key={post.id + tag} 
+                key={post.id + tag + `-i${index}`} 
                 to={`/${this.props.username}/feed/all?search=${tag}`} 
                 className="j-post-hashtag-link" 
               >
