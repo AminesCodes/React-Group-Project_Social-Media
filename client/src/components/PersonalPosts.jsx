@@ -42,7 +42,6 @@ export default class PersonalPosts extends React.Component {
     }
 
     getUserPosts = async (userId) => {
-        console.log(`http://localhost:3129/posts/userid/${userId}`)
         if (userId) {
             try {
                 const { data } = await axios.get(`http://localhost:3129/posts/userid/${userId}`)
@@ -54,7 +53,9 @@ export default class PersonalPosts extends React.Component {
     }
 
     componentDidMount() {
-        // this.props.handleTabSelection(3)
+        if (this.props.handleTabSelection) {
+            this.props.handleTabSelection(3)
+        }
         this.getUserPosts(this.state.userId)
     }
 
@@ -92,7 +93,6 @@ export default class PersonalPosts extends React.Component {
                 title: this.state.targetPostTitle,
                 caption: this.state.targetPostCaption,
             }
-            console.log(requestBody)
             const { data } = await axios.patch(`http://localhost:3129/posts/edit/${postId}`, requestBody)
             if (data.status === 'success') {
                 this.getUserPosts(this.state.userId)
@@ -135,7 +135,6 @@ export default class PersonalPosts extends React.Component {
     
     // ##################### RENDER ######################
     render() {
-        console.log(this.state.userId)
         let post = null
         if (this.state.displayTargetPost) {
             post = <PostLightBox userId={this.state.userId} postId={this.state.targetPostId} allowedToEdit={this.props.allowedToEdit} title={this.state.targetPostTitle} caption={this.state.targetPostCaption} image={this.state.targetPost.image_url} timestamp={this.state.targetPost.time_created} handleClosePost={this.handleClosePost} handleDeletePost={this.handleDeletePost} handleTitleInput={this.handleTitleInput} handleCaptionInput={this.handleCaptionInput} handleForm={this.handleForm}/>
