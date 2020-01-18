@@ -5,14 +5,17 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter, Link, Switch, Route } from 'react-router-dom';
 
 import './TopBar.css';
 
 import UsernameSign from './UsernameSign';
 
 // import { ReactComponent as Logo } from '../assets/images/logo_200112.svg';
-const imgLogo = require('../assets/images/logo-quick2.png');
+const imgLogo1 = require('../assets/images/suitApp-Logo-Superhero.png');
+const imgLogo2 = require('../assets/images/suitApp-Logo-Space.png');
+const imgLogo3 = require('../assets/images/suitApp-Logo-Princess.png');
+const imgLogo4 = require('../assets/images/suitApp-Logo-Explorer.png');
 
 class TopBar extends PureComponent {
   state = {
@@ -41,8 +44,20 @@ class TopBar extends PureComponent {
           <UsernameSign username={this.props.username} />
 
           <Link className='navbar-brand' to='/'>
-              <img className='j-logo' src={imgLogo} alt="SuitApp Logo" />
-              {/* <Logo className='j-logo' alt='SuitApp Logo' title='SuitApp Logo' /> height='108px' width='130px'*/}
+            <Switch>
+              <Route path={'/*/persona'}>
+                <img className='j-logo' src={imgLogo2} alt="SuitApp Logo" />
+              </Route>
+              <Route path={'/*/events'}>
+                <img className='j-logo' src={imgLogo3} alt="SuitApp Logo" />
+              </Route>
+              <Route path={'/*/account'}>
+                <img className='j-logo' src={imgLogo4} alt="SuitApp Logo" />
+              </Route>
+              <Route path={'/'}>
+                <img className='j-logo' src={imgLogo1} alt="SuitApp Logo" />
+              </Route>
+            </Switch>
           </Link>
 
           <form onSubmit={this.handleSearchForm}>

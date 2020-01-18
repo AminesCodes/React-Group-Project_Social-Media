@@ -77,6 +77,12 @@ const processInput = (req, location) => {
           formattedHashtags
       });
 
+      case "title":
+      if (!req.body.title || !req.body.title.trim()) {
+        return ''
+      }
+      return req.body.title.trim()
+
     default:
       throw new Error("500__error: you're not supposed to be here.");
   }

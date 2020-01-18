@@ -36,19 +36,19 @@ export default class AboutSA extends PureComponent {
     return (
       <>
         <div className="About">
-          <img 
-            alt="suitApp logo" 
-            src={this.randomLogoLink()}
-            className="hero-logo"
-          />
-          <p className="about-text">SuitApp is a social media site founded on the idea of bringing together the most passionate and creative minds in the world of Cosplay and giving them the tools to reach a wide audience of fans who appreciate and celebrate their work. We want to help you forge the connections to grow your skills and collaborate on bigger builds and bolder designs.<br/>
+          <div className="about-text"><strong>SuitApp</strong> is a social media site founded on the idea of bringing together the most passionate and creative minds in the world of Cosplay and giving them the tools to reach a wide audience of fans who appreciate and celebrate their work. We want to help you forge the connections to grow your skills and collaborate on bigger builds and bolder designs.<br/>
             <br/>
             Find your following.<br/>
             Empower your Cosplay.<br/>
             Discover your best self.<br/>
             <br/>
-            It’s time to SuitApp!<br/>
-          </p>
+            It’s time to<br/>
+            <img 
+              alt="suitApp logo" 
+              src={this.randomLogoLink()}
+              className="hero-logo"
+            />
+          </div>
         </div>
       </>
     );
