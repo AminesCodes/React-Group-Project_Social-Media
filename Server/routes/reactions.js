@@ -82,11 +82,10 @@ router.get('/post/all/:postId', async (request, response) => {
                     payload: allReactionsByPostId,
                 })
             } else {
-                response.status(400)
                 response.json({
-                    status: 'fail',
+                    status: 'success',
                     message: 'No reactions returned.',
-                    payload: null,
+                    payload: [],
                 })
             }
         } catch (err) {
