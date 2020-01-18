@@ -148,8 +148,8 @@ export default class PostCard extends PureComponent {
     return(
       <li className="j-post-card">
         <div className="j-post-userbox">
-          <h6 className="j-post-username j-shadow">{username}</h6>
           <Link to={`/${username}/persona`}>
+            <h6 className="j-post-username j-shadow">{username}</h6>
             <img className="j-post-avatar j-shadow" src={avatar_url} alt="Avatar" />
           </Link>
         </div>
