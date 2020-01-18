@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 
 import Avatar from './Avatar'
@@ -119,8 +120,10 @@ export default class CommentCard extends React.PureComponent {
         return (
             <div className='row'>
                 <div className='col-sm-3'>
-                    <Avatar className='d-block' avatar={this.props.avatar} />
-                    <strong className='d-block p-2 m-0'>{this.props.username}</strong>
+                    <Link to={`/${this.props.username}/persona`}>
+                        <Avatar className='d-block' avatar={this.props.avatar} />
+                        <strong className='d-block p-2 m-0'>{this.props.username}</strong>
+                    </Link>
                 </div>
                 <div className='col-sm-9'>
                     <div className='row'>
