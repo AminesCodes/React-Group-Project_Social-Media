@@ -79,7 +79,6 @@ export default class Persona extends Component {
   }
 
   async shouldComponentUpdate(nextProps, nextState) {
-    console.log(nextProps.match.url, this.props.match.url)
     if (nextProps.match.url !== this.props.match.url) {
       await this.getUserInfo(nextProps.match.url)
       return true
@@ -104,7 +103,6 @@ export default class Persona extends Component {
   
   // ################ RENDER ###########
   render() {
-    console.log('RENDER CALLED')
     const uId = sessionStorage.getItem('Parent-Ing_App_UId')
     const imgAvatar = require('../assets/images/avatars/2.png')
     return (
