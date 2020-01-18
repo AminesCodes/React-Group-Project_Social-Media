@@ -81,10 +81,16 @@ li.j-post-card {
 
   border-radius: 30px;
   padding: 0px 2px 1px 0px;
+  margin-right: 5px;
+}
+
+.j-like-img {
+  position: relative;
+  top: -1px;
 }
 
 .j-reaction-icon-btn:hover {
-  box-shadow: 0px -17px 17px #f310c2;
+  box-shadow: 0px 2px 5px #f310c2;
 }
 
 .j-reaction-num {
