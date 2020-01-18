@@ -38,7 +38,7 @@ export default class Events extends PureComponent {
             {new Date(event.start_time).toLocaleString()}
           </div>
           <div className="Event-date">
-            {new Date(event.end_time).toLocaleString()}
+            {(new Date(event.end_time).toLocaleString()).split(' ')[0]}
           </div>
           <div className="Event-minor">
             {event.con_state}
