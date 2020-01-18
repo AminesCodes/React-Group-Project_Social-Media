@@ -5,8 +5,8 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { Component } from 'react';
-import axios from 'axios'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 
 // import './Persona.css';
 
@@ -80,7 +80,7 @@ export default class Persona extends Component {
 
   async shouldComponentUpdate(nextProps, nextState) {
     if (nextProps.match.url !== this.props.match.url) {
-      await this.getUserInfo(nextProps.match.url)
+       this.getUserInfo(nextProps.match.url)
       return true
     }
     return false
@@ -103,7 +103,6 @@ export default class Persona extends Component {
   // ################ RENDER ###########
   render() {
     const uId = sessionStorage.getItem('Suit_App_UId')
-    console.log(this.state.userId, parseInt(uId))
     const imgAvatar = require('../assets/images/avatars/2.png')
     return (
       <div className='container-fluid m-3'>
