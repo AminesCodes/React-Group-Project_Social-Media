@@ -4,7 +4,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 
@@ -37,7 +37,7 @@ const handleNetworkErrors = err => {
     }
 }
 
-export default class Persona extends PureComponent {
+export default class Persona extends Component {
   state = {
     userId: 0,
     username: '',
@@ -49,11 +49,10 @@ export default class Persona extends PureComponent {
     caption: '',
   }
 
-  async componentDidMount() {
+  getUserInfo = async (url) => {
     try {
-      const targetUser = this.props.match.url.split('/')[1]
+      const targetUser = url.split('/')[1]
       const {data} = await axios.get(`http://localhost:3129/users/${targetUser}`)  //GET THE USER INFO
-      console.log(data)
       this.setState({
         userId: data.payload.id,
         username: data.payload.username,
@@ -67,13 +66,26 @@ export default class Persona extends PureComponent {
       const randomIndexes = []
       this.getRandomFollowers(randomIndexes, 3, {}, allFollowers.length)
       const randomFollows = randomIndexes.map(num => allFollowers[num])
-      // console.log(randomFollows)
       this.setState({
         followers: randomFollows,
       })
     } catch (err) {
       handleNetworkErrors(err)
     }
+  }
+
+  async componentDidMount() {
+    await this.getUserInfo(this.props.match.url)
+  }
+
+  async shouldComponentUpdate(nextProps, nextState) {
+    console.log(nextProps.match.url, this.props.match.url)
+    if (nextProps.match.url !== this.props.match.url) {
+      await this.getUserInfo(nextProps.match.url)
+      return true
+    }
+    // return nextProps.match.url !== this.props.match.url
+    return false
   }
 
   getRandomFollowers = (arr, num, tracker, max) => {
@@ -92,9 +104,9 @@ export default class Persona extends PureComponent {
   
   // ################ RENDER ###########
   render() {
+    console.log('RENDER CALLED')
     const uId = sessionStorage.getItem('Parent-Ing_App_UId')
     const imgAvatar = require('../assets/images/avatars/2.png')
-    console.log(this.state.followers)
     return (
       <div className='container-fluid m-3'>
         <div className='row' >
