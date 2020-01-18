@@ -137,6 +137,27 @@ a.nav-link {
   }
 }
 
+.About {
+  display: inline-block;
+  text-align: center;
+}
+
+.hero-logo {
+  width: 60%;
+  margin-top: 20px;
+  align-self: center;
+  text-align: center;
+}
+
+.about-text {
+  background-color: #F1EFEF;
+  color: black;
+  border-radius: 10px;
+  font-size: large;
+  padding: 10px;
+  margin: 40px;
+}
+
 
 /* JOEY'S HOLD
 
