@@ -83,7 +83,6 @@ export default class Persona extends Component {
       await this.getUserInfo(nextProps.match.url)
       return true
     }
-    // return nextProps.match.url !== this.props.match.url
     return false
   }
 
@@ -103,7 +102,8 @@ export default class Persona extends Component {
   
   // ################ RENDER ###########
   render() {
-    const uId = sessionStorage.getItem('Parent-Ing_App_UId')
+    const uId = sessionStorage.getItem('Suit_App_UId')
+    console.log(this.state.userId, parseInt(uId))
     const imgAvatar = require('../assets/images/avatars/2.png')
     return (
       <div className='container-fluid m-3'>

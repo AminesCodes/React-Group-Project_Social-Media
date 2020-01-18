@@ -284,6 +284,7 @@ export default class Account extends React.PureComponent {
 
     // ############ RENDER ############
     render() {
+        const uId = sessionStorage.getItem('Suit_App_UId')
         let content =
             <div className='spinner-border m-5' role='status'>
                 <span className='sr-only  text-center'>Loading...</span>
@@ -347,6 +348,7 @@ export default class Account extends React.PureComponent {
                         active = {this.state.postsTab}
                         handleTabSelection = {this.handleTabSelection}
                         userId = {this.state.id}
+                        allowedToEdit={this.state.id+'' === uId+''} 
                         {...props} /> )} 
                     />
                     <Route path={`/:username/account/relationships`} render={props => (<Relationships
@@ -363,9 +365,7 @@ export default class Account extends React.PureComponent {
 
         return (
             <div className='container'>
-                {content}
-
-                
+                {content}    
             </div>
         )
     }
