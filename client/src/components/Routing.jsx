@@ -31,7 +31,7 @@ export default class Routing extends PureComponent {
                 </div>
                 <div className="j-main col">
                     <Switch>
-                        <Route path={'/'} render={props => (<Feed username={this.props.username} userId={this.props.userId} {...props} /> )} />
+                        <Route exact path={'/'} render={props => (<Feed username={this.props.username} userId={this.props.userId} {...props} /> )} />
                         <Route path={'/undefined/:page'} component={ErrorNotFound} />
                         <Route path={'/:username/feed'} render={props => (<Feed username={this.props.username} userId={this.props.userId} {...props} /> )} />
                         <Route path={'/:username/persona'} render={props => (<Persona username={this.props.username} userId={this.props.userId} {...props} /> )} />
