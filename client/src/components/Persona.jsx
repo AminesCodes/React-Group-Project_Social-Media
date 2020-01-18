@@ -43,6 +43,7 @@ export default class Persona extends Component {
     username: '',
     avatar: '',
     bio: '',
+    isUserFollowing: false,
     followers: [],
     newPost: null,
     title: '',
@@ -60,15 +61,36 @@ export default class Persona extends Component {
         bio: data.payload.bio,
       })
 
-      const response = await axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`)
+      const promises = []
+      // const response = await axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`)
+      promises.push(axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`))
+      
+      const currentUserId = sessionStorage.getItem('Suit_App_UId')
+      const currentUsername = sessionStorage.getItem('Suit_App_Un')
+      promises.push(axios.get(`http://localhost:3129/follows/${currentUserId}`))
 
-      const allFollowers = response.data.payload
+      const [ allFollowersData, allCurrentUserFollowingsData ] = await Promise.all(promises)
+
+      const allFollowers = allFollowersData.data.payload
       const randomIndexes = []
       this.getRandomFollowers(randomIndexes, 3, {}, allFollowers.length)
       const randomFollows = randomIndexes.map(num => allFollowers[num])
-      this.setState({
-        followers: randomFollows,
-      })
+      
+      this.setState({ followers: randomFollows })
+
+      const allCurrentUserFollowings = allCurrentUserFollowingsData.data.payload
+      let isUserFollowing = false
+      for (let following of allCurrentUserFollowings) {
+        if (following.follow === targetUser) {
+          isUserFollowing = true
+          return
+        }
+      }
+      if (targetUser == currentUsername) {
+        isUserFollowing = true
+      }
+
+      this.setState({ isUserFollowing: isUserFollowing })
     } catch (err) {
       handleNetworkErrors(err)
     }
@@ -99,11 +121,31 @@ export default class Persona extends Component {
       this.getRandomFollowers(arr, num, tracker, max)
     }
   }
+
+  handleFollowButton = async () => {
+    const currentUserId = sessionStorage.getItem('Suit_App_UId')
+    const pw = sessionStorage.getItem('Suit_App_KS')
+    const targetUserId = this.state.userId
+
+    try {
+      const { data } = await axios.post(`http://localhost:3129/follows/add/${currentUserId}/${targetUserId}`, {password: pw})
+      if (data.status === 'success') {
+        this.setState({ isUserFollowing: true })
+      }
+    } catch (err) {
+      handleNetworkErrors(err)
+    }
+  }
   
   // ################ RENDER ###########
   render() {
     const uId = sessionStorage.getItem('Suit_App_UId')
     const imgAvatar = require('../assets/images/avatars/2.png')
+
+    let followBtn = null
+    if (!this.state.isUserFollowing) {
+      followBtn = <button className='btn btn-sm btn-info m-2' onClick={this.handleFollowButton}>Follow</button>
+    }
     return (
       <div className='container-fluid m-3'>
         <div className='row' >
@@ -111,6 +153,7 @@ export default class Persona extends Component {
                 <Avatar avatar={this.state.avatar}/>
             </div>
             <div className='col-sm-7'>
+                {followBtn}
                 <p>{this.state.bio}</p>
             </div>
             <div className='col-sm-3'>
