@@ -65,19 +65,22 @@ export default class Feed extends PureComponent {
     const postsList = this.state.posts.map(post => {
 
         // CREATE HASHTAGS COMPONENTS
-        let tagData = post.hashtag_str;
-        let hashtags = tagData.split('#');
-        hashtags = hashtags.filter(el => !!el).map((tag, index) => {
-            return (
-              <Link 
-                key={post.id + tag + `-i${index}`} 
-                to={`/${this.props.currUsername}/feed/all?search=${tag}`} 
-                className="j-post-hashtag-link" 
-              >
-                {'#' + tag}
-              </Link>
-            );
-        });
+        let hashtags = [];
+        if (post.hashtag_str) {
+          let tagData = post.hashtag_str;
+          hashtags = tagData.split('#');
+          hashtags = hashtags.filter(el => !!el).map((tag, index) => {
+              return (
+                <Link 
+                  key={post.id + tag + `-i${index}`} 
+                  to={`/${this.props.currUsername}/feed/all?search=${tag}`} 
+                  className="j-post-hashtag-link" 
+                >
+                  {'#' + tag}
+                </Link>
+              );
+          });
+        }
 
         // CREATE DYNAMIC POST WIDTH ON EMPTY TEXTS PROP
         const calcedImgStyle = { marginRight: (!post.title && !post.caption) ? "auto" : false };
