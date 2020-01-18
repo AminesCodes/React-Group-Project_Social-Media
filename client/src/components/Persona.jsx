@@ -62,7 +62,6 @@ export default class Persona extends Component {
       })
 
       const promises = []
-      // const response = await axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`)
       promises.push(axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`))
       
       const currentUserId = sessionStorage.getItem('Suit_App_UId')
@@ -81,16 +80,19 @@ export default class Persona extends Component {
       const allCurrentUserFollowings = allCurrentUserFollowingsData.data.payload
       let isUserFollowing = false
       for (let following of allCurrentUserFollowings) {
+        console.log(following.follow, targetUser, currentUsername)
         if (following.follow === targetUser) {
           isUserFollowing = true
-          return
+          break
         }
       }
-      if (targetUser == currentUsername) {
+      if (targetUser === currentUsername) {
         isUserFollowing = true
       }
+      console.log('HERE BEFORE: ', this.state.isUserFollowing)
 
       this.setState({ isUserFollowing: isUserFollowing })
+      console.log('HERE AFTER: ', this.state.isUserFollowing)
     } catch (err) {
       handleNetworkErrors(err)
     }
