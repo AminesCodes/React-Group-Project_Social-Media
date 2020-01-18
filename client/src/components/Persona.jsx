@@ -89,10 +89,8 @@ export default class Persona extends Component {
       if (targetUser === currentUsername) {
         isUserFollowing = true
       }
-      console.log('HERE BEFORE: ', this.state.isUserFollowing)
-
+      
       this.setState({ isUserFollowing: isUserFollowing })
-      console.log('HERE AFTER: ', this.state.isUserFollowing)
     } catch (err) {
       handleNetworkErrors(err)
     }
