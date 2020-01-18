@@ -90,7 +90,7 @@ export default class PostCard extends PureComponent {
 
           <div className="j-reaction-hold">
             <img src={iconLike} className="j-reaction-icon" alt="likes" />{this.state.reactions.length}
-            <img src={iconComment} className="j-reaction-icon" alt="comments" />{this.state.comments.length}
+            <img src={iconComment} className="j-reaction-icon" alt="comments" onClick={this.handleShowClick} />{this.state.comments.length}
           </div>
           <div className="j-post-image-box">
             <img className="j-post-image j-shadow" src={image_url} style={this.props.imgStyle} alt="Post" />
@@ -111,11 +111,11 @@ export default class PostCard extends PureComponent {
           </div>
         </div>
 
-        <button 
-          className="j-post-show-comments-btn" 
-          style={showButtonStyle} 
-          onClick={this.handleShowClick}
-        >Show Comments</button>
+        {/* // <button 
+        //   className="j-post-show-comments-btn" 
+        //   style={showButtonStyle} 
+        //   onClick={this.handleShowClick}
+        // >Show Comments</button> */}
 
         <div className="j-post-comments-box" style={{ display: areCommentsVisible ? "block" : "none" }}>
           <div className="j-post-hr" style={{ display: areCommentsVisible ? "block" : "none" }} />
