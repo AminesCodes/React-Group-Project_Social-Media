@@ -71,7 +71,25 @@ li.j-post-card {
 
 .j-reaction-icon {
   height: 20px;
-  margin: 2px 3px 3px 19px;
+  margin: 2px 1px 0px 7px;
+}
+
+.j-reaction-icon-btn {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  border-radius: 30px;
+  padding: 0px 2px 1px 0px;
+}
+
+.j-reaction-icon-btn:hover {
+  box-shadow: 0px -17px 17px #f310c2;
+}
+
+.j-reaction-num {
+  color: #7d698d;
+  margin: 2px 1px;
 }
 
 .j-post-image-box {
@@ -162,15 +180,16 @@ li.j-post-card {
   color: #f310c2;
 }
 
-.j-post-card > .row {
+.j-post-comments-box > .row {
   flex-wrap: nowrap;
 
+  margin-right: 34px;
   margin-left: 162px;
   padding: 3px 3px 6px 3px;
   border-bottom: solid 1px #111;
 }
 
-.j-post-card > .row > .col-sm-3 {
+.j-post-comments-box > .row > .col-sm-3 {
   display: flex;
   flex-direction: column-reverse;
   flex-wrap: nowrap;
@@ -178,12 +197,12 @@ li.j-post-card {
   min-width: 162px;
 }
 
-.j-post-card > .row > .col-sm-3 > .p-2, .j-post-card .m-2 {
+.j-post-comments-box > .row > .col-sm-3 > .p-2, .j-post-comments-box .m-2 {
   padding: 3px 3px 3px 0px !important;
   margin: 0px !important;
 }
 
-.j-post-card .avatarImage {
+.j-post-comments-box .avatarImage {
   width: 46px;
   height: 46px;
   object-fit: scale-down;
@@ -196,10 +215,10 @@ li.j-post-card {
   margin-left: auto;
 }
 
-.j-post-show-comments-btn {
+/* .j-post-show-comments-btn {
   margin: 6px 15px 3px 15px;
   width: -webkit-fill-available;
-}
+} */
 
 .j-shadow {
   box-shadow: 6px 4px 10px rgba(0, 0, 0, 0.45);
