@@ -58,7 +58,9 @@ export default class CommentCard extends React.PureComponent {
                 const { data } = await axios.put(`http://localhost:3129/comments/${this.props.commentId}`, requestBody)
                 console.log(data)
                 if (data.status === 'success') {
-                    this.props.reloadComments(this.props.postId)
+                    if (this.props.reloadComments) {
+                        this.props.reloadComments(this.props.postId)
+                    }
                     this.setState({
                         showForm: false,
                         // comment: this.props.comment
@@ -85,7 +87,9 @@ export default class CommentCard extends React.PureComponent {
             }
             const { data } = await axios.patch(`http://localhost:3129/comments/${this.props.commentId}/delete`, requestBody)
             if (data.status === 'success') {
-                this.props.reloadComments(this.props.postId)
+                if (this.props.reloadComments) {
+                    this.props.reloadComments(this.props.postId)
+                }
             }
         } catch (err) {
             handleNetworkErrors(err)

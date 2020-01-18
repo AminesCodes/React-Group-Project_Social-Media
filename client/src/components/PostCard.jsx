@@ -146,7 +146,7 @@ export default class PostCard extends Component {
             userId={Number(this.uId)} 
             commenterId={comment.commenter_id} 
             // postId={this.props.postId} 
-            // reloadComments={this.props.reloadComments} 
+            reloadComments={this.getCommentsAndReactions} 
           />
         );
     })
