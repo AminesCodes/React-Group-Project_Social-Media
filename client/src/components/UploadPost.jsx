@@ -32,7 +32,6 @@ const handleNetworkErrors = err => {
 
 export default class UploadPost extends React.PureComponent{
     state = {
-        userId: this.props.userId,
         imageFile: null,
         title: '',
         caption: '',
@@ -71,11 +70,11 @@ export default class UploadPost extends React.PureComponent{
             const pw = sessionStorage.getItem('Suit_App_KS')
             const post = new FormData();
             post.append('posts', this.state.imageFile)
-            post.append('currUserId', this.state.userId)
+            post.append('currUserId', this.props.userId)
             post.append('password', pw)
             post.append('title', this.state.title)
             post.append('caption', this.state.caption)
-
+            
             try {
                 const { data } = await axios.post(`http://localhost:3129/posts/add`, post)
                 if (data.status === 'success') {
@@ -85,7 +84,7 @@ export default class UploadPost extends React.PureComponent{
                         caption: '',
                         position: 'relative'
                     })
-                    this.props.reloadPosts()
+                    await this.props.reloadPosts()
                 }
             } catch (err) {
                 handleNetworkErrors(err)
