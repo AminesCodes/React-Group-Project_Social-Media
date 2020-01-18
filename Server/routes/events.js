@@ -62,7 +62,7 @@ router.get('/event/all/:eventId', async (request, response) => {
             if (allEventsByEventId.length) {
                 response.json({
                     status: 'success',
-                    message: `Successfully retrieved all reactions related to the post: ${eventId}`,
+                    message: `Successfully retrieved all events: ${eventId}`,
                     payload: allEventsByEventId,
                 })
             } else {
