@@ -38,13 +38,35 @@ lavender [rum]: #7d698d
 
 
 /* BASE APP STYLES */
+body {
+  background-color: #120920;
+}
+
 .App {
   font-family: 'Mukta', sans-serif;
   font-size: 0.9em;
 }
 
+button {
+  border-radius: 6px;
+}
+
+.j-jumbotron {
+  margin-bottom: 11rem;
+}
+
 .bg-appColor {
-  background-color: #391868; /* old (lime): #6dc55a */;
+  /* background-color: #391868; */
+  background: rgb(19,9,33);
+  background: linear-gradient(0deg, rgba(19,9,33,1) 13%, rgba(57,24,104,1) 100%);
+}
+
+.j-arrow-down {
+  margin: 0 auto;
+  color: #f1efef;
+  font-weight: bold;
+  font-family: 'AlegreyaSans-Black';
+  width: min-content;
 }
 
 .avatarImage {

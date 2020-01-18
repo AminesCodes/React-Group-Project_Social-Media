@@ -59,12 +59,13 @@ export default class App extends Component {
 
     let pageContent = 
       <>
-        <div className="jumbotron bg-appColor text-white">
+        <div className="j-jumbotron jumbotron bg-appColor text-white">
           <div className="container-sm mx-auto">
             <Logo className='img-fluid d-sm-block mx-auto' alt='SuitApp Logo' title="SuitApp Logo" />
           </div>
           <LoginSigninForm formSubmit={this.handleFormSubmit}/>
         </div>
+        <div className="j-arrow-down">V</div>
         <AboutSA className='container-sm'/>
       </>
 

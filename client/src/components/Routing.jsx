@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 import './Routing.css';
 
@@ -31,7 +31,9 @@ export default class Routing extends PureComponent {
                 </div>
                 <div className="j-main col">
                     <Switch>
-                        <Route exact path={'/'} render={props => (<Feed username={this.props.username} userId={this.props.userId} {...props} /> )} />
+                        <Route exact path={'/'}>
+                            <Redirect to={`/${this.props.username}/feed`} /> 
+                        </Route>
                         <Route path={'/undefined/:page'} component={ErrorNotFound} />
                         <Route path={'/:username/feed'} render={props => (<Feed username={this.props.username} userId={this.props.userId} {...props} /> )} />
                         <Route path={'/:username/persona'} render={props => (<Persona username={this.props.username} userId={this.props.userId} {...props} /> )} />

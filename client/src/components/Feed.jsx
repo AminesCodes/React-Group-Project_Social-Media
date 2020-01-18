@@ -11,7 +11,6 @@ import axios from 'axios';
 // import './Feed.css';
 
 import PostCard from './PostCard';
-import CommentCard from './CommentCard'
 
 
 export default class Feed extends PureComponent {
