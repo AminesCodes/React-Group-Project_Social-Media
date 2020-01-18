@@ -4,6 +4,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import './LoginSigninForm.css';
+
 
 const handleNetworkErrors = err => {
     if (err.response) {
@@ -128,36 +130,36 @@ export default class LoginSigninFrom extends React.PureComponent {
         let signinFields = null;
         if (this.state.formFunctionality[0] === 'Sign-in') {
             signinFields = <>
-                <div className='form-group col-md-6'>
-                    <input className='form-control' id='username' type='text' value={this.state.username} onChange={this.handleUsernameInput} required></input>
+                <div className='j-form-group form-group col-md-6'>
+                    <input className='j-form-control form-control' id='username' type='text' value={this.state.username} onChange={this.handleUsernameInput} required></input>
                     <label className='ph-area' htmlFor='username'>Username: </label>
                 </div>
-                <div className='form-group col-md-6'>
-                    <input className='form-control' id='firstname' type='text' value={this.state.firstName} onChange={this.handleFirstNameInput} required></input>
+                <div className='j-form-group form-group col-md-6'>
+                    <input className='j-form-control form-control' id='firstname' type='text' value={this.state.firstName} onChange={this.handleFirstNameInput} required></input>
                     <label className='ph-area' htmlFor='firstname'>First name: </label>
                 </div>
-                <div className='form-group col-md-6'>
-                    <input className='form-control' id='lastname' type='text' value={this.state.lastName} onChange={this.handleLastNameInput} required></input>
+                <div className='j-form-group form-group col-md-6'>
+                    <input className='j-form-control form-control' id='lastname' type='text' value={this.state.lastName} onChange={this.handleLastNameInput} required></input>
                     <label className='ph-area' htmlFor='lastname'>Last name: </label>
                 </div>
-                <div className='form-group col-md-6'>
-                    <input className='form-check-input' id='defaultCheck' type='checkbox' checked={this.state.ageCheck} onChange={this.handleAgeCheck}/>
-                    <label className='form-check-label' htmlFor='defaultCheck'>I confirm I'm 13 or over</label>
+                <div className='j-form-group form-group col-md-6'>
+                    <input className='j-form-check-input form-check-input' id='defaultCheck' type='checkbox' checked={this.state.ageCheck} onChange={this.handleAgeCheck}/>
+                    <label className='j-form-check-label form-check-label' htmlFor='defaultCheck'>I confirm that I am 13 years old or older.</label>
                 </div>
             </>
         }
         return(
-            <form className='was-validated row' onSubmit={this.handleFormSubmit} >
-                <div className='form-group col-md-6'>
-                    <input className='form-control' id='email' type='email' value={this.state.email} onChange={this.handleEmailInput} required></input>
+            <form className='j-was-validated was-validated row' onSubmit={this.handleFormSubmit} >
+                <div className='j-form-group form-group col-md-6'>
+                    <input className='j-form-control form-control' id='email' type='email' value={this.state.email} onChange={this.handleEmailInput} required></input>
         <label className='ph-area' htmlFor='email'>Email address: </label>
                 </div>
-                <div className='form-group col-md-6'>
-                    <input className='form-control' id='password' type='password' autoComplete='off' value={this.state.password} onChange={this.handlePasswordInput} required></input>
+                <div className='j-form-group form-group col-md-6'>
+                    <input className='j-form-control form-control' id='password' type='password' autoComplete='off' value={this.state.password} onChange={this.handlePasswordInput} required></input>
                     <label className='ph-area' htmlFor='password'>Password: </label>
                 </div>
                 {signinFields}
-                <div className='d-sm-flex justify-content-between col-md-12'>
+                <div className='j-d-sm-flex d-sm-flex justify-content-between col-md-12'>
                     <button className='d-sm-block'>{this.state.formFunctionality[0]}</button>
                     {spinner}
                     <button className='d-sm-block btn btn-link' onClick={this.handleSigninBtn}>{this.state.formFunctionality[1]}<strong>{this.state.formFunctionality[2]}</strong></button>
