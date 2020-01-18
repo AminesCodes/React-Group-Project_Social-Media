@@ -16,8 +16,8 @@ export default function PostCard(props) {
   return(
     <li className="j-post-card">
       <div className="j-post-userbox">
-        <h6 className="j-post--username j-shadow">{props.username}</h6>
-        <img className="j-post--avatar j-shadow" src={props.avatar_url} alt="Avatar" />
+        <h6 className="j-post-username j-shadow">{props.username}</h6>
+        <img className="j-post-avatar j-shadow" src={props.avatar_url} alt="Avatar" />
       </div>
 
       <div className="j-post-grid" style={props.gridStyle}>
@@ -26,11 +26,10 @@ export default function PostCard(props) {
           <img src={iconLike} className="j-reaction-icon" alt="likes" />11
           <img src={iconComment} className="j-reaction-icon" alt="comments" />22
         </div>
-        <div className="j-post--postimg-box">
-          <img className="j-post--postimg j-shadow" src={props.image_url} style={props.imgStyle} alt="Post" />
+        <div className="j-post-image-box">
+          <img className="j-post-image j-shadow" src={props.image_url} style={props.imgStyle} alt="Post" />
         </div>
         <div className="j-post-banner-box">
-          {/* <div className="j-post-hashtags-hr">T</div> */}
           <h3 className="j-post-title">{props.title}</h3>
         </div>
         <p className="j-post-caption">{props.caption}</p>

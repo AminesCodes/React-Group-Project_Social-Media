@@ -24,34 +24,41 @@ toast.configure();
 
 export default class App extends PureComponent {
   state = {
-    loggedUser: '',
+    loggedUser: null,
+    loggedUserId: 0,
+    loggedUserUsername: '',
   }
 
   handleFormSubmit = (user, password) => {
-    sessionStorage.setItem('Parent-Ing_App_KS', password);
-    sessionStorage.setItem('Parent-Ing_App_UId', user.id);
-    sessionStorage.setItem('Parent-Ing_App_Un', user.username);
-    this.setState({loggedUser: user});
+    console.log(user)
+    sessionStorage.setItem('Suit_App_KS', password);
+    sessionStorage.setItem('Suit_App_UId', user.id);
+    sessionStorage.setItem('Suit_App_Un', user.username);
+    
+    this.setState({
+      loggedUser: user,
+    });
   }
 
   handleLogOut = () => {
     sessionStorage.clear();
-    this.setState({loggedUser: null})
+    this.setState({
+      loggedUser: null,
+    })
   }
 
 
   // ###################### RENDER ######################
   render() {
-    const pw = sessionStorage.getItem('Parent-Ing_App_KS')
-    const uId = sessionStorage.getItem('Parent-Ing_App_UId')
-    const username = sessionStorage.getItem('Parent-Ing_App_Un')
+    const pw = sessionStorage.getItem('Suit_App_KS')
+    const uId = sessionStorage.getItem('Suit_App_UId')
+    const username = sessionStorage.getItem('Suit_App_Un')
 
     let pageContent = 
       <>
         <div className="jumbotron bg-appColor text-white">
           <div className="container-sm mx-auto">
             <Logo className='img-fluid d-sm-block mx-auto' alt='SuitApp Logo' title="SuitApp Logo" />
-            <h1 className='text-center'>SuitApp</h1>
           </div>
           <LoginSigninForm formSubmit={this.handleFormSubmit}/>
         </div>
@@ -59,7 +66,7 @@ export default class App extends PureComponent {
       </>
 
     if (pw && uId) {
-      pageContent = <Routing user={this.state.loggedUser} username={username} logout={this.handleLogOut}/>
+      pageContent = <Routing user={this.state.loggedUser} userId={uId} username={username} logout={this.handleLogOut}/>
     }
 
     return (
