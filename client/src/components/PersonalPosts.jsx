@@ -85,8 +85,8 @@ export default class PersonalPosts extends React.Component {
         event.preventDefault()
 
         try {
-            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
-            const uId = sessionStorage.getItem('Parent-Ing_App_UId')
+            const pw = sessionStorage.getItem('Suit_App_KS')
+            const uId = sessionStorage.getItem('Suit_App_UId')
             const requestBody = {
                 password: pw,
                 currUserId: uId,
