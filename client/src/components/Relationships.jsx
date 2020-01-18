@@ -65,7 +65,7 @@ export default class PersonalPosts extends React.PureComponent {
 
     handleUnfollowButton = async (targetId) => {
         try {
-            const password = sessionStorage.getItem('Parent-Ing_App_KS')
+            const password = sessionStorage.getItem('Suit_App_KS')
             const userId = this.props.userId
 
             const {data} = await axios.patch(`http://localhost:3129/follows/delete/${userId}/${targetId}`, {password: password})
@@ -79,7 +79,7 @@ export default class PersonalPosts extends React.PureComponent {
 
     handleFollowButton = async (targetId) => {
         try {
-            const password = sessionStorage.getItem('Parent-Ing_App_KS')
+            const password = sessionStorage.getItem('Suit_App_KS')
             const userId = this.props.userId
 
             const {data} = await axios.post(`http://localhost:3129/follows/add/${userId}/${targetId}`, {password: password})

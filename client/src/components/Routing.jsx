@@ -14,19 +14,6 @@ import ErrorNotFound from './ErrorNotFound';
 
 
 export default class Routing extends PureComponent {
-  state = {
-    search: ''
-  }
-
-  handleSearchForm = async (event) => {
-    event.preventDefault()
-  }
-
-  handleSearchInput = event => {
-    this.setState({search: event.target.value})
-  }
-
-
   // ################ RENDER ###########
   render() {
     return (
@@ -44,13 +31,13 @@ export default class Routing extends PureComponent {
                 </div>
                 <div className="j-main col">
                     <Switch>
-                        <Route exact path='/' component={Feed} />
+                        <Route path={'/'} render={props => (<Feed username={this.props.username} userId={this.props.userId} {...props} /> )} />
                         <Route path={'/undefined/:page'} component={ErrorNotFound} />
-                        <Route path={'/:username/feed'} render={props => (<Feed username={this.props.username} {...props} /> )} />
-                        <Route path={'/:username/persona'} render={props => (<Persona username={this.props.username} {...props} /> )} />
-                        <Route path={'/:username/events'} render={props => (<Events username={this.props.username} {...props} /> )} />
-                        <Route path={'/about'} render={props => (<AboutSA username={this.props.username} {...props} /> )} />
-                        <Route path={'/:username/account'} render={props => (<Account username={this.props.username} logout={this.props.logout} {...props} /> )} />
+                        <Route path={'/:username/feed'} render={props => (<Feed username={this.props.username} userId={this.props.userId} {...props} /> )} />
+                        <Route path={'/:username/persona'} render={props => (<Persona username={this.props.username} userId={this.props.userId} {...props} /> )} />
+                        <Route path={'/:username/events'} render={props => (<Events username={this.props.username} userId={this.props.userId} {...props} /> )} />
+                        <Route path={'/about'} render={props => (<AboutSA username={this.props.username} userId={this.props.userId} {...props} /> )} />
+                        <Route path={'/:username/account'} render={props => (<Account username={this.props.username} userId={this.props.userId} logout={this.props.logout} {...props} /> )} />
                         <Route exact component={ErrorNotFound} />
                     </Switch>
                 </div>

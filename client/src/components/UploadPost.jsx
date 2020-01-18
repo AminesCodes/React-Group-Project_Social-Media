@@ -33,6 +33,7 @@ const handleNetworkErrors = err => {
 export default class UploadPost extends React.PureComponent{
     state = {
         imageFile: null,
+        title: '',
         caption: '',
         position: 'relative',
         imagePreview: ''
@@ -54,6 +55,10 @@ export default class UploadPost extends React.PureComponent{
         this.preview_image(event)
     }
 
+    handleTitleInput = event => {
+        this.setState({title: event.target.value})
+    }
+
     handleCaptionInput = event => {
         this.setState({caption: event.target.value})
     }
@@ -62,11 +67,12 @@ export default class UploadPost extends React.PureComponent{
         event.preventDefault()
 
         if (this.state.imageFile) {
-            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+            const pw = sessionStorage.getItem('Suit_App_KS')
             const post = new FormData();
             post.append('posts', this.state.imageFile)
             post.append('currUserId', this.props.userId)
             post.append('password', pw)
+            post.append('title', this.state.title)
             post.append('caption', this.state.caption)
             
             try {
@@ -121,12 +127,15 @@ export default class UploadPost extends React.PureComponent{
                         <img src={this.state.imagePreview} alt='Card' style={imageStyle}/>
                     </div>
                     <div className='card-body p-1' style={{width: '100%', height: '20%'}}>
-                        <form className='d-flex' onSubmit={this.handleForm}>
-                            <div className='d-flex flex-column'>
-                                <label className='flex-grow-1' htmlFor='captionText'><Edit className='icon flex-grow-1'/></label>
-                                <button className='btn btn-primary'><Save style={{width: '35px'}}/></button>
+                        <form className='row' onSubmit={this.handleForm}>
+                            <div className='col-1'>
+                                <label className='flex-grow-1' htmlFor='titleText'><Edit className='icon flex-grow-1'/></label>
+                                <button className='btn btn-primary'><Save style={{width: '30px'}}/></button>
                             </div>
-                            <textarea className='rounded flex-grow-1' id='captionText' value={this.state.caption} onChange={this.handleCaptionInput}></textarea>
+                            <div className='col-11 d-flex flex-column'>
+                                <input className='rounded mb-1' type='text' id='titleText' value={this.state.title} onChange={this.handleTitleInput} />
+                                <textarea className='rounded flex-grow-1' value={this.state.caption} onChange={this.handleCaptionInput} />
+                            </div>
                         </form>
                     </div>
                 </div>

@@ -86,7 +86,6 @@ export default class PersonalPosts extends React.Component {
         try {
             const pw = sessionStorage.getItem('Parent-Ing_App_KS')
             const uId = sessionStorage.getItem('Parent-Ing_App_UId')
-            console.log(uId)
             const requestBody = {
                 password: pw,
                 currUserId: uId,
@@ -115,7 +114,7 @@ export default class PersonalPosts extends React.Component {
 
     handleDeletePost = async (postId) => {
         try {
-            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+            const pw = sessionStorage.getItem('Suit_App_KS')
             const user = {
                 password: pw,
                 currUserId: this.state.userId,

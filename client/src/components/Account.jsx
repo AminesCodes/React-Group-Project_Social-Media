@@ -178,7 +178,7 @@ export default class Account extends React.PureComponent {
                     newPasswordConfirmation: '', 
                 })
                 if (data.status === 'success') {
-                    sessionStorage.setItem('Parent-Ing_App_KS', newPassword);
+                    sessionStorage.setItem('Suit_App_KS', newPassword);
                     toast.success('Password updated successfully ',
                     { position: toast.POSITION.BOTTOM_CENTER });
 
@@ -207,7 +207,7 @@ export default class Account extends React.PureComponent {
 
         //         const { data } = await axios.patch(`http://localhost:3129/users/${id}/password`, updateData)
         //         if (data.status === 'success') {
-        //             sessionStorage.setItem('Parent-Ing_App_KS', newPassword);
+        //             sessionStorage.setItem('Suit_App_KS', newPassword);
         //             toast.success('Password updated successfully ',
         //             { position: toast.POSITION.BOTTOM_CENTER });
 

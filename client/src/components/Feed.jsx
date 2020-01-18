@@ -11,11 +11,12 @@ import axios from 'axios';
 // import './Feed.css';
 
 import PostCard from './PostCard';
+import CommentCard from './CommentCard'
 
 
 export default class Feed extends PureComponent {
-  pw = sessionStorage.getItem('Parent-Ing_App_KS');
-  uId = sessionStorage.getItem('Parent-Ing_App_UId');
+  pw = sessionStorage.getItem('Suit_App_KS');
+  // uId = sessionStorage.getItem('Suit_App_UId');
   state = {
     posts: []
   }
@@ -47,35 +48,59 @@ export default class Feed extends PureComponent {
     const pathname = this.props.location.pathname;
     const searchString = this.getSearches();
     if (!pathname.includes("all")) {                      // switch to follows feed
-      url += `follows/${this.uId}`;
+      url += `follows/${this.props.userId}`;
     } else if (searchString) {                            // switch to hashtags feed
       url += `tags/?hashtags=${searchString}`;
     }
     const response = await axios.get(url);
+    const postsArray = response.data.payload;
+    for (let post of postsArray) {
+      const [ postComments, postReactions ] = await Promise.all([
+        await axios.get(`http://localhost:3129/comments/${post.id}`),
+        await axios.get(`http://localhost:3129/reactions/post/all/${post.id}`)
+      ]);
+      post["comments"] = postComments.data.payload;
+      post["reactions"] = postReactions.data.payload;
+    }
     this.setState((prevState, props) => {
-        return {posts: response.data.payload}
+        return {posts: postsArray}
     });
   }
-
-  // handleClickHashtag = async (event) => {
-  //   event.preventDefault();
-  //   console.log(this.props.history)
-  //   this.props.history.push({
-  //       pathname: `/${this.props.username}/feed/all`,
-  //       search: `?search=${this.state.search}`
-  //   });
-  // }
 
   // ############## RENDER ################
   render() {
     // console.log("render ran, posts: ", this.state.posts);
+
     const postsList = this.state.posts.map(post => {
+
+        // CREATE COMMENTS
+        let commentsAttachment = []
+        if (post.comments) {
+          commentsAttachment = post.comments.map(comment => {
+              return (
+                <CommentCard 
+                  key={post.id + comment.username + comment.comment_id} 
+                  commentId={comment.comment_id} 
+                  avatar={comment.avatar_url} 
+                  username={comment.username} 
+                  comment={comment.comment_body} 
+                  timestamp={comment.time_created} 
+                  userId={Number(this.uId)} 
+                  commenterId={comment.commenter_id} 
+                  // postId={this.props.postId} 
+                  // reloadComments={this.props.reloadComments} 
+                />
+              );
+          });
+        }
+
+        // CREATE HASHTAGS COMPONENTS
         let tagData = post.hashtag_str;
         let hashtags = tagData.split('#');
-        hashtags = hashtags.filter(el => !!el).map(tag => {
+        hashtags = hashtags.filter(el => !!el).map((tag, index) => {
             return (
               <Link 
-                key={post.id + tag} 
+                key={post.id + tag + `-i${index}`} 
                 to={`/${this.props.username}/feed/all?search=${tag}`} 
                 className="j-post-hashtag-link" 
               >
@@ -84,19 +109,29 @@ export default class Feed extends PureComponent {
             );
         });
 
-        // const hashtagsStr = hashtags.join(' ');
+        // CREATE DYNAMIC POST WIDTH ON EMPTY TEXTS PROP
+        const calcedImgStyle = { marginRight: (!post.title && !post.caption) ? "auto" : false };
+        const calcedGridStyle = { gridTemplateColumns: (!post.title && !post.caption) ? "min-content" : "373px min-content" };
 
+        // FORMAT TIMESTAMP PROP
         const timestamp = new Date(post.time_created);
+
         return(
             <PostCard
               key={post.id} 
               username={post.username} 
               avatar_url={post.avatar_url} 
+              title={post.title}
               caption={post.caption} 
               hashtags={hashtags} 
               id={post.id} 
               image_url={post.image_url} 
-              time_created={timestamp.toUTCString()}
+              time_created={timestamp.toLocaleString()}
+
+              imgStyle={calcedImgStyle} 
+              gridStyle={calcedGridStyle}
+
+              comments={commentsAttachment}
 
               handleClickHashtag={this.handleClickHashtag}
             />
