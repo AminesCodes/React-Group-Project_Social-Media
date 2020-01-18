@@ -5,24 +5,118 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
-// import { Link } from 'react-router-dom';
+import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 // import './Persona.css';
 
-export default class Persona extends PureComponent {
-  pw = sessionStorage.getItem('Suit_App_KS');
-  uId = sessionStorage.getItem('Suit_App_UId');
-  state = {
+import PersonalPosts from './PersonalPosts'
+import Avatar from './Avatar'
 
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const handleNetworkErrors = err => {
+    if (err.response) {
+        if (err.response.data.message) {
+            toast.error(err.response.data.message,
+                { position: toast.POSITION.TOP_CENTER });
+        } else {
+            toast.error(`${err.response.data}: ${err.response.status} - ${err.response.statusText}`,
+            { position: toast.POSITION.TOP_CENTER });
+            console.log('Error', err);
+        }
+    } else if (err.message) {
+        toast.error(err.message,
+            { position: toast.POSITION.TOP_CENTER });
+    } else {
+        toast.error('Sorry, an error occurred, try again later',
+            { position: toast.POSITION.TOP_CENTER });
+        console.log('Error', err);
+    }
+}
+
+export default class Persona extends PureComponent {
+  state = {
+    userId: 0,
+    username: '',
+    avatar: '',
+    bio: '',
+    followers: [],
+    newPost: null,
+    title: '',
+    caption: '',
   }
 
+  async componentDidMount() {
+    try {
+      const targetUser = this.props.match.url.split('/')[1]
+      const {data} = await axios.get(`http://localhost:3129/users/${targetUser}`)  //GET THE USER INFO
+      console.log(data)
+      this.setState({
+        userId: data.payload.id,
+        username: data.payload.username,
+        avatar: data.payload.avatar_url,
+        bio: data.payload.bio,
+      })
+
+      const response = await axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`)
+
+      const allFollowers = response.data.payload
+      const randomIndexes = []
+      this.getRandomFollowers(randomIndexes, 3, {}, allFollowers.length)
+      const randomFollows = randomIndexes.map(num => allFollowers[num])
+      // console.log(randomFollows)
+      this.setState({
+        followers: randomFollows,
+      })
+    } catch (err) {
+      handleNetworkErrors(err)
+    }
+  }
+
+  getRandomFollowers = (arr, num, tracker, max) => {
+    const randomId = Math.floor(Math.random() * max)
+    if (arr.length === num) {
+      return
+    }
+    if (tracker[randomId]) {
+      this.getRandomFollowers(arr, num, tracker, max)
+    } else {
+      tracker[randomId] = true
+      arr.push(randomId)
+      this.getRandomFollowers(arr, num, tracker, max)
+    }
+  }
   
   // ################ RENDER ###########
   render() {
+    const uId = sessionStorage.getItem('Parent-Ing_App_UId')
+    const imgAvatar = require('../assets/images/avatars/2.png')
+    console.log(this.state.followers)
     return (
-      <>
-      Welcome to the Persona Page.
-      </>
+      <div className='container-fluid m-3'>
+        <div className='row' >
+            <div className='col-sm-2'>
+                <Avatar avatar={this.state.avatar}/>
+            </div>
+            <div className='col-sm-7'>
+                <p>{this.state.bio}</p>
+            </div>
+            <div className='col-sm-3'>
+                <div className='d-flex flex-wrap m-0 p-0'>
+                  {this.state.followers.map(user => 
+                    <div className='flex-fill m-0 p-0' key={user.follower+user.avatar_url}>
+                      <Link to={`/${user.follower}/persona`}>
+                        <img className='squareAvatar m-0 p-0' src={user.avatar_url || imgAvatar} alt='profile avatar'></img>
+                      </Link>
+                    </div>)}   
+                </div>
+            </div>
+        </div>
+        <PersonalPosts className='row' userId={this.state.userId} allowedToEdit={this.state.userId+'' === uId+''} active={true}/>
+   </div>
     );
   }
 }

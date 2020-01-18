@@ -30,8 +30,9 @@ const handleNetworkErrors = err => {
 }
 
 
-export default class PersonalPosts extends React.PureComponent {
+export default class PersonalPosts extends React.Component {
     state = {
+        userId: this.props.userId,
         userPosts: [],
         targetPostId: 0,
         targetPost: null,
@@ -41,20 +42,31 @@ export default class PersonalPosts extends React.PureComponent {
     }
 
     getUserPosts = async (userId) => {
-        try {
-            const { data } = await axios.get(`http://localhost:3129/posts/userid/${userId}`)
-            this.setState({ userPosts: data.payload })
-        } catch (err) {
-            handleNetworkErrors(err)
+        console.log(`http://localhost:3129/posts/userid/${userId}`)
+        if (userId) {
+            try {
+                const { data } = await axios.get(`http://localhost:3129/posts/userid/${userId}`)
+                this.setState({ userPosts: data.payload })
+            } catch (err) {
+                handleNetworkErrors(err)
+            }
         }
     }
 
     componentDidMount() {
-        this.props.handleTabSelection(3)
-        this.getUserPosts(this.props.userId)
+        // this.props.handleTabSelection(3)
+        this.getUserPosts(this.state.userId)
     }
 
-    handlePicClick = async (index) => {
+    async componentDidUpdate(prevProps, prevState) {
+        if (prevProps.userId !== this.props.userId) {
+            await this.setState({userId: this.props.userId})
+            await this.getUserPosts(this.state.userId)
+        }
+    }
+
+
+    handlePicClick = (index) => {
         this.setState({
             targetPostId: this.state.userPosts[index].id,
             targetPost: this.state.userPosts[index],
@@ -72,16 +84,18 @@ export default class PersonalPosts extends React.PureComponent {
         event.preventDefault()
 
         try {
-            const pw = sessionStorage.getItem('Suit_App_KS')
+            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+            const uId = sessionStorage.getItem('Parent-Ing_App_UId')
             const requestBody = {
                 password: pw,
-                currUserId: this.props.userId,
+                currUserId: uId,
                 title: this.state.targetPostTitle,
                 caption: this.state.targetPostCaption,
             }
+            console.log(requestBody)
             const { data } = await axios.patch(`http://localhost:3129/posts/edit/${postId}`, requestBody)
             if (data.status === 'success') {
-                this.getUserPosts(this.props.userId)
+                this.getUserPosts(this.state.userId)
                 toast.success('✓',
                     { position: toast.POSITION.BOTTOM_CENTER });
             }
@@ -103,11 +117,11 @@ export default class PersonalPosts extends React.PureComponent {
             const pw = sessionStorage.getItem('Suit_App_KS')
             const user = {
                 password: pw,
-                currUserId: this.props.userId,
+                currUserId: this.state.userId,
             }
             const { data } = await axios.patch(`http://localhost:3129/posts/delete/${postId}`, user)
             if (data.status === 'success') {
-                this.getUserPosts(this.props.userId)
+                this.getUserPosts(this.state.userId)
                 this.setState({displayTargetPost: false})
             }
         } catch (err) {
@@ -116,19 +130,25 @@ export default class PersonalPosts extends React.PureComponent {
     }
 
     reloadPosts = () => {
-        this.getUserPosts(this.props.userId)
+        this.getUserPosts(this.state.userId)
     }
     
     // ##################### RENDER ######################
     render() {
+        console.log(this.state.userId)
         let post = null
         if (this.state.displayTargetPost) {
-            post = <PostLightBox userId={this.props.userId} postId={this.state.targetPostId} title={this.state.targetPostTitle} caption={this.state.targetPostCaption} image={this.state.targetPost.image_url} timestamp={this.state.targetPost.time_created} handleClosePost={this.handleClosePost} handleDeletePost={this.handleDeletePost} handleTitleInput={this.handleTitleInput} handleCaptionInput={this.handleCaptionInput} handleForm={this.handleForm}/>
+            post = <PostLightBox userId={this.state.userId} postId={this.state.targetPostId} allowedToEdit={this.props.allowedToEdit} title={this.state.targetPostTitle} caption={this.state.targetPostCaption} image={this.state.targetPost.image_url} timestamp={this.state.targetPost.time_created} handleClosePost={this.handleClosePost} handleDeletePost={this.handleDeletePost} handleTitleInput={this.handleTitleInput} handleCaptionInput={this.handleCaptionInput} handleForm={this.handleForm}/>
+        }
+
+        let uploadPost = null
+        if (this.props.allowedToEdit) {
+            uploadPost = <UploadPost userId={this.state.userId} reloadPosts={this.reloadPosts}/>
         }
         return (
             <div className={`container tab-pane ${this.props.active}`}>
                 <div className='d-flex flex-wrap'>
-                    <UploadPost userId={this.props.userId} reloadPosts={this.reloadPosts}/>
+                    {uploadPost}
                     {this.state.userPosts.map((post, index) => <PostThumbnail index={index} key={post.image_url+post.time_created} id={post.id} image={post.image_url} tags={post.hashtag_str} handlePicClick={this.handlePicClick}/>)}
                 </div>
                 {post}

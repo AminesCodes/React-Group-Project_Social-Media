@@ -126,7 +126,7 @@ export default class CommentCard extends React.PureComponent {
                     <div className='row'>
                         <div className='col-sm-11'>
                             <span className='d-block m-2' >{this.props.comment}</span>
-                            <span className='d-block m-2'>{new Date(this.props.timestamp).toLocaleString()}</span>
+                            <span className='j-comm-time d-block m-2'>{new Date(this.props.timestamp).toLocaleString()}</span>
                         </div>
                         {commentControl}
                     </div>
