@@ -61,7 +61,7 @@ export default class PersonalPosts extends React.Component {
 
     async componentDidUpdate(prevProps, prevState) {
         if (prevProps.userId !== this.props.userId) {
-            await this.setState({userId: this.props.userId})
+            await this.setState({userId: this.props.userId, displayTargetPost: false})
             await this.getUserPosts(this.state.userId)
         }
     }
