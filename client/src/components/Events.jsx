@@ -54,9 +54,9 @@ export default class Events extends PureComponent {
       )
     })
     return (
-      <>
+      <div className="Event-container">
       { list }
-      </>
+      </div>
     );
   }
 }
