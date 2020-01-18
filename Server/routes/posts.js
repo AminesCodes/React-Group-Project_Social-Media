@@ -38,7 +38,6 @@ const {
   createPost,
   editPost,
   deletePost,
-  getPostOwner
 } = require('../queries/posts.js');
 
 
@@ -128,12 +127,14 @@ router.post("/add", upload.single("posts"), async (req, res, next) => {
     try {
       const imageUrl = processInput(req, "imageUrl");
       const { caption, formattedHashtags } = processInput(req, "caption");
+      const title = processInput(req, "title");
       const currUserId = processInput(req, "currUserId");
       const password = processInput(req, "password");
       const authenticated = await getAuth(currUserId, password);
       if (authenticated) {
         const response = await createPost({
             ownerId: currUserId,
+            title,
             caption,
             formattedHashtags,
             imageUrl
@@ -147,6 +148,7 @@ router.post("/add", upload.single("posts"), async (req, res, next) => {
         throw new Error("401__error: authentication failure");
       }
     } catch (err) {
+      console.log(err)
       handleError(err, req, res, next);
     }
 });
@@ -156,11 +158,12 @@ router.patch("/edit/:postId", async (req, res, next) => {
   try {
     const postId = processInput(req, "postId");
     const { caption, formattedHashtags } = processInput(req, "caption");
+    const title = processInput(req, "title");
     const currUserId = processInput(req, "currUserId");
     const password = processInput(req, "password");
     const authenticated = getAuth(currUserId, password);
     if (authenticated) {
-      const response = await editPost({ id: postId, currUserId, caption, formattedHashtags });
+      const response = await editPost({ id: postId, currUserId, title, caption, formattedHashtags });
       res.json({
           status: "success",
           message: `post ${postId} edited`,

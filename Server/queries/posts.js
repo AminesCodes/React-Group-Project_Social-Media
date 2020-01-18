@@ -129,10 +129,12 @@ const createPost = async (bodyObj) => {
   try {
     const postQuery = `
       INSERT INTO posts (owner_id
+        , title
         , caption
         , hashtag_str
         , image_url
       ) VALUES ($/ownerId/
+        , $/title/
         , $/caption/
         , $/formattedHashtags/
         , $/imageUrl/
@@ -148,7 +150,8 @@ const editPost = async (bodyObj) => {
   try {
     const patchQuery = `
       UPDATE posts
-      SET caption = $/caption/
+      SET title = $/title/
+        , caption = $/caption/
         , hashtag_str = $/formattedHashtags/
       WHERE id = $/id/
         AND owner_id = $/currUserId/
@@ -182,22 +185,6 @@ const deletePost = async (postId, currUserId) => {
   }
 }
 
-const getPostOwner = async (numId) => {
-  try {
-    const getQuery = `
-      SELECT owner_id
-      FROM posts
-      WHERE id = $/id/;
-    `;
-    const { owner_id } = await db.one(getQuery, { id: numId });
-    return owner_id;
-  } catch(err) {
-    if (err.message === "No data returned from the query.") {
-      throw new Error(`404__error: post ${numId} does not exist`);
-    }
-    throw(err);
-  }
-}
 
 
 /* EXPORT */
@@ -209,6 +196,5 @@ module.exports = {
   getOnePost,
   createPost,
   editPost,
-  deletePost,
-  getPostOwner
+  deletePost
 }
