@@ -72,8 +72,8 @@ export default class PostLightBox extends React.PureComponent {
         event.preventDefault()
 
         try {
-            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
-            const uId = sessionStorage.getItem('Parent-Ing_App_UId')
+            const pw = sessionStorage.getItem('Suit_App_KS')
+            const uId = sessionStorage.getItem('Suit_App_UId')
             const requestBody = {
                 password: pw,
                 body: this.state.newComment,
@@ -110,7 +110,7 @@ export default class PostLightBox extends React.PureComponent {
             objectFit: 'scale-down',
         }
  
-        const uId = parseInt(sessionStorage.getItem('Parent-Ing_App_UId'))
+        const uId = parseInt(sessionStorage.getItem('Suit_App_UId'))
         let commentsContainer = null
         if (this.state.showComments) {
             commentsContainer = <Comments userId={uId} postId={this.props.postId} allComments={this.state.comments} handleCloseComments={this.handleCloseComments} handleCommentInput={this.handleCommentInput} commentText={this.state.newComment} handleAddCommentForm={this.handleAddCommentForm} reloadComments={this.getAllCommentsAndReactions}/>

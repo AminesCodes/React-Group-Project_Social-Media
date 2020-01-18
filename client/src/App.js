@@ -4,7 +4,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { toast } from 'react-toastify';
     import 'react-toastify/dist/ReactToastify.css';
 
@@ -12,8 +12,8 @@ import './reset.css'; // stays before App.css
 import './App.css'; // this must stay before component imports
 
 import LoginSigninForm from './components/LoginSigninForm';
-import Intro from './components/Intro';
 import Routing from './components/Routing';
+import AboutSA from './components/AboutSA';
 
 import { ReactComponent as Logo } from './assets/images/logo_200112.svg';
 
@@ -22,15 +22,18 @@ toast.configure();
 // const imgLogo = require('./assets/images/logo.png');
 
 
-export default class App extends PureComponent {
+export default class App extends Component {
   state = {
     loggedUser: null,
-    loggedUserId: 0,
-    loggedUserUsername: '',
+    // loggedUserId: 0,
+    // loggedUserUsername: '',
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.loggedUser !== this.state.loggedUser
   }
 
   handleFormSubmit = (user, password) => {
-    console.log(user)
     sessionStorage.setItem('Suit_App_KS', password);
     sessionStorage.setItem('Suit_App_UId', user.id);
     sessionStorage.setItem('Suit_App_Un', user.username);
@@ -62,7 +65,7 @@ export default class App extends PureComponent {
           </div>
           <LoginSigninForm formSubmit={this.handleFormSubmit}/>
         </div>
-        <Intro className='container-sm'/>
+        <AboutSA className='container-sm'/>
       </>
 
     if (pw && uId) {
