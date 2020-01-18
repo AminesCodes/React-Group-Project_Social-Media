@@ -4,7 +4,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 */
 
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -38,7 +38,7 @@ const handleNetworkErrors = err => {
 }
 
 
-export default class PostCard extends PureComponent {
+export default class PostCard extends Component {
   uId = Number(sessionStorage.getItem('Suit_App_UId'));
   pw = sessionStorage.getItem('Suit_App_KS');
   state = {
@@ -51,6 +51,14 @@ export default class PostCard extends PureComponent {
   async componentDidMount() {
     // console.log("componentDidMount ran");
     await this.getCommentsAndReactions();
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    const prevIsLiked = !!prevState.currUserLikeId;
+    const currIsLiked = !!this.state.currUserLikeId;
+    if (prevIsLiked !== currIsLiked) {
+      await this.getCommentsAndReactions();
+    }
   }
 
   getCommentsAndReactions = async () => {
@@ -84,9 +92,7 @@ export default class PostCard extends PureComponent {
           emojiType: 1
         }
         const response = await axios.post(url, postBody);
-        this.setState((prevState, props) => {
-            return { currUserLikeId: response.data.payload.id }
-        });
+        this.setState({ currUserLikeId: response.data.payload.id });
       } else {
         const url = `http://localhost:3129/reactions/delete/${this.state.currUserLikeId}`;
         const postBody = {
@@ -95,9 +101,7 @@ export default class PostCard extends PureComponent {
         }
         const response = await axios.patch(url, postBody);
         console.log(response);
-        this.setState((prevState, props) => {
-            return { currUserLikeId: null }
-        });
+        this.setState({ currUserLikeId: null });
       }
     } catch (err) {
       handleNetworkErrors (err);
@@ -124,9 +128,11 @@ export default class PostCard extends PureComponent {
     const { comments, currUserLikeId, areCommentsVisible } = this.state;
 
     const didCurrUserReactStyle = currUserLikeId
-      ? { boxShadow: "0px 2px 8px #6bb7c3" }
+      ? { boxShadow: "0px 2px 5px #6bb7c3" }
       : { boxShadow: "none" };
-    // const showButtonStyle = { color: areCommentsVisible ? "#ccc" : "#7d698d" };
+    const showCommsBtnStyle = areCommentsVisible
+      ? { boxShadow: "0px 2px 5px #f310c2" }
+      : { boxShadow: "none" };
 
     const commentsList = comments.map(comment => {
         return (
@@ -158,12 +164,12 @@ export default class PostCard extends PureComponent {
 
           <div className="j-reaction-hold">
             <div className="j-reaction-icon-btn" style={didCurrUserReactStyle} onClick={this.handleLikeClick}>
-              <img src={iconLike} className="j-reaction-icon" alt="likes" />
+              <img src={iconLike} className="j-reaction-icon j-like-img" alt="likes" />
               <div className="j-reaction-num">
                 {this.state.reactions.length}
               </div>
             </div>
-            <div className="j-reaction-icon-btn" onClick={this.handleShowClick}>
+            <div className="j-reaction-icon-btn j-comm-btn" style={showCommsBtnStyle} onClick={this.handleShowClick}>
               <img src={iconComment} className="j-reaction-icon" alt="comments" />
               <div className="j-reaction-num">
                 {this.state.comments.length}
