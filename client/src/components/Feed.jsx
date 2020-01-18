@@ -11,7 +11,6 @@ import axios from 'axios';
 // import './Feed.css';
 
 import PostCard from './PostCard';
-import CommentCard from './CommentCard'
 
 
 export default class Feed extends PureComponent {
@@ -72,7 +71,7 @@ export default class Feed extends PureComponent {
             return (
               <Link 
                 key={post.id + tag + `-i${index}`} 
-                to={`/${this.props.username}/feed/all?search=${tag}`} 
+                to={`/${this.props.currUsername}/feed/all?search=${tag}`} 
                 className="j-post-hashtag-link" 
               >
                 {'#' + tag}
@@ -90,6 +89,7 @@ export default class Feed extends PureComponent {
         return(
             <PostCard
               key={post.id} 
+              currUsername={this.props.currUsername} 
               postId={post.id} 
               username={post.username} 
               avatar_url={post.avatar_url} 

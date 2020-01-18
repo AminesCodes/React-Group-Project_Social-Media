@@ -71,12 +71,26 @@ li.j-post-card {
 
 .j-reaction-icon {
   height: 20px;
-  margin: 2px 3px 3px 19px;
+  margin: 2px 1px 0px 7px;
 }
 
-/* .j-reaction-icon:hover {
+.j-reaction-icon-btn {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  border-radius: 30px;
+  padding: 0px 2px 1px 0px;
+}
+
+.j-reaction-icon-btn:hover {
   box-shadow: 0px -17px 17px #f310c2;
-} */
+}
+
+.j-reaction-num {
+  color: #7d698d;
+  margin: 2px 1px;
+}
 
 .j-post-image-box {
   grid-row: span 3;
@@ -201,10 +215,10 @@ li.j-post-card {
   margin-left: auto;
 }
 
-.j-post-show-comments-btn {
+/* .j-post-show-comments-btn {
   margin: 6px 15px 3px 15px;
   width: -webkit-fill-available;
-}
+} */
 
 .j-shadow {
   box-shadow: 6px 4px 10px rgba(0, 0, 0, 0.45);
