@@ -5,6 +5,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
+import axios from 'axios';
 
 import './PostCard.css';
 
@@ -16,14 +17,33 @@ const iconComment = require("../assets/images/reactions/comment.png");
 
 export default class PostCard extends PureComponent {
   pw = sessionStorage.getItem('Suit_App_KS');
-  // uId = sessionStorage.getItem('Suit_App_UId');
-  state = {
+  uId = sessionStorage.getItem('Suit_App_UId');
 
+  state = {
+    comments: [],
+    reactions: [],
+    areCommentsVisible: false
+  }
+
+  async componentDidMount() {
+    // console.log("componentDidMount ran");
+    await this.getCommentsAndReactions();
+  }
+
+  getCommentsAndReactions = async () => {
+    const [ commentsResponse, reactionsResponse ] = await Promise.all([
+      await axios.get(`http://localhost:3129/comments/${this.props.postId}`),
+      await axios.get(`http://localhost:3129/reactions/post/all/${this.props.postId}`)
+    ]);
+    const comments = commentsResponse.data.payload;
+    const reactions = reactionsResponse.data.payload;
+    this.setState((prevState, props) => {
+        return { comments: comments, reactions: reactions }
+    });
   }
 
   render() {
     const {
-      id,
       username,
       avatar_url,
       image_url,
@@ -43,8 +63,8 @@ export default class PostCard extends PureComponent {
         <div className="j-post-grid" style={this.props.gridStyle}>
 
           <div className="j-reaction-hold">
-            <img src={iconLike} className="j-reaction-icon" alt="likes" />11
-            <img src={iconComment} className="j-reaction-icon" alt="comments" />22
+            <img src={iconLike} className="j-reaction-icon" alt="likes" />{this.state.reactions.length}
+            <img src={iconComment} className="j-reaction-icon" alt="comments" />{this.state.comments.length}
           </div>
           <div className="j-post-image-box">
             <img className="j-post-image j-shadow" src={image_url} style={this.props.imgStyle} alt="Post" />
