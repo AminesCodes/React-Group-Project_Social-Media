@@ -6,9 +6,12 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 import React, { PureComponent } from 'react';
 import axios from 'axios'
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 
 // import './Persona.css';
+
+import PersonalPosts from './PersonalPosts'
+import Avatar from './Avatar'
 
 
 import { toast } from 'react-toastify';
@@ -35,14 +38,11 @@ const handleNetworkErrors = err => {
 }
 
 export default class Persona extends PureComponent {
-  // pw = sessionStorage.getItem('Parent-Ing_App_KS');
-  // uId = sessionStorage.getItem('Parent-Ing_App_UId');
   state = {
     userId: 0,
     username: '',
     avatar: '',
     bio: '',
-    posts: [],
     followers: [],
     newPost: null,
     title: '',
@@ -61,18 +61,14 @@ export default class Persona extends PureComponent {
         bio: data.payload.bio,
       })
 
-      const promises = []
-      promises.push(axios.get(`http://localhost:3129/posts/userid/${data.payload.id}`))
-      promises.push(axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`))
-      const response = await Promise.all(promises)
+      const response = await axios.get(`http://localhost:3129/follows/followers/${data.payload.id}`)
 
-      const allFollowers = response[1].data.payload
+      const allFollowers = response.data.payload
       const randomIndexes = []
       this.getRandomFollowers(randomIndexes, 3, {}, allFollowers.length)
       const randomFollows = randomIndexes.map(num => allFollowers[num])
       // console.log(randomFollows)
       this.setState({
-        posts: response[0].data.payload,
         followers: randomFollows,
       })
     } catch (err) {
@@ -96,16 +92,30 @@ export default class Persona extends PureComponent {
   
   // ################ RENDER ###########
   render() {
-    // console.log(this.props)
-    // console.log(this.state.targetUsername)
-    let myDisplay = null
-    if (this.state.followers.length) {
-      console.log(this.state.followers[0].follower)
-      
-    }
+    const uId = sessionStorage.getItem('Parent-Ing_App_UId')
+    const imgAvatar = require('../assets/images/avatars/2.png')
+    console.log(this.state.followers)
     return (
-      <div className='container-fluid'>
-        {this.state.followers.map(user => <p>{user.follower}</p>)}
+      <div className='container-fluid m-3'>
+        <div className='row' >
+            <div className='col-sm-2'>
+                <Avatar avatar={this.state.avatar}/>
+            </div>
+            <div className='col-sm-7'>
+                <p>{this.state.bio}</p>
+            </div>
+            <div className='col-sm-3'>
+                <div className='d-flex flex-wrap m-0 p-0'>
+                  {this.state.followers.map(user => 
+                    <div className='flex-fill m-0 p-0' key={user.follower+user.avatar_url}>
+                      <Link to={`/${user.follower}/persona`}>
+                        <img className='squareAvatar m-0 p-0' src={user.avatar_url || imgAvatar} alt='profile avatar'></img>
+                      </Link>
+                    </div>)}   
+                </div>
+            </div>
+        </div>
+        <PersonalPosts className='row' userId={this.state.userId} allowedToEdit={this.state.userId+'' === uId+''} active={true}/>
    </div>
     );
   }
