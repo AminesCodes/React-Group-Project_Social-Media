@@ -5,6 +5,7 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 import './PostCard.css';
@@ -82,8 +83,10 @@ export default class PostCard extends PureComponent {
     return(
       <li className="j-post-card">
         <div className="j-post-userbox">
-          <h6 className="j-post-username j-shadow">{username}</h6>
-          <img className="j-post-avatar j-shadow" src={avatar_url} alt="Avatar" />
+          <Link to={`/${username}/persona`}>
+            <h6 className="j-post-username j-shadow">{username}</h6>
+            <img className="j-post-avatar j-shadow" src={avatar_url} alt="Avatar" />
+          </Link>
         </div>
 
         <div className="j-post-grid" style={this.props.gridStyle}>
