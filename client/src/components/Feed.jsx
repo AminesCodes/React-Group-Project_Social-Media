@@ -119,17 +119,17 @@ export default class Feed extends PureComponent {
         return(
             <PostCard
               key={post.id} 
+              id={post.id} 
               username={post.username} 
               avatar_url={post.avatar_url} 
+              image_url={post.image_url} 
               title={post.title}
               caption={post.caption} 
               hashtags={hashtags} 
-              id={post.id} 
-              image_url={post.image_url} 
               time_created={timestamp.toLocaleString()}
 
               imgStyle={calcedImgStyle} 
-              gridStyle={calcedGridStyle}
+              gridStyle={calcedGridStyle} 
 
               comments={commentsAttachment}
 
