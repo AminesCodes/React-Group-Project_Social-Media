@@ -65,27 +65,6 @@ export default class Feed extends PureComponent {
 
     const postsList = this.state.posts.map(post => {
 
-        // CREATE COMMENTS
-        let commentsAttachment = []
-        if (post.comments) {
-          commentsAttachment = post.comments.map(comment => {
-              return (
-                <CommentCard 
-                  key={post.id + comment.username + comment.comment_id} 
-                  commentId={comment.comment_id} 
-                  avatar={comment.avatar_url} 
-                  username={comment.username} 
-                  comment={comment.comment_body} 
-                  timestamp={comment.time_created} 
-                  userId={Number(this.uId)} 
-                  commenterId={comment.commenter_id} 
-                  // postId={this.props.postId} 
-                  // reloadComments={this.props.reloadComments} 
-                />
-              );
-          });
-        }
-
         // CREATE HASHTAGS COMPONENTS
         let tagData = post.hashtag_str;
         let hashtags = tagData.split('#');
@@ -122,8 +101,6 @@ export default class Feed extends PureComponent {
 
               imgStyle={calcedImgStyle} 
               gridStyle={calcedGridStyle} 
-
-              comments={commentsAttachment} 
 
               handleClickHashtag={this.handleClickHashtag} 
             />
