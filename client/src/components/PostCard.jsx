@@ -8,6 +8,9 @@ import React from 'react';
 
 import './PostCard.css';
 
+const iconLike = require("../assets/images/reactions/like.png");
+const iconComment = require("../assets/images/reactions/comment.png");
+
 
 export default function PostCard(props) {
   return(
@@ -19,7 +22,10 @@ export default function PostCard(props) {
 
       <div className="j-post-grid" style={props.gridStyle}>
 
-        <div className="reactionHold"></div>
+        <div className="j-reaction-hold">
+          <img src={iconLike} className="j-reaction-icon" alt="likes" />11
+          <img src={iconComment} className="j-reaction-icon" alt="comments" />22
+        </div>
         <div className="j-post--postimg-box">
           <img className="j-post--postimg j-shadow" src={props.image_url} style={props.imgStyle} alt="Post" />
         </div>

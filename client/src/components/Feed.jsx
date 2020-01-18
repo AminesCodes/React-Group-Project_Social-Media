@@ -85,7 +85,7 @@ export default class Feed extends PureComponent {
                   username={comment.username} 
                   comment={comment.comment_body} 
                   timestamp={comment.time_created} 
-                  userId={this.props.userId} 
+                  userId={Number(this.uId)} 
                   commenterId={comment.commenter_id} 
                   // postId={this.props.postId} 
                   // reloadComments={this.props.reloadComments} 

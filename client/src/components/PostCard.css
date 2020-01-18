@@ -60,6 +60,20 @@ li.j-post-card {
   min-width: 589px;
 }
 
+.j-reaction-hold {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  margin-right: 16px;
+  align-items: flex-start;
+}
+
+.j-reaction-icon {
+  height: 20px;
+  margin: 2px 3px 3px 19px;
+}
+
 .j-post--postimg-box {
   grid-row: span 3;
 }
@@ -146,6 +160,40 @@ li.j-post-card {
 
 .j-post-hashtag-link:hover {
   color: #f310c2;
+}
+
+.j-post-card > .row {
+  flex-wrap: nowrap;
+
+  margin-left: 162px;
+  padding: 3px 3px 6px 3px;
+  border-bottom: solid 1px #111;
+}
+
+.j-post-card > .row > .col-sm-3 {
+  display: flex;
+  flex-direction: column-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  min-width: 162px;
+}
+
+.j-post-card > .row > .col-sm-3 > .p-2, .j-post-card .m-2 {
+  padding: 3px 3px 3px 0px !important;
+  margin: 0px !important;
+}
+
+.j-post-card .avatarImage {
+  width: 46px;
+  height: 46px;
+  object-fit: scale-down;
+  border-radius: 14px;
+}
+
+.j-comm-time {
+  color: #bbb;
+  display: inline-block;
+  margin-left: auto;
 }
 
 .j-shadow {
