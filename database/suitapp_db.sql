@@ -62,6 +62,17 @@ CREATE TABLE follows
     time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP 
 );
 
+CREATE TABLE events
+(
+    id SERIAL PRIMARY KEY,
+    start_time VARCHAR NOT NULL,
+    end_time VARCHAR DEFAULT '',
+    con_name VARCHAR (100) NOT NULL,
+    con_state VARCHAR (100) NOT NULL,
+    con_location VARCHAR (100) NOT NULL,
+    con_url VARCHAR (200) DEFAULT '',
+    time_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP 
+);
 
 
 /* SEED DATA */
@@ -336,7 +347,50 @@ VALUES
 (8, 7),
 (8, 4);
 
-/* I'll handle emojies and adding more likes tomorrow */
+INSERT INTO events
+(start_time, end_time, con_name, con_state, con_location, con_url)
+VALUES
+('2020/01/10', '2020/1/13', 'Anime Los Angeles', 'Ontario, California - United States', 'Ontario Convention Center', 'https://animelosangeles.org'),
+('2020/01/11', '2020/1/13', 'OrcaCon', 'Bellevue, Washington - United States', 'Hilton Bellevue', 'http://www.orcacon.org'),
+('2020/01/19', '', 'Kick Off the Cons', 'Renton, Washington - United States', 'Renton Technical College', 'https://www.rentoncitycomiccon.com/kick-off-the-cons-2/'),
+('2020/02/09', '', 'Uchi-con', 'Chicago, Illinois - United States', 'Ida Noyes Hall and the Harper Memorial', 'http://uchi-con.com'),
+('2020/02/09', '', 'Chibi Chibi Con', 'Olympia, Washington - United States', 'The Evergreen State College', 'https://chibichibicon.com'),
+('2020/02/15', '2020/02/17', 'Gallifrey One', 'Los Angeles, California - United States', 'Mariott Los Angeles Airport Hotel', 'http://www.gallifreyone.com'),
+('2020/02/15', '2020/02/17', 'Anime Milwaukee', 'Milqaukee, Wisconsin - United States', 'Hyatt Regency & Wisconsin Center', 'http://animemilwaukee.org'),
+('2020/02/15', '2020/02/17', 'Katsucon', 'National Harbor, Maryland - United States', 'Gaylord National Motel and Convention', 'https://www.katsucon.org'),
+('2020/02/15', '2020/02/17', 'RadCon', 'Pasco, Washington - United States', 'Red Lion Hotel', 'https://www.radcon.org'),
+('2020/02/16', '2020/02/17', 'Long Beacg Comic Expo', 'Long Beach, California - United States', 'Long Beach Convention Center', 'http://longbeachcomicexpo.com/'),
+('2020/02/22', '2020/02/24', 'Plattecon', 'Platteville, Wisconsin - United States', 'Ullsvik Hall 1 University Plaza', 'https://tabletop.events/conventions/plattecon-xxxii'),
+('2020/03/14', '2020/03/17', 'Emerald City Comic Con', 'Seattle, Washington - United States', 'Washington State Convention Center', 'http://www.emeraldcitycomiccon.com/'),
+('2020/03/15', '2020/03/17', 'Aselia Con', 'Irving, Texas - United States', 'Double Tree DFW North', 'https://aseliacon.com/'),
+('2020/03/22', '2020/03/24', 'Zenkaikon', 'Lancaster, Pennsylvania - United States', 'Lancaster County Convention Center', 'https://zenkaikon.com/'),
+('2020/03/29', '2020/03/31', 'No Brand Con', 'Wisconsin Dells, Wisconsin - United States', 'Chula Vista Resort', 'http://www.nobrandcon.org/p/'),
+('2020/03/29', '2020/03/31', 'Anime Detour', 'Minneapolis, Minnesota - United States', 'Hyatt Regency Minneapolis', 'https://www.animedetour.com/'),
+('2020/03/29', '2020/03/31', 'WonderCon', 'Anaheim, California - United States', 'Anaheim Convention Center', 'https://www.comic-con.org/wca'),
+('2020/03/30', '', 'Baka Fest', 'Houston, Texas - United States', 'Park Inn Radisson Conference Center', 'https://www.facebook.com/events/2322763167955003/'),
+('2020/04/18', '2020/04/21', 'Norwescon', 'Seatac, Washington - United States', 'Doubletree Hotel', 'http://www.norwescon.org'),
+('2020/04/19', '2020/04/21', 'Sakura Con', 'Seattle, Washington - United States', 'Washington State Convention Center', 'http://sakuracon.org'),
+('2020/04/19', '2020/04/21', 'Anime Boston', 'Boston, Massachusetts - United States', 'Hynes Convention Center', 'http://animeboston.com/'),
+('2020/04/20', '', 'Karoshi-Con', 'DeKalb, Illinois - United States', 'Holmes Student Center', 'http://niuanime.x10host.com/karoshicon-general.html'),
+('2020/04/26', '2020/04/28', 'LVL UP Expo', 'Las Vegas, Nevada - United States', 'Las Vegas Convention Center', 'https://lvlupexpo.com'),
+('2020/04/26', '2020/04/28', 'Causeacon', 'Beckley, West Virginia - United States', 'Beckley-Raleigh County Community Center', 'http://www.causeacon.com/'),
+('2020/04/27', '', 'Animetroplex', 'Denton, Texas - United States', 'Lone Star Indoor Sports Center', 'http://www.ampxcon3.com'),
+('2020/05/03', '2020/05/05', 'Crypticon Seattle', 'Seatac, Washington - United States', 'Doubletree Hotel', 'https://www.crypticonseattle.com/'),
+('2020/05/03', '2020/05/05', 'Northern FanCon', 'Prince George, BC - Canada', 'CN Centre', 'http://fancon.ca'),
+('2020/05/03', '2020/05/05', 'Anime St. Louis', 'Saint Charles, Missouri - United States', 'St. Charles Convention Center', 'http://animestl.net/'),
+('2020/05/04', '', 'Concinnity', 'Milwaukee, Wisconsin - United States', 'Cudahy Student Center', 'https://concinnitycon.weebly.com'),
+('2020/05/10', '2020/05/12', 'Sabaku Con', 'Albuquerque, New Mexico - United States', 'Albuquerque Mariott', 'http://www.sabakucon.com/'),
+('2020/05/16', '2020/05/19', 'Megacon Orlando', 'Orlando, Florida - United States', 'Orange County Convention Center', 'https://www.megaconorlando.com/home.html'),
+('2020/05/17', '2020/05/19', 'Everfree Northwest', 'Seatac, Washington - United States', 'Doubletree Hotel', 'https://everfreenw.com/'),
+('2020/05/17', '2020/05/19', 'Anime Central', 'Rosemont, Illinois - United States', 'Donald E. Stephens Convention Center', 'https://www.acen.org'),
+('2020/05/23', '2020/05/26', 'Momocon', 'Atlanta, Georgia - United States', 'Georgia World Congress Center', 'https://www.momocon.com/'),
+('2020/05/24', '2020/05/27', 'Balticon', 'Baltimore, Maryland - United States', 'Renaissance Baltimore Harborplace Hotel', 'https://www.balticon.org/wp53/'),
+('2020/05/24', '2020/05/27', 'FanimeCon', 'San Jose, California - United States', 'SanJose Convention Center', 'https://www.fanime.com/'),
+('2020/05/24', '2020/05/26', 'Anime North', 'Toronto, Toronto - Canada', 'Toronto Congress Centre', 'https://www.animenorth.com/live/'),
+('2020/05/30', '2020/06/02', 'Colossalcon', 'Sandusky, Ohio - United States', 'Kalahari Resort', 'http://www.colossalcon.com'),
+('2020/05/31', '2020/06/02', 'Anime Conji', 'San Diego, California - United States', 'Mission Valley Mariott Hotel', 'http://animeconji.org'),
+('2020/06/01', '2020/06/02', 'Lilac City Comic Con', 'Spokane, Washington - United States', 'Spokane Convention Center', 'https://lilaccitycomicon.webs.com/'),
+('2020/06/06', '2020/06/09', 'A-Kon', 'Fort Worth, Texas - United States', 'Fort Worth Convention Center', 'https://a-kon.com');
 
 /* TESTING */
 
@@ -354,3 +408,6 @@ FROM reactions;
 
 SELECT *
 FROM follows;
+
+SELECT *
+FROM events;
