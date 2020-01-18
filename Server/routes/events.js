@@ -68,7 +68,7 @@ router.get('/event/all/:eventId', async (request, response) => {
             } else {
                 response.json({
                     status: 'success',
-                    message: 'No reactions returned.',
+                    message: 'No events returned.',
                     payload: [],
                 })
             }
