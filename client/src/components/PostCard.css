@@ -33,7 +33,7 @@ li.j-post-card {
   background-color: #fff; */
 }
 
-.j-post--username {
+.j-post-username {
   background-color: #fff;
   border: solid 2px #390288;
   border-radius: 18px;
@@ -41,7 +41,7 @@ li.j-post-card {
   text-align: center;
 }
 
-.j-post--avatar {
+.j-post-avatar {
   width: 80px;
   height: 80px;
   object-fit: cover;
@@ -74,11 +74,11 @@ li.j-post-card {
   margin: 2px 3px 3px 19px;
 }
 
-.j-post--posting-box {
+.j-post-image-box {
   grid-row: span 3;
 }
 
-.j-post--posting {
+.j-post-image {
   height: 390px;
   border-radius: 8px;
   margin-right: 32px;
