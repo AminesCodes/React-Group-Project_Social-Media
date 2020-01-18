@@ -148,7 +148,6 @@ router.post("/add", upload.single("posts"), async (req, res, next) => {
         throw new Error("401__error: authentication failure");
       }
     } catch (err) {
-      console.log(err)
       handleError(err, req, res, next);
     }
 });
