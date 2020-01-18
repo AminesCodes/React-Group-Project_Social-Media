@@ -36,33 +36,16 @@ const handleError = (response, err) => {
     }
 }
 
-const isValidId = (id) => {
-    if (!isNaN(parseInt(id)) && id.length === (parseInt(id) + '').length) {
-        return true
-    }
-    return false
-}
-
 // GET ALL EVENTS BY EVENT ID
 
-router.get('/event/all/:eventId', async (request, response) => {
-    const eventId = request.params.eventId;
-    const validId = isValidId(eventId);
+router.get('/', async (request, response) => {
 
-    if (!validId) {
-        response.status(404)
-            response.json({
-                status: 'fail',     
-                message: 'Wrong route',
-                payload: null,
-            })
-    } else {
         try {
-            const allEventsByEventId = await getAllEventsByEventId(eventId);
+            const allEventsByEventId = await getAllEventsByEventId();
             if (allEventsByEventId.length) {
                 response.json({
                     status: 'success',
-                    message: `Successfully retrieved all events: ${eventId}`,
+                    message: `Successfully retrieved all events`,
                     payload: allEventsByEventId,
                 })
             } else {
@@ -76,7 +59,7 @@ router.get('/event/all/:eventId', async (request, response) => {
             handleError(response, err)
         }
     }
-})
+)
 
 
 module.exports = router

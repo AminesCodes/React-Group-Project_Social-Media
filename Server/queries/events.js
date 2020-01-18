@@ -1,13 +1,12 @@
 const db = require('../db');
 
-const getAllEventsByEventId = async (eventId) => {
+const getAllEventsByEventId = async () => {
     try {
         const requestQuery = `
             SELECT *
             FROM events
-            WHERE post_id = $1
             ORDER BY events.id ASC`
-        return await db.any(requestQuery, eventId)
+        return await db.any(requestQuery)
     } catch (err) {
         throw err
     }
