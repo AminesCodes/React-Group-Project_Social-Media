@@ -72,12 +72,13 @@ export default class PostLightBox extends React.PureComponent {
         event.preventDefault()
 
         try {
-            const pw = sessionStorage.getItem('Suit_App_KS')
+            const pw = sessionStorage.getItem('Parent-Ing_App_KS')
+            const uId = sessionStorage.getItem('Parent-Ing_App_UId')
             const requestBody = {
                 password: pw,
                 body: this.state.newComment,
             }
-            const { data } = await axios.post(`http://localhost:3129/comments/${this.props.postId}/${this.props.userId}`, requestBody)
+            const { data } = await axios.post(`http://localhost:3129/comments/${this.props.postId}/${uId}`, requestBody)
             if (data.status === 'success') {
                 this.getAllCommentsAndReactions(this.props.postId)
                 this.setState({newComment: ''})
@@ -108,31 +109,46 @@ export default class PostLightBox extends React.PureComponent {
             height: '100%',
             objectFit: 'scale-down',
         }
-
+ 
+        const uId = parseInt(sessionStorage.getItem('Parent-Ing_App_UId'))
         let commentsContainer = null
         if (this.state.showComments) {
-            commentsContainer = <Comments userId={this.props.userId} postId={this.props.postId} allComments={this.state.comments} handleCloseComments={this.handleCloseComments} handleCommentInput={this.handleCommentInput} commentText={this.state.newComment} handleAddCommentForm={this.handleAddCommentForm} reloadComments={this.getAllCommentsAndReactions}/>
+            commentsContainer = <Comments userId={uId} postId={this.props.postId} allComments={this.state.comments} handleCloseComments={this.handleCloseComments} handleCommentInput={this.handleCommentInput} commentText={this.state.newComment} handleAddCommentForm={this.handleAddCommentForm} reloadComments={this.getAllCommentsAndReactions}/>
         }
     
+        let trashCanIcon = null
+        let saveButton = null
+        let editIcon = null
+        let edit = 'disabled'
+        let postId = null
+
+        if (this.props.allowedToEdit) {
+            trashCanIcon = <TrashCan className='icon' style={{position: 'absolute', top: '0', right: '0'}} onClick={() => this.props.handleDeletePost(this.props.postId)}/>
+            saveButton = <button className='btn btn-primary'><Save style={{width: '30px'}}/></button>
+            editIcon = <Edit className='icon flex-grow-1'/>
+            edit = ''
+            postId = this.props.postId
+        }
+
         return ( 
             <>
             <div className='container rounded' style={divStyle}>
                 <div className='card position-relative' style={{width: '100%', height: '100%', backgroundColor: backgroundColor}}>
                     <Close className='position-absolute icon' onClick={this.props.handleClosePost} />
                     <div className='card-img-top position-relative' style={{width: '100%', height: '80%'}}>
-                        <TrashCan className='icon' style={{position: 'absolute', top: '0', right: '0'}} onClick={() => this.props.handleDeletePost(this.props.postId)}/>
+                        {trashCanIcon}
                         <img src={this.props.image} alt='Card' style={imageStyle}/>
                         <span className='timestampSpan'>{new Date(this.props.timestamp).toLocaleString()}</span>
                     </div>
                     <div className='card-body p-1' style={{width: '100%', height: '20%'}}>
-                        <form className='row' onSubmit={e => this.props.handleForm(e, this.props.postId)} style={{width: '100%', height: '83%'}}>
+                        <form className='row' onSubmit={e => this.props.handleForm(e, postId)} style={{width: '100%', height: '83%'}}>
                             <div className='col-1'>
-                                <label htmlFor='titleEdit'><Edit className='icon flex-grow-1'/></label>
-                                <button className='btn btn-primary'><Save style={{width: '30px'}}/></button>
+                                <label htmlFor='titleEdit'>{editIcon}</label>
+                                {saveButton}
                             </div>
                             <div className='col-11 d-flex flex-column'>
-                                <input className='rounded mb-1' type='text' id='titleEdit' value={this.props.title} onChange={e => this.props.handleTitleInput(e)} />
-                                <textarea className='rounded flex-grow-1' value={this.props.caption} onChange={e => this.props.handleCaptionInput(e)} />
+                                <input className={`rounded mb-1`} type='text' id='titleEdit' value={this.props.title} onChange={e => this.props.handleTitleInput(e)} disabled={edit}/>
+                                <textarea className={`rounded flex-grow-1`} value={this.props.caption} onChange={e => this.props.handleCaptionInput(e)} disabled={edit}/>
                             </div>
                         </form>
                         <div className='d-flex justify-content-between'>
