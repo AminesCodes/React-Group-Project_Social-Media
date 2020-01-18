@@ -5,10 +5,9 @@ GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
 
 
 import React, { PureComponent } from 'react';
-import '../../src/App.css'
 // import { Link } from 'react-router-dom';
 
-// import './AboutSA.css';
+import './AboutSA.css';
 
 export default class AboutSA extends PureComponent {
   pw = sessionStorage.getItem('Parent-Ing_App_KS');
