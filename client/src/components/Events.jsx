@@ -18,10 +18,6 @@ export default class Events extends PureComponent {
   }
 
   async componentDidMount() {
-    await this.getEvents();
-  }
-
-  getEvents = async () => {
     let url = 'http://localhost:3129/events/'; 
     const response = await axios.get(url);
     const eventsArray = response.data.payload;
@@ -30,7 +26,6 @@ export default class Events extends PureComponent {
     })
   }
 
-  
   // ################ RENDER ###########
   render() {
     const list = this.state.events.map((event, k) => {
