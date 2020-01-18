@@ -62,7 +62,6 @@ export default class PostCard extends PureComponent {
     const allReactions = reactionsResponse.data.payload;
     const reactions = allReactions.filter(el => !el.comment_id);
     for (let reaction of reactions) {
-      console.log(reaction.reactor_id, this.uId);
       if (reaction.reactor_id === this.uId) {
         this.setState((prevState, props) => {
             return { currUserLikeId: reaction.reaction_id.toString() }
@@ -81,24 +80,23 @@ export default class PostCard extends PureComponent {
         const url = `http://localhost:3129/reactions/add/post/${this.props.postId}`;
         const postBody = {
           password: this.pw,
-          reactorId: this.uId,
+          reactorId: this.uId + '',
           emojiType: 1
         }
-        console.log(url, postBody);
         const response = await axios.post(url, postBody);
-        console.log("hit", response);
-        // this.setState((prevState, props) => {
-        //     return { currUserLikeId: !this.state.currUserLikeId }
-        // });
+        this.setState((prevState, props) => {
+            return { currUserLikeId: response.data.payload.id }
+        });
       } else {
         const url = `http://localhost:3129/reactions/delete/${this.state.currUserLikeId}`;
         const postBody = {
           password: this.pw,
-          reactorId: this.uId
+          reactorId: this.uId + ''
         }
-        await axios.patch(url, postBody);
+        const response = await axios.patch(url, postBody);
+        console.log(response);
         this.setState((prevState, props) => {
-            return { currUserLikeId: !this.state.currUserLikeId }
+            return { currUserLikeId: null }
         });
       }
     } catch (err) {
@@ -113,7 +111,6 @@ export default class PostCard extends PureComponent {
   }
 
   render() {
-    // const pw = sessionStorage.getItem('Suit_App_KS');
 
     const {
       username,
