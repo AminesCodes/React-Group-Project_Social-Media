@@ -1,0 +1,13 @@
+/*
+Avatar Styling | Client | SUITAPP Web App
+GROUP 1: Amine Bensalem, Douglas MacKrell, Savita Madray, Joseph P. Pasaoa
+*/
+
+
+.avatarImage {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: solid 2px #390288;
+}

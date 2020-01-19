@@ -1,0 +1,16 @@
+h2 {
+  font-size: 2em;
+  text-decoration: underline;
+  margin: 22px;
+}
+
+.j-bio {
+  font-size: 1.5em;
+}
+
+.j-persona-name {
+  font-size: 1.5em;
+  font-family: 'AlegreyaSans-Black';
+  color: #3b1a6b;
+  margin-top: 6px;
+}

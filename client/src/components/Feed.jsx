@@ -73,7 +73,7 @@ export default class Feed extends PureComponent {
               return (
                 <Link 
                   key={post.id + tag + `-i${index}`} 
-                  to={`/${this.props.currUsername}/feed/all?search=${tag}`} 
+                  to={`/${this.props.username}/feed/all?search=${tag}`} 
                   className="j-post-hashtag-link" 
                 >
                   {'#' + tag}

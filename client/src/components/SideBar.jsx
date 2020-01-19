@@ -46,6 +46,15 @@ export default class SideBar extends PureComponent {
                       <li>
                         <NavLink className='j-sub-nav' to={`/${this.props.username}/persona/designer`}>Designer</NavLink>
                       </li>
+                      <li>
+                        <NavLink className='j-sub-nav' to={`/${this.props.username}/persona/hair`}>Hair Stylist</NavLink>
+                      </li>
+                      <li>
+                        <NavLink className='j-sub-nav' to={`/${this.props.username}/persona/makeup`}>Makeup Artist</NavLink>
+                      </li>
+                      <li>
+                        <NavLink className='j-sub-nav' to={`/${this.props.username}/persona/costumer`}>Costume Maker</NavLink>
+                      </li>
                     </ul>
                   </Route> 
               </li>

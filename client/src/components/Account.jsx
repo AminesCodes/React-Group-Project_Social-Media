@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, Route, Switch } from 'react-router-dom';
 import axios from 'axios'
 
+import './Account.css';
 
 import ProfileTab from './ProfileTab'
 import PasswordTab from './PasswordTab'
@@ -287,12 +288,12 @@ export default class Account extends React.PureComponent {
         const uId = sessionStorage.getItem('Suit_App_UId')
         let content =
             <div className='spinner-border m-5' role='status'>
-                <span className='sr-only  text-center'>Loading...</span>
+                <span className='sr-only text-center'>Loading...</span>
             </div>
         if (!this.state.waitingForData) {
             content = 
             <>
-                <ul className="nav nav-tabs">
+                <ul className="j-account nav nav-tabs">
                     <li className="nav-item">
                       <Link className={`nav-link ${this.state.profileTab}`} to={`${this.props.match.url}`} >Profile</Link>
                     </li>
