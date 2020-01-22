@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 
-// import './Persona.css';
+import './Persona.css';
 
 import PersonalPosts from './PersonalPosts'
 import Avatar from './Avatar'
@@ -149,12 +149,14 @@ export default class Persona extends Component {
     return (
       <div className='container-fluid m-3'>
         <div className='row' >
-            <div className='col-sm-2'>
+            <div className='j-left col-sm-2'>
                 <Avatar avatar={this.state.avatar}/>
+                <div className="j-persona-name">{this.state.username}</div>
             </div>
             <div className='col-sm-7'>
                 {followBtn}
-                <p>{this.state.bio}</p>
+                <h2>Bio</h2>
+                <p className='j-bio'>{this.state.bio}</p>
             </div>
             <div className='col-sm-3'>
                 <div className='d-flex flex-wrap m-0 p-0'>

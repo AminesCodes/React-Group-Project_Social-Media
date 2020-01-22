@@ -1,0 +1,10 @@
+.j-account .nav-link:link, .j-account .nav-link:visited {
+  font-style: normal;
+  text-decoration: none;
+  font-weight: normal;
+  font-family: 'Mukta', sans-serif;
+}
+
+.j-account .nav-link:hover, .j-account .nav-link:active {
+color: gold;
+}

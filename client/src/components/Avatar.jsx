@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './Avatar.css';
+
 const imgAvatar = require('../assets/images/avatars/2.png');
 
 
